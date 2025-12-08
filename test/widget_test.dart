@@ -7,7 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:praise_choir_app/choirApp.dart';
+import 'package:praise_choir_app/choir_app.dart';
 
 
 void main() {
