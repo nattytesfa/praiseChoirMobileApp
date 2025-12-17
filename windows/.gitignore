@@ -1,5 +1,9 @@
 flutter/ephemeral/
 
+# Firebase options file
+lib/firebase_options.dart
+
+
 # Miscellaneous
 *.class
 *.log
