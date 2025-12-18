@@ -27,7 +27,27 @@ class _MemberManagementScreenState extends State<MemberManagementScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Member Management')),
+      appBar: AppBar(
+        title: const Text('Member Management'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search members...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                fillColor: Colors.white,
+                filled: true,
+              ),
+              onChanged: (value) {},
+            ),
+          ),
+        ),
+      ),
       body: BlocBuilder<AdminCubit, AdminState>(
         builder: (context, state) {
           if (state is AdminLoading) {
