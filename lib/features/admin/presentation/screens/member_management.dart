@@ -40,7 +40,7 @@ class _MemberManagementScreenState extends State<MemberManagementScreen> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                fillColor: Colors.white,
+                fillColor: Colors.black,
                 filled: true,
               ),
               onChanged: (value) {},
@@ -73,6 +73,10 @@ class _MemberManagementScreenState extends State<MemberManagementScreen> {
       itemBuilder: (context, index) {
         final member = members[index];
         return ListTile(
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
           leading: CircleAvatar(child: Text(member.name[0].toUpperCase())),
           title: Text(member.name),
           subtitle: Column(
@@ -94,18 +98,27 @@ class _MemberManagementScreenState extends State<MemberManagementScreen> {
           trailing: PopupMenuButton<String>(
             onSelected: (value) => _handleMemberAction(value, member),
             itemBuilder: (context) => [
-              const PopupMenuItem(value: 'edit', child: Text('Edit Member')),
+              // const PopupMenuItem(value: 'edit', child: Text('Edit Member')),
               const PopupMenuItem(
                 value: 'change_role',
                 child: Text('Change Role'),
               ),
-              if (member.isActive)
-                const PopupMenuItem(
-                  value: 'deactivate',
-                  child: Text('Deactivate'),
-                ),
-              if (!member.isActive)
-                const PopupMenuItem(value: 'activate', child: Text('Activate')),
+
+              !member.isActive
+                  ? const PopupMenuItem(
+                      value: 'activate',
+                      child: Text(
+                        'Activate',
+                        style: TextStyle(color: Colors.green),
+                      ),
+                    )
+                  : const PopupMenuItem(
+                      value: 'deactivate',
+                      child: Text(
+                        'Deactivate',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
             ],
           ),
         );
@@ -119,15 +132,49 @@ class _MemberManagementScreenState extends State<MemberManagementScreen> {
         _showRoleDialog(member);
         break;
       case 'deactivate':
-        context.read<AdminCubit>().deactivateMember(member.id);
+        _showConfirmDialog(
+          title: "Deactivate Member",
+          content: "Are you sure you want to disable ${member.name}'s access?",
+          onConfirm: () =>
+              context.read<AdminCubit>().deactivateMember(member.id),
+        );
         break;
       case 'activate':
-        // Implement activate functionality
-        break;
-      case 'edit':
-        // Navigate to edit member screen
+        _showConfirmDialog(
+          title: "Activate Member",
+          content: "Restore app access for ${member.name}?",
+          onConfirm: () => context.read<AdminCubit>().activateMember(member.id),
+        );
         break;
     }
+  }
+
+  // Helper for quick confirmations
+  void _showConfirmDialog({
+    required String title,
+    required String content,
+    required VoidCallback onConfirm,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              onConfirm();
+              Navigator.pop(context);
+            },
+            child: const Text("Confirm"),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showRoleDialog(UserModel member) {

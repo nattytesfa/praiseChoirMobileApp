@@ -7,28 +7,28 @@ part 'user_model.g.dart';
 class UserModel {
   @HiveField(0)
   final String id; // This will match Firebase UID
-  
+
   @HiveField(1)
   final String email;
-  
+
   @HiveField(2)
   final String name;
-  
+
   @HiveField(3)
   final String role; // leader, songWriter, member, prayerGroup
-  
+
   @HiveField(4)
   final DateTime joinDate;
-  
+
   @HiveField(5)
   final bool isActive;
-  
+
   @HiveField(6)
   final String? profileImagePath;
-  
+
   @HiveField(7)
   final DateTime? lastLogin;
-  
+
   @HiveField(8)
   final bool emailVerified;
 
@@ -63,10 +63,7 @@ class UserModel {
   }
 
   // For creating from Firestore document
-  factory UserModel.fromFirestore(
-    String id,
-    Map<String, dynamic> data,
-  ) {
+  factory UserModel.fromFirestore(String id, Map<String, dynamic> data) {
     return UserModel(
       id: id,
       email: data['email'] ?? '',
@@ -107,8 +104,8 @@ class UserModel {
       joinDate: DateTime.parse(json['joinDate']),
       isActive: json['isActive'] ?? true,
       profileImagePath: json['profileImagePath'],
-      lastLogin: json['lastLogin'] != null 
-          ? DateTime.parse(json['lastLogin']) 
+      lastLogin: json['lastLogin'] != null
+          ? DateTime.parse(json['lastLogin'])
           : null,
       emailVerified: json['emailVerified'] ?? false,
     );

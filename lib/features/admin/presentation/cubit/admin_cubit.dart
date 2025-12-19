@@ -37,8 +37,6 @@ class AdminCubit extends Cubit<AdminState> {
     }
   }
 
-
-
   /// Updates a member role and refreshes cloud data
   Future<void> updateMemberRole(String memberId, String newRole) async {
     try {
@@ -52,10 +50,27 @@ class AdminCubit extends Cubit<AdminState> {
     }
   }
 
+  // admin_cubit.dart
+  Future<void> activateMember(String userId) async {
+    try {
+      // Optional: emit(AdminLoading()); // Only if you want a full screen spinner
+      await _authRepository.updateUserStatus(userId, true);
+
+      // Refresh the list so the UI updates immediately
+      await loadAdminStats();
+    } catch (e) {
+      if (!isClosed) {
+        emit(AdminError('Failed to activate member: ${e.toString()}'));
+      }
+    }
+  }
+
   /// Deactivates a member (Soft Delete)
   Future<void> deactivateMember(String memberId) async {
     try {
-      await _authRepository.updateUserRole(memberId, 'deactivated');
+      await _authRepository.updateUserStatus(memberId, false);
+
+      // await _authRepository.updateUserRole(memberId, 'deactivated');
       // Or create a specific method in repo: updateStatus(memberId, false)
       await loadAdminStats();
     } catch (e) {
