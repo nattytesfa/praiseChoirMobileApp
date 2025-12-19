@@ -27,7 +27,7 @@ class AdminStatsModel {
 
   @HiveField(7)
   final DateTime lastUpdated;
-  
+
   @HiveField(8)
   final int adminCount;
 
@@ -40,12 +40,13 @@ class AdminStatsModel {
     required this.unreadMessages,
     required this.upcomingEvents,
     required this.lastUpdated,
-    required this.adminCount, 
+    required this.adminCount,
   });
 
   Map<String, dynamic> toJson() {
     return {
       'totalMembers': totalMembers,
+      'adminCount': adminCount,
       'activeMembers': activeMembers,
       'totalSongs': totalSongs,
       'songsWithAudio': songsWithAudio,
@@ -66,12 +67,13 @@ class AdminStatsModel {
       unreadMessages: json['unreadMessages'],
       upcomingEvents: json['upcomingEvents'],
       lastUpdated: DateTime.parse(json['lastUpdated']),
-      adminCount: json['admincount']
+      adminCount: json['adminCount'],
     );
   }
 
   AdminStatsModel copyWith({
     int? totalMembers,
+    int? adminCount,
     int? activeMembers,
     int? totalSongs,
     int? songsWithAudio,
@@ -90,7 +92,7 @@ class AdminStatsModel {
       unreadMessages: unreadMessages ?? this.unreadMessages,
       upcomingEvents: upcomingEvents ?? this.upcomingEvents,
       lastUpdated: lastUpdated ?? this.lastUpdated,
-      adminCount: adminCount,
+      adminCount: adminCount ?? this.adminCount,
     );
   }
 }

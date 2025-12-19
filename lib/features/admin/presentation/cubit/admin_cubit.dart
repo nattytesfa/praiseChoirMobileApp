@@ -17,7 +17,9 @@ class AdminCubit extends Cubit<AdminState> {
 
       // 2. Calculate Stats locally from the list
       final activeMembers = allMembers.where((m) => m.isActive).toList();
-      final adminCount = allMembers.where((m) => m.role == 'admin').length;
+      final adminCount = allMembers
+          .where((m) => m.role == 'leader' || m.role == 'admin')
+          .length;
 
       // Note: You can add SongRepository later to fill totalSongs
       final stats = AdminStatsModel(
