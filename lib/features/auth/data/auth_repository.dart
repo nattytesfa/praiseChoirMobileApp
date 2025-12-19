@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:praise_choir_app/features/auth/data/models/user_model.dart';
 import 'package:hive/hive.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -37,7 +36,18 @@ class AuthRepository {
   // Inside AuthRepository.dart
   Future<List<UserModel>> getAllUsers() async {
     try {
-      final snapshot = await _firestore.collection('users').get();
+      final snapshot = await _firestore
+          .collection('users')
+          .get()
+          .timeout(
+            const Duration(seconds: 10),
+            onTimeout: () {
+              throw Exception(
+                "Firestore request timed out. Check your internet.",
+              );
+            },
+          );
+
       return snapshot.docs
           .map((doc) => UserModel.fromJson(doc.data()))
           .toList();
@@ -48,18 +58,24 @@ class AuthRepository {
 
   Future<void> updateUserRole(String targetUserId, String newRole) async {
     try {
-      // Optional: Check if we already have 3 admins before adding more
+      // 1. Only check the limit if we are UPGRADING someone to admin
       if (newRole == 'admin') {
         final adminQuery = await _firestore
             .collection('users')
             .where('role', isEqualTo: 'admin')
             .get();
 
-        if (adminQuery.docs.length >= 3) {
+        // Check if the user is already an admin (don't count them twice)
+        bool alreadyAdmin = adminQuery.docs.any(
+          (doc) => doc.id == targetUserId,
+        );
+
+        if (!alreadyAdmin && adminQuery.docs.length > 3) {
           throw Exception('Limit reached: Maximum of 3 leaders allowed.');
         }
       }
 
+      // 2. Perform the update for ANY role (admin, user, member, deactivated)
       await _firestore.collection('users').doc(targetUserId).update({
         'role': newRole,
       });
@@ -216,10 +232,6 @@ class AuthRepository {
 
       // Clear local storage (your existing logic)
       await _settingsBox.delete('current_user_id');
-
-      if (kDebugMode) {
-        print('User logged out successfully');
-      }
     } catch (e) {
       throw Exception('Logout failed: $e');
     }
@@ -280,6 +292,17 @@ class AuthRepository {
 
     // Update in Firestore
     await _firestore.collection('users').doc(user.id).update(user.toJson());
+  }
+
+  Future<void> updateUserStatus(String userId, bool status) async {
+    try {
+      await _firestore.collection('users').doc(userId).update({
+        'isActive': status,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      throw Exception('Failed to update user status: $e');
+    }
   }
 
   // ==================== PRIVATE HELPER METHODS ====================
