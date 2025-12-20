@@ -1,7 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/config/routes.dart';
+import 'package:praise_choir_app/core/constants/app_constants.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
+import 'package:praise_choir_app/features/admin/admin_routes.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 
@@ -10,12 +13,15 @@ class HomeScreen extends StatelessWidget {
 
   // Inside your HomeScreen or Sidebar
   void _navigateToAdmin(BuildContext context) {
+ // <--- ADD THIS
     // We check the role one last time for safety before navigating
     final state = context.read<AuthCubit>().state;
 
-    if (state is AuthAuthenticated && state.user.role == 'admin') {
+    if (state is AuthAuthenticated &&
+        state.user.role == AppConstants.roleLeader) {
       // This string must match the one in your AdminRoutes
-      Navigator.pushNamed(context, Routes.adminDashboard);
+      Navigator.pushNamed(context, AdminRoutes.adminDashboard);
+   
     }
   }
 
@@ -145,7 +151,7 @@ class HomeScreen extends StatelessWidget {
       actions: [
         IconButton(
           icon: const Icon(Icons.logout_rounded, color: Colors.white),
-          onPressed: () => context.read<AuthCubit>().logout(),
+          onPressed: () => context.read<AuthCubit>().logout(context),
         ),
       ],
     );
@@ -188,7 +194,8 @@ class HomeScreen extends StatelessWidget {
   Widget _buildLeaderCard(BuildContext context) {
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
-        if (state is AuthAuthenticated && state.user.role == 'admin') {
+        if (state is AuthAuthenticated &&
+            state.user.role == AppConstants.roleLeader) {
           return _buildActionCard(
             context,
             title: "Leader Tools",

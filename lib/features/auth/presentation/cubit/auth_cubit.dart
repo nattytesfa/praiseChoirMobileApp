@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:praise_choir_app/config/routes.dart';
 import 'package:praise_choir_app/core/constants/app_constants.dart';
 import 'package:praise_choir_app/features/auth/data/auth_repository.dart';
 import 'package:praise_choir_app/features/auth/data/models/user_model.dart';
@@ -40,10 +42,12 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> logout() async {
+  Future<void> logout(BuildContext context) async {
     try {
       await authRepository.logout(); // Call repo to clear Firebase/Hive
       emit(AuthUnauthenticated()); // Tell UI to go back to Login screen
+      if (!context.mounted) return;
+      Navigator.pushNamed(context, Routes.login);
     } catch (e) {
       emit(AuthError("Logout failed: $e"));
     }

@@ -7,7 +7,8 @@ class AppConstants {
   static const int paymentDueDay = 1; // 1st of every month
 
   // Role constants
-  static const String roleLeader = 'leader';
+  static const String roleLeader = 'admin';
+  static const String roleUser = 'user';
   static const String roleSongwriter = 'Songwriter';
   static const String roleMember = 'member';
   static const String rolePrayerGroup = 'prayer_group';

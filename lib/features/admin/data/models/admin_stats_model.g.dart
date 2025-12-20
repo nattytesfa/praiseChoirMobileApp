@@ -26,6 +26,7 @@ class AdminStatsModelAdapter extends TypeAdapter<AdminStatsModel> {
       upcomingEvents: fields[6] as int,
       lastUpdated: fields[7] as DateTime,
       adminCount: fields[8] as int,
+      lastSynced: fields[9] as DateTime,
     );
   }
 

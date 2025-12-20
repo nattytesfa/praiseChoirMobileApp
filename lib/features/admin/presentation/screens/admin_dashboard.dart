@@ -1,4 +1,7 @@
+import 'package:praise_choir_app/core/constants/app_constants.dart';
+import 'package:praise_choir_app/features/admin/admin_routes.dart';
 import 'package:praise_choir_app/features/admin/presentation/cubit/admin_state.dart';
+import 'package:praise_choir_app/features/admin/presentation/widgets/system_health.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +31,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   void _checkAdminAccess() {
     final authState = context.read<AuthCubit>().state;
     if (authState is AuthAuthenticated) {
-      if (authState.user.role != 'admin') {
+      if (authState.user.role != AppConstants.roleLeader) {
         // Use your AppConstants.roleLeader here
         Navigator.pop(context);
       }
@@ -132,8 +135,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
               color: Colors.blueGrey,
             ),
           ),
-          const SizedBox(height: 16),
-
           // 2x2 GRID
           GridView.count(
             shrinkWrap: true,
@@ -161,14 +162,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
               _buildCategoryCard(
                 context,
-                "System Health",
-                "Database integrity",
-                Icons.health_and_safety_rounded,
-                Colors.teal,
-                () => context.read<AdminCubit>().checkSystemHealth(),
-              ),
-              _buildCategoryCard(
-                context,
                 "System Settings",
                 "Global app config",
                 Icons.settings_applications_rounded,
@@ -176,6 +169,20 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 () => Navigator.pushNamed(context, '/admin/settings'),
               ),
             ],
+          ),
+          const SizedBox(height: 32),
+          const Text(
+            "System Diagnostic",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.blueGrey,
+            ),
+          ),
+          const SizedBox(height: 16),
+          SystemHealth(
+            onHealthCheck: () => context.read<AdminCubit>().checkSystemHealth(),
+            onCleanup: () => _confirmCleanup(context),
           ),
         ],
       ),
@@ -264,6 +271,46 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 }
 
+void _confirmCleanup(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: const Text('Cleanup Local Cache?'),
+      content: const Text(
+        'This will clear your local Hive database and redownload everything from Firestore. Use this if you see data errors.',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(dialogContext),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.orange,
+            foregroundColor: Colors.white, // Ensure text is visible
+          ),
+          onPressed: () async {
+            // 1. Close the dialog first so the user sees the dashboard again
+            Navigator.pop(dialogContext);
+
+            // 2. Trigger the cleanup and wait for it
+            // This will trigger the CircularProgressIndicator you have in SystemHealth
+            await context.read<AdminCubit>().cleanupData();
+
+            // 3. Optional: Show a snackbar when done
+            if (context.mounted) {
+              Navigator.pushNamed(context, AdminRoutes.adminDashboard);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('System re-synced successfully!')),
+              );
+            }
+          },
+          child: const Text('Clear & Sync'),
+        ),
+      ],
+    ),
+  );
+}
 
 
 

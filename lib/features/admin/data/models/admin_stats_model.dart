@@ -31,6 +31,9 @@ class AdminStatsModel {
   @HiveField(8)
   final int adminCount;
 
+  @HiveField(9)
+  final DateTime lastSynced;
+
   AdminStatsModel({
     required this.totalMembers,
     required this.activeMembers,
@@ -41,6 +44,7 @@ class AdminStatsModel {
     required this.upcomingEvents,
     required this.lastUpdated,
     required this.adminCount,
+    required this.lastSynced,
   });
 
   Map<String, dynamic> toJson() {
@@ -54,6 +58,7 @@ class AdminStatsModel {
       'unreadMessages': unreadMessages,
       'upcomingEvents': upcomingEvents,
       'lastUpdated': lastUpdated.toIso8601String(),
+      'lastSynced': lastSynced.toIso8601String(),
     };
   }
 
@@ -68,6 +73,7 @@ class AdminStatsModel {
       upcomingEvents: json['upcomingEvents'],
       lastUpdated: DateTime.parse(json['lastUpdated']),
       adminCount: json['adminCount'],
+      lastSynced: DateTime.parse(json['lastSynced']),
     );
   }
 
@@ -93,6 +99,7 @@ class AdminStatsModel {
       upcomingEvents: upcomingEvents ?? this.upcomingEvents,
       lastUpdated: lastUpdated ?? this.lastUpdated,
       adminCount: adminCount ?? this.adminCount,
+      lastSynced: lastUpdated ?? lastSynced,
     );
   }
 }
