@@ -173,6 +173,29 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 }
+
+// admin_cubit.dart
+
+List<UserModel> getRecentLogins(List<UserModel> members) {
+  // Sort members: most recent login at the top
+  final sorted = List<UserModel>.from(members);
+  sorted.sort((a, b) {
+    if (a.lastLogin == null) return 1;
+    if (b.lastLogin == null) return -1;
+    return b.lastLogin!.compareTo(a.lastLogin!);
+  });
+  return sorted;
+}
+
+Map<String, List<UserModel>> getActivitySegments(List<UserModel> members) {
+  final now = DateTime.now();
+  final sevenDaysAgo = now.subtract(const Duration(days: 7));
+
+  return {
+    'active': members.where((u) => u.lastLogin != null && u.lastLogin!.isAfter(sevenDaysAgo)).toList(),
+    'inactive': members.where((u) => u.lastLogin == null || u.lastLogin!.isBefore(sevenDaysAgo)).toList(),
+  };
+}
   // Future<void> googleSignIn() async {
   //   emit(AuthLoading());
   //   if (_auth == null) {

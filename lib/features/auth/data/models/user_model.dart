@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive/hive.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:praise_choir_app/core/constants/app_constants.dart';
 
 part 'user_model.g.dart';
 
@@ -64,23 +66,30 @@ class UserModel {
 
   // For creating from Firestore document
   factory UserModel.fromFirestore(String id, Map<String, dynamic> data) {
+    // Helper to handle both String and Timestamp from Firestore
+    DateTime? parseDateTime(dynamic value) {
+      if (value == null) return null;
+      if (value is String) return DateTime.tryParse(value);
+      if (value is Timestamp) return value.toDate(); // If using cloud_firestore
+      return null;
+    }
+
     return UserModel(
       id: id,
       email: data['email'] ?? '',
       name: data['name'] ?? '',
-      role: data['role'] ?? 'member',
-      joinDate: data['joinDate'] != null
-          ? DateTime.parse(data['joinDate'])
-          : DateTime.now(),
+      role:
+          (data['role']?.toString().toLowerCase() == 'leader' ||
+              data['role']?.toString().toLowerCase() == 'admin')
+          ? AppConstants.roleLeader
+          : AppConstants.roleUser,
+      joinDate: parseDateTime(data['joinDate']) ?? DateTime.now(),
       isActive: data['isActive'] ?? true,
       profileImagePath: data['profileImagePath'],
-      lastLogin: data['lastLogin'] != null
-          ? DateTime.parse(data['lastLogin'])
-          : null,
+      lastLogin: parseDateTime(data['lastLogin']),
       emailVerified: data['emailVerified'] ?? false,
     );
   }
-
   Map<String, dynamic> toJson() {
     return {
       'id': id,
