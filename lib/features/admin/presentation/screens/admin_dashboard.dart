@@ -150,7 +150,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               color: Colors.blueGrey,
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
 
           // 2x2 GRID
           GridView.count(
@@ -187,11 +187,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
             ],
           ),
-          const SizedBox(height: 32),
 
-          // Inside your Column
-          // PendingRequestsList(members: state.members),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           const Text(
             "System Diagnostic",
             style: TextStyle(
@@ -200,7 +197,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               color: Colors.blueGrey,
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           SystemHealth(
             onHealthCheck: () => context.read<AdminCubit>().checkSystemHealth(),
             onCleanup: () => _confirmCleanup(context),
