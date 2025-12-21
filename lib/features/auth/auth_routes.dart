@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:praise_choir_app/core/widgets/common/role_selection_screen.dart';
 
 class AuthRoutes {
-  static Route<dynamic> generateRoute(RouteSettings settings) {
+  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       // case '/auth/login':
-        // return MaterialPageRoute(builder: (_) => const LoginScreen());
+      // return MaterialPageRoute(builder: (_) => const LoginScreen());
 
       // case '/auth/otp':
       //   final args = settings.arguments as Map<String, dynamic>;
@@ -40,10 +40,10 @@ class AuthRoutes {
 
 // Update the main routes.dart to include auth routes
 // class AppRouter {
-//   Route<dynamic> generateRoute(RouteSettings settings) {
+//   Route<dynamic> onGenerateRoute(RouteSettings settings) {
 //     // Auth Routes
 //     if (settings.name?.startsWith('/auth/') ?? false) {
-//       return AuthRoutes.generateRoute(settings);
+//       return AuthRoutes.onGenerateRoute(settings);
 //     }
 
 //     // Other routes...

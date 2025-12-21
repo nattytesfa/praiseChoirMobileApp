@@ -18,6 +18,8 @@ class AdminStatsLoaded extends AdminState {
   final List<UserModel> members;
 
   const AdminStatsLoaded(this.stats, this.members);
+  int get pendingCount =>
+      members.where((u) => u.approvalStatus == 'pending').length;
 
   @override
   List<Object> get props => [stats, members];
@@ -41,11 +43,11 @@ class MemberUpdated extends AdminState {
   List<Object> get props => [member];
 }
 
-class SystemHealthChecked extends AdminState {
+class SystemHealthChecked extends AdminStatsLoaded {
   final Map<String, dynamic> healthStatus;
 
-  const SystemHealthChecked(this.healthStatus);
+  const SystemHealthChecked(this.healthStatus, super.stats, super.members);
 
   @override
-  List<Object> get props => [healthStatus];
+  List<Object> get props => [healthStatus, stats, members];
 }

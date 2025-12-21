@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/config/routes.dart';
@@ -25,10 +24,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String? _errorMessage;
 
   final List<Map<String, String>> _roles = [
-    {'value': 'member', 'label': 'Member'},
-    {'value': 'songWriter', 'label': 'Song Writer'},
-    {'value': 'prayerGroup', 'label': 'Prayer Group'},
-    // Note: 'leader' role should be assigned by existing leaders, not self-selected
+    {'value': 'member', 'label': 'Member (Needs Leader Approval)'},
+    {'value': 'guest', 'label': 'Guest (View Songs Only)'},
   ];
 
   @override
@@ -39,14 +36,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _confirmPasswordController.dispose();
     super.dispose();
   }
-
-  // void _navigateToRoleSelector() {
-  //   Navigator.pushNamedAndRemoveUntil(
-  //     context,
-  //     Routes.roleSelection,
-  //     (route) => false,
-  //   );
-  // }
 
   Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) return;
@@ -60,41 +49,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       role: _selectedRole,
     );
   }
-
-  // Future<void> _signUp() async {
-  //   if (!_formKey.currentState!.validate()) return;
-
-  //   setState(() {
-  //     isLoading = true;
-  //     _errorMessage = null;
-  //   });
-
-  //   final cubit = context.read<AuthCubit>();
-
-  //   // Listen for state changes
-  //   final subscription = cubit.stream.listen((state) {
-  //     if (state is AuthError) {
-  //       setState(() {
-  //         _errorMessage = state.message;
-  //         isLoading = false;
-  //       });
-  //     } else if (state is AuthAuthenticated) {
-  //       // Success - navigate to home
-  //       _navigateToRoleSelector();
-  //     }
-  //   });
-
-  //   // Trigger sign up
-  //   await cubit.signUpWithEmail(
-  //     email: _emailController.text.trim(),
-  //     password: _passwordController.text,
-  //     name: _nameController.text.trim(),
-  //     role: _selectedRole,
-  //   );
-
-  //   // Clean up subscription
-  //   subscription.cancel();
-  // }
 
   void _navigateToLogin() {
     Navigator.pushReplacementNamed(context, '/login');
@@ -112,23 +66,37 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
       body: BlocListener<AuthCubit, AuthState>(
         listener: (context, state) {
-          if (kDebugMode) {
-            print("Current State: $state");
-          } // ADD THIS TO DEBUG
           if (state is AuthAuthenticated) {
-            if (kDebugMode) {
-              print("Success! Navigating...");
+            final user = state.user;
+            if (user.role == 'guest') {
+              // Guests go to the public screen
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                Routes.home,
+                (route) => false,
+              );
+            } else if (user.approvalStatus == 'pending') {
+              // Members go to the waiting room
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                Routes.pendingUser,
+                (route) => false,
+              );
+            } else {
+              // Approved members/leaders go home
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                Routes.home,
+                (route) => false,
+              );
             }
             // This will fire automatically when the sign-up is successful
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              Routes.home, // Or Routes.songs
-              (route) => false,
-            );
+            // Navigator.pushNamedAndRemoveUntil(
+            //   context,
+            //   Routes.home, // Or Routes.songs
+            //   (route) => false,
+            // );
           } else if (state is AuthError) {
-            if (kDebugMode) {
-              print("Error: ${state.message}");
-            }
             // Handle the error state here too
             ScaffoldMessenger.of(
               context,
@@ -290,7 +258,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         setState(() {
                           _selectedRole = value!;
                         });
+                        if (value == 'member') {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Note: Members require leader approval after sign up.',
+                              ),
+                            ),
+                          );
+                        }
                       },
+
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please select a role';

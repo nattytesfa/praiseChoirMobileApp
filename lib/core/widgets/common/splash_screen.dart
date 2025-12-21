@@ -56,7 +56,16 @@ class _SplashScreenState extends State<SplashScreen>
       listener: (context, state) {
         // As soon as the Cubit emits a result, navigate!
         if (state is AuthAuthenticated) {
-          Navigator.pushReplacementNamed(context, Routes.home);
+          // 1. Check Guest Role first
+          if (state.user.role == 'guest') {
+            Navigator.pushReplacementNamed(context, Routes.home);
+          }
+
+          // 2. Check Approval Status
+          if (state.user.approvalStatus == 'pending' ||
+              state.user.approvalStatus == 'denied') {
+            Navigator.pushReplacementNamed(context, Routes.pendingUser);
+          }
         } else if (state is AuthUnauthenticated || state is AuthError) {
           Navigator.pushReplacementNamed(context, Routes.login);
         }

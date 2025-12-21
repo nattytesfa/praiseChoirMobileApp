@@ -1,10 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
 import 'package:praise_choir_app/features/admin/data/models/admin_stats_model.dart';
 import 'package:praise_choir_app/features/admin/presentation/cubit/admin_state.dart';
 import 'package:praise_choir_app/features/auth/data/auth_repository.dart';
+import 'package:praise_choir_app/features/auth/data/models/user_model.dart';
 
 class AdminCubit extends Cubit<AdminState> {
   final AuthRepository _authRepository;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   AdminCubit(this._authRepository) : super(AdminInitial());
 
@@ -32,12 +36,15 @@ class AdminCubit extends Cubit<AdminState> {
         upcomingEvents: 0,
         lastUpdated: DateTime.now(),
         adminCount: adminCount,
+        lastSynced: DateTime.now(),
       );
       emit(AdminStatsLoaded(stats, allMembers));
     } catch (e) {
       emit(AdminError('Failed to load: ${e.toString()}'));
     }
   }
+
+ 
 
   /// Updates a member role and refreshes cloud data
   Future<void> updateMemberRole(String memberId, String newRole) async {
@@ -80,179 +87,96 @@ class AdminCubit extends Cubit<AdminState> {
     }
   }
 
-  /// Checks if Hive boxes are healthy on the local device
-  void checkSystemHealth() {
+  Future<void> checkSystemHealth() async {
+    // Save the current data before starting the check
+    if (state is! AdminStatsLoaded) return;
+    final currentState = state as AdminStatsLoaded;
+    // emit(AdminLoading());
     try {
-      final healthStatus = <String, dynamic>{
-        'firestore_connected': true,
-        'last_sync': DateTime.now().toIso8601String(),
+      // 1. Check local Hive boxes
+      final usersBoxHealthy = Hive.isBoxOpen('users');
+      final songsBoxHealthy = Hive.isBoxOpen('songs');
+      final paymentsBoxHealthy = Hive.isBoxOpen('payments');
+
+      // 2. Get counts from Repository (or direct Firestore calls)
+      // final userCount = await _authRepository
+      //     .getUserCount(); // Implement these in Repo
+      // final songCount = await _songRepository.getSongCount();
+
+      // 3. Logic checks (Example: Check for duplicate users)
+      // For now, we'll set these to true, but you can add actual logic later
+      bool hasDuplicates = false;
+
+      final healthStatus = {
+        'users_box': usersBoxHealthy,
+        'songs_box': songsBoxHealthy,
+        'payments_box': paymentsBoxHealthy,
+        'duplicate_users': hasDuplicates,
+        'storage_healthy': true,
+        'total_users': currentState.members.length,
+        'total_songs': 0,
+        'total_payments': 0, // Update as needed
       };
-      emit(SystemHealthChecked(healthStatus));
+
+      // THE FIX: Emit the new state WITH the old data
+      emit(
+        SystemHealthChecked(
+          healthStatus,
+          currentState.stats,
+          currentState.members,
+        ),
+      );
     } catch (e) {
-      emit(AdminError('System health check failed'));
+      emit(AdminError('Health check failed: $e'));
+    }
+  }
+
+  // admin_cubit.dart
+
+  Future<void> respondToRequest(
+    String userId,
+    bool approved, {
+    String? message,
+  }) async {
+    try {
+      final status = approved ? 'approved' : 'denied';
+
+      // 1. Update Firestore
+      await _firestore.collection('users').doc(userId).update({
+        'approvalStatus': status,
+        'adminMessage': message,
+        // If denied, we might want to keep them as guest, if approved, they become member
+        'role': approved ? 'member' : 'guest',
+      });
+
+      // 2. Refresh the local data
+      await loadAdminStats();
+    } catch (e) {
+      emit(AdminError("Failed to update user: $e"));
+    }
+  }
+
+  Future<void> cleanupData() async {
+    // This is a "Safety" feature: Clear local cache and reload
+    emit(AdminLoading());
+    // 1. Keep the dashboard visible by checking current state
+    if (state is! AdminStatsLoaded) return;
+    final currentState = state as AdminStatsLoaded;
+    try {
+      final userBox = Hive.box<UserModel>('users');
+      await userBox.clear();
+      // If you have other boxes, clear them the same way:
+      // await Hive.box('songs').clear();
+      // After clearing local, reload from Cloud
+      // 3. Re-fetch data from Firestore so the UI isn't empty
+      await loadAdminStats();
+      // 4. Optionally run a health check to show the green checkmarks again
+      await checkSystemHealth();
+    } catch (e) {
+      emit(AdminError('Cleanup failed: ${e.toString()}'));
+      // Re-emit the previous state so the dashboard doesn't disappear
+      emit(currentState);
     }
   }
 }
 
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:praise_choir_app/core/constants/app_constants.dart';
-// import 'package:praise_choir_app/features/auth/data/models/user_model.dart';
-// import 'package:hive/hive.dart';
-// import 'admin_state.dart';
-
-// class AdminCubit extends Cubit<AdminState> {
-//   AdminCubit() : super(AdminInitial());
-
-//   void loadAdminStats() async {
-//     emit(AdminLoading());
-//     try {
-//       // final userBox = Hive.box<UserModel>(HiveBoxes.users);
-//       // final songBox = Hive.box<SongModel>(HiveBoxes.songs);
-//       // final paymentBox = Hive.box<PaymentModel>(HiveBoxes.payments);
-
-//       // final members = userBox.values.toList();
-//       // final songs = songBox.values.toList();
-//       // final payments = paymentBox.values.toList();
-
-//       // final currentMonth = DateTime(DateTime.now().year, DateTime.now().month);
-//       // final monthlyPayments = payments
-//       //     .where(
-//       //       (p) =>
-//       //           p.dueDate.year == currentMonth.year &&
-//       //           p.dueDate.month == currentMonth.month,
-//       //     )
-//       //     .toList();
-
-//       //     final paidCount = monthlyPayments
-//       //         .where((p) => p.status == PaymentStatus.paid)
-//       //         .length;
-//       //     final collectionRate = monthlyPayments.isNotEmpty
-//       //         ? (paidCount / monthlyPayments.length) * 100
-//       //         : 0.0;
-
-//       //     final stats = AdminStatsModel(
-//       //       totalMembers: members.length,
-//       //       activeMembers: members.where((m) => m.isActive).length,
-//       //       totalSongs: songs.length,
-//       //       songsWithAudio: songs.where((s) => s.audioPath != null).length,
-//       //       monthlyCollectionRate: collectionRate,
-//       //       unreadMessages: 0, // Would be calculated from chat
-//       //       upcomingEvents: 0, // Would be calculated from events
-//       //       lastUpdated: DateTime.now(),
-//       //     );
-
-//       //     emit(AdminStatsLoaded(stats, members));
-//     } catch (e) {
-//       //     emit(AdminError('Failed to load admin statistics'));
-//     }
-//   }
-
-//   void updateMemberRole(String memberId, String newRole) async {
-//     try {
-//       final userBox = Hive.box<UserModel>(HiveBoxes.users);
-//       final member = userBox.values.firstWhere((m) => m.id == memberId);
-//       final updatedMember = UserModel(
-//         id: member.id,
-//         email: member.email,
-//         name: member.name,
-//         role: newRole,
-//         joinDate: member.joinDate,
-//         isActive: member.isActive,
-//         profileImagePath: member.profileImagePath,
-//       );
-
-//       final index = userBox.values.toList().indexWhere((m) => m.id == memberId);
-//       if (index != -1) {
-//         await userBox.putAt(index, updatedMember);
-//         emit(MemberUpdated(updatedMember));
-//         loadAdminStats(); // Reload stats
-//       }
-//     } catch (e) {
-//       emit(AdminError('Failed to update member role'));
-//     }
-//   }
-
-//   void deactivateMember(String memberId) async {
-//     try {
-//       final userBox = Hive.box<UserModel>(HiveBoxes.users);
-//       final member = userBox.values.firstWhere((m) => m.id == memberId);
-//       final updatedMember = UserModel(
-//         id: member.id,
-//         email: member.email,
-//         name: member.name,
-//         role: member.role,
-//         joinDate: member.joinDate,
-//         isActive: false,
-//         profileImagePath: member.profileImagePath,
-//       );
-
-//       final index = userBox.values.toList().indexWhere((m) => m.id == memberId);
-//       if (index != -1) {
-//         await userBox.putAt(index, updatedMember);
-//         emit(MemberUpdated(updatedMember));
-//         loadAdminStats(); // Reload stats
-//       }
-//     } catch (e) {
-//       emit(AdminError('Failed to deactivate member'));
-//     }
-//   }
-
-//   void checkSystemHealth() async {
-//     emit(AdminLoading());
-//     try {
-//       final healthStatus = <String, dynamic>{};
-
-//       // Check Hive boxes
-//       final userBox = Hive.box<UserModel>(HiveBoxes.users);
-//       // final songBox = Hive.box<SongModel>(HiveBoxes.songs);
-//       // final paymentBox = Hive.box<PaymentModel>(HiveBoxes.payments);
-
-//       healthStatus['users_box'] = userBox.isOpen;
-//       // healthStatus['songs_box'] = songBox.isOpen;
-//       // healthStatus['payments_box'] = paymentBox.isOpen;
-
-//       // Check data integrity
-//       healthStatus['total_users'] = userBox.length;
-//       // healthStatus['total_songs'] = songBox.length;
-//       // healthStatus['total_payments'] = paymentBox.length;
-
-//       // Check for duplicates
-//       final users = userBox.values.toList();
-//       final uniquePhones = users.map((u) => u.email).toSet();
-//       healthStatus['duplicate_users'] = users.length != uniquePhones.length;
-
-//       // Check storage usage (simplified)
-//       healthStatus['storage_healthy'] = true;
-
-//       emit(SystemHealthChecked(healthStatus));
-//     } catch (e) {
-//       emit(AdminError('Failed to check system health'));
-//     }
-//   }
-
-//   // void cleanupData() async {
-//   //   emit(AdminLoading());
-//   //   try {
-//   //     // Remove duplicate songs (simplified logic)
-//   //     final songBox = Hive.box<SongModel>(HiveBoxes.songs);
-//   //     final songs = songBox.values.toList();
-//   //     final uniqueSongs = <String, SongModel>{};
-
-//   //     for (final song in songs) {
-//   //       final key = '${song.title}_${song.language}';
-//   //       if (!uniqueSongs.containsKey(key)) {
-//   //         uniqueSongs[key] = song;
-//   //       }
-//   //     }
-
-//   //     await songBox.clear();
-//   //     for (final song in uniqueSongs.values) {
-//   //       await songBox.add(song);
-//   //     }
-
-//   //     loadAdminStats(); // Reload stats after cleanup
-//   //   } catch (e) {
-//   //     emit(AdminError('Failed to cleanup data'));
-//   //   }
-//   // }
-// }

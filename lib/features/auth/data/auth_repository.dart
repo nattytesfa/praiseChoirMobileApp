@@ -56,6 +56,17 @@ class AuthRepository {
     }
   }
 
+  Future<UserModel> getFreshUserData(String uid) async {
+    final doc = await _firestore.collection('users').doc(uid).get();
+    if (!doc.exists) throw Exception("User not found");
+
+    final user = UserModel.fromFirestore(doc.id, doc.data()!);
+
+    // Sync the fresh data back to Hive so the cache stays updated
+    await _usersBox.put(user.id, user);
+    return user;
+  }
+
   Future<void> updateUserRole(String targetUserId, String newRole) async {
     try {
       // 1. Only check the limit if we are UPGRADING someone to admin
@@ -92,6 +103,7 @@ class AuthRepository {
     required String password,
     required String name,
     required String role,
+    required String approvalStatus, // Add this parameter
   }) async {
     try {
       // 1. Firebase Auth
@@ -107,6 +119,8 @@ class AuthRepository {
         name: name,
         role: role,
         joinDate: DateTime.now(),
+        approvalStatus: approvalStatus, // Set it here!
+        lastLogin: DateTime.now(),
       );
 
       // 3. Save to Firestore
@@ -303,6 +317,19 @@ class AuthRepository {
     } catch (e) {
       throw Exception('Failed to update user status: $e');
     }
+  }
+
+  // auth_repository.dart
+  Future<int> getUserCount() async {
+    // Using .count() is cheaper than fetching all documents!
+    final aggregateQuery = await _firestore.collection('users').count().get();
+    return aggregateQuery.count ?? 0;
+  }
+
+  // song_repository.dart
+  Future<int> getSongCount() async {
+    final aggregateQuery = await _firestore.collection('songs').count().get();
+    return aggregateQuery.count ?? 0;
   }
 
   // ==================== PRIVATE HELPER METHODS ====================

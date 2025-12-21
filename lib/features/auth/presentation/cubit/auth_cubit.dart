@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,9 @@ import 'package:hive/hive.dart';
 class AuthCubit extends Cubit<AuthState> {
   final dynamic _auth;
   final AuthRepository authRepository;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  late Box<UserModel> _usersBox;
 
   /// If [disableFirebase] is true, the cubit will not call Firebase APIs and
   /// will operate in a disabled mode suitable for testing other features.
@@ -39,6 +43,28 @@ class AuthCubit extends Cubit<AuthState> {
       }
     } catch (e) {
       emit(AuthError("Failed to initialize: $e"));
+    }
+  }
+
+  Future<void> refreshUserStatus() async {
+    final currentUser = _auth.currentUser;
+    if (currentUser == null) return;
+
+    try {
+      // 1. Fetch fresh data from Firestore
+      final doc = await _firestore
+          .collection('users')
+          .doc(currentUser.uid)
+          .get();
+      final updatedUser = UserModel.fromFirestore(doc.id, doc.data()!);
+
+      // 2. Update local Hive cache
+      await _usersBox.put(updatedUser.id, updatedUser);
+
+      // 3. Emit new state to trigger UI update
+      emit(AuthAuthenticated(updatedUser));
+    } catch (e) {
+      emit(AuthError("Failed to refresh: $e"));
     }
   }
 
@@ -141,6 +167,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoading());
 
     try {
+      final status = (role == 'guest') ? 'approved' : 'pending';
       // 1. Let the repository handle the complex work:
       // - Creating the Firebase account
       // - Updating the Firestore document
@@ -150,6 +177,7 @@ class AuthCubit extends Cubit<AuthState> {
         password: password,
         name: name,
         role: role,
+        approvalStatus: status, // Pass this to repository
       );
 
       // 2. Emit success only after the repository finishes successfully.
@@ -192,8 +220,14 @@ Map<String, List<UserModel>> getActivitySegments(List<UserModel> members) {
   final sevenDaysAgo = now.subtract(const Duration(days: 7));
 
   return {
-    'active': members.where((u) => u.lastLogin != null && u.lastLogin!.isAfter(sevenDaysAgo)).toList(),
-    'inactive': members.where((u) => u.lastLogin == null || u.lastLogin!.isBefore(sevenDaysAgo)).toList(),
+    'active': members
+        .where((u) => u.lastLogin != null && u.lastLogin!.isAfter(sevenDaysAgo))
+        .toList(),
+    'inactive': members
+        .where(
+          (u) => u.lastLogin == null || u.lastLogin!.isBefore(sevenDaysAgo),
+        )
+        .toList(),
   };
 }
   // Future<void> googleSignIn() async {

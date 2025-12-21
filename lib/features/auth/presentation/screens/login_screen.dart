@@ -32,11 +32,25 @@ class _LoginScreenState extends State<LoginScreen> {
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthAuthenticated) {
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              Routes.home,
-              (r) => false,
-            );
+            final user = state.user;
+
+            // USE THE SAME GATEKEEPER LOGIC EVERYWHERE
+            if (user.approvalStatus == 'pending' ||
+                user.approvalStatus == 'denied') {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                Routes.pendingUser,
+                (route) => false,
+              );
+            } else if (user.role == 'guest') {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/songs_public',
+                (route) => false,
+              );
+            } else {
+              Navigator.pushReplacementNamed(context, Routes.home);
+            }
           } else if (state is AuthError) {
             ScaffoldMessenger.of(
               context,
@@ -44,6 +58,9 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         },
         builder: (context, state) {
+          if (state is AuthLoading) {
+            const Center(child: CircularProgressIndicator());
+          }
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Form(

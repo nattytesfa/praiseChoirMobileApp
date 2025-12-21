@@ -34,6 +34,10 @@ class UserModel {
   @HiveField(8)
   final bool emailVerified;
 
+  @HiveField(9)
+  final String approvalStatus; // 'pending', 'approved', 'denied'
+  @HiveField(10)
+  final String? adminMessage; // Message from leader if denied
   UserModel({
     required this.id,
     required this.email,
@@ -44,6 +48,8 @@ class UserModel {
     this.profileImagePath,
     this.lastLogin,
     this.emailVerified = false,
+    this.approvalStatus = 'approved', // Default 'approved' for guests
+    this.adminMessage,
   });
 
   // Convert Firebase User to your UserModel
@@ -74,20 +80,22 @@ class UserModel {
       return null;
     }
 
+    final String rawRole = data['role']?.toString().toLowerCase() ?? 'guest';
+    final String mappedRole = (rawRole == 'leader' || rawRole == 'admin')
+        ? AppConstants.roleLeader
+        : rawRole;
     return UserModel(
       id: id,
       email: data['email'] ?? '',
       name: data['name'] ?? '',
-      role:
-          (data['role']?.toString().toLowerCase() == 'leader' ||
-              data['role']?.toString().toLowerCase() == 'admin')
-          ? AppConstants.roleLeader
-          : AppConstants.roleUser,
+      role: mappedRole,
       joinDate: parseDateTime(data['joinDate']) ?? DateTime.now(),
       isActive: data['isActive'] ?? true,
       profileImagePath: data['profileImagePath'],
       lastLogin: parseDateTime(data['lastLogin']),
       emailVerified: data['emailVerified'] ?? false,
+      approvalStatus: data['approvalStatus'] ?? 'pending',
+      adminMessage: data['adminMessage'],
     );
   }
   Map<String, dynamic> toJson() {
@@ -101,6 +109,8 @@ class UserModel {
       'profileImagePath': profileImagePath,
       'lastLogin': lastLogin?.toIso8601String(),
       'emailVerified': emailVerified,
+      'approvalStatus': approvalStatus,
+      'adminMessage': adminMessage,
     };
   }
 
@@ -117,6 +127,8 @@ class UserModel {
           ? DateTime.parse(json['lastLogin'])
           : null,
       emailVerified: json['emailVerified'] ?? false,
+      approvalStatus: json['approvalStatus'] ?? 'approved',
+      adminMessage: json['adminMessage'],
     );
   }
 
@@ -131,6 +143,8 @@ class UserModel {
     String? profileImagePath,
     DateTime? lastLogin,
     bool? emailVerified,
+    String? approvalStatus,
+    String? adminMessage,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -142,6 +156,8 @@ class UserModel {
       profileImagePath: profileImagePath ?? this.profileImagePath,
       lastLogin: lastLogin ?? this.lastLogin,
       emailVerified: emailVerified ?? this.emailVerified,
+      approvalStatus: approvalStatus ?? this.approvalStatus,
+      adminMessage: adminMessage ?? this.adminMessage,
     );
   }
 }
