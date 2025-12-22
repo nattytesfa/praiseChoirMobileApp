@@ -25,15 +25,15 @@ class HomeScreen extends StatelessWidget {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.logout_rounded, color: Colors.white),
-                  onPressed: () => context.read<AuthCubit>().logout(context),
-                ),
-                IconButton(
                   icon: const Icon(
                     Icons.brightness_4_rounded,
                     color: Colors.white,
                   ),
                   onPressed: () {},
+                ),
+                IconButton(
+                  icon: const Icon(Icons.logout_rounded, color: Colors.white),
+                  onPressed: () => context.read<AuthCubit>().logout(context),
                 ),
               ],
             ),
@@ -41,7 +41,7 @@ class HomeScreen extends StatelessWidget {
 
           // LEFT: Logout and Theme Toggle
           leading: _buildProfileMenu(context, user),
-          
+
           // MIDDLE: Network Status Animation
           title: const NetworkStatusIndicator(),
           centerTitle: true,
@@ -57,6 +57,9 @@ class HomeScreen extends StatelessWidget {
         ),
         body: const TabBarView(
           children: [
+            // ... must match the number of widgets here!
+            Center(child: Text("English Song List")), // Widget for Tab 1
+            Center(child: Text("የአማርኛ መዝሙር ዝርዝር")), // Widget for Tab 2
             // SongListView(language: 'en'), // Placeholder for English songs
             // SongListView(language: 'am'), // Placeholder for Amharic songs
           ],
@@ -69,66 +72,105 @@ class HomeScreen extends StatelessWidget {
     return PopupMenuButton(
       offset: const Offset(0, 50),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: CircleAvatar(
-          radius: 18,
-          backgroundColor: Colors.white24,
-          child: Text(
-            user?.name[0].toUpperCase() ?? "U",
-            style: const TextStyle(color: Colors.white, fontSize: 14),
-          ),
-        ),
-      ),
+      // 1. Changed to Hamburger Icon
+      icon: const Icon(Icons.menu, color: Colors.white),
       itemBuilder: (context) => <PopupMenuEntry<dynamic>>[
         PopupMenuItem(
           enabled: false,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                user?.name ?? "User",
-                style: const TextStyle(fontWeight: FontWeight.bold),
+              Row(
+                children: [
+                  // 2. Profile Photo moved inside here
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Colors.blue.shade800,
+                    child: Text(
+                      user?.name[0].toUpperCase() ?? "U",
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Name and Email
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user?.name ?? "User",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Text(
+                          user?.email ?? "",
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey.shade600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              Text(user?.email ?? "", style: const TextStyle(fontSize: 12)),
-              const SizedBox(height: 5),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade100,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Text(
-                  user?.role.toUpperCase() ?? "GUEST",
-                  style: const TextStyle(fontSize: 10),
+              const SizedBox(height: 10),
+              // Role Badge
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Text(
+                    user?.role.toUpperCase() ?? "GUEST",
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.blue.shade900,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
-              const Divider(),
+              const Divider(height: 20),
             ],
           ),
         ),
+        // ... rest of your menu items
         const PopupMenuItem(
           child: ListTile(
             leading: Icon(Icons.person_outline),
             title: Text("My Profile"),
+            contentPadding: EdgeInsets.zero, // Clean up the alignment
           ),
         ),
         const PopupMenuItem(
           child: ListTile(
             leading: Icon(Icons.favorite_border),
             title: Text("Favorites"),
+            contentPadding: EdgeInsets.zero,
           ),
         ),
         const PopupMenuItem(
           child: ListTile(
             leading: Icon(Icons.payment),
             title: Text("Payment History"),
+            contentPadding: EdgeInsets.zero,
           ),
         ),
         const PopupMenuItem(
           child: ListTile(
             leading: Icon(Icons.settings),
             title: Text("Settings"),
+            contentPadding: EdgeInsets.zero,
           ),
         ),
         const PopupMenuDivider(),
