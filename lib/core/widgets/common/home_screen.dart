@@ -20,27 +20,32 @@ class HomeScreen extends StatelessWidget {
           backgroundColor: Theme.of(context).primaryColor,
           elevation: 0,
           leadingWidth: 100,
-          // LEFT: Logout and Theme Toggle
-          leading: Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.logout_rounded, color: Colors.white),
-                onPressed: () => context.read<AuthCubit>().logout(context),
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.brightness_4_rounded,
-                  color: Colors.white,
+          // RIGHT: Profile Menu
+          actions: [
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.logout_rounded, color: Colors.white),
+                  onPressed: () => context.read<AuthCubit>().logout(context),
                 ),
-                onPressed: () {},
-              ),
-            ],
-          ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.brightness_4_rounded,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ],
+
+          // LEFT: Logout and Theme Toggle
+          leading: _buildProfileMenu(context, user),
+          
           // MIDDLE: Network Status Animation
           title: const NetworkStatusIndicator(),
           centerTitle: true,
-          // RIGHT: Profile Menu
-          actions: [_buildProfileMenu(context, user)],
+          // actions: [_buildProfileMenu(context, user)],
           // TABS: For English and Amharic Song Filtering
           bottom: const TabBar(
             indicatorColor: Colors.white,
