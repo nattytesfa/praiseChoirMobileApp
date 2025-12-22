@@ -155,7 +155,7 @@ class AppColors {
     }
   }
 
-  static Color withOpacity(Color color, double opacity) {
+  static Color withValues(Color color, double opacity) {
     // Use integer alpha to avoid precision-loss deprecation warnings
     final alpha = (opacity * 255).clamp(0, 255).round();
     return color.withAlpha(alpha);

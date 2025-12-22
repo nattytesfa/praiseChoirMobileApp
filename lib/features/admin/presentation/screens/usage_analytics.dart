@@ -24,7 +24,7 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
     showDatePicker(
       context: context,
       initialDate: _selectedDate,
-      firstDate: DateTime(2020),
+      firstDate: DateTime(2025),
       lastDate: DateTime.now(),
     ).then((date) {
       if (date != null) {
@@ -115,7 +115,7 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
       body: BlocBuilder<AdminCubit, AdminState>(
         builder: (context, state) {
           if (state is AdminLoading) {
-            // return const LoadingIndicator();
+            return const Center(child: CircularProgressIndicator());
           } else if (state is AdminStatsLoaded) {
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16),

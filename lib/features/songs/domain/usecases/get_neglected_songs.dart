@@ -1,0 +1,18 @@
+import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
+import 'package:praise_choir_app/features/songs/data/song_repository.dart';
+
+class GetNeglectedSongs {
+  final SongRepository repository;
+
+  GetNeglectedSongs(this.repository);
+
+  Future<List<SongModel>> call({int daysThreshold = 90}) async {
+    final thresholdDate = DateTime.now().subtract(
+      Duration(days: daysThreshold),
+    );
+    return await repository.getNeglectedSongs(
+      thresholdDate,
+      daysThreshold: daysThreshold,
+    );
+  }
+}

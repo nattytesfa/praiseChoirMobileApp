@@ -1,0 +1,179 @@
+import 'package:flutter/material.dart' hide DateUtils;
+import 'package:praise_choir_app/core/theme/app_colors.dart';
+import 'package:praise_choir_app/core/theme/app_text_styles.dart';
+import 'package:praise_choir_app/core/utils/date_utils.dart';
+import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
+
+class SongListItem extends StatelessWidget {
+  final SongModel song;
+  final VoidCallback onTap;
+  final VoidCallback onPerformed;
+  final VoidCallback onPracticed;
+  final bool showStats;
+
+  const SongListItem({
+    super.key,
+    required this.song,
+    required this.onTap,
+    required this.onPerformed,
+    required this.onPracticed,
+    this.showStats = true,
+  });
+
+  Color _getTagColor(String tag) {
+    switch (tag) {
+      case 'old':
+        return AppColors.warning;
+      case 'new':
+        return AppColors.success;
+      case 'favorite':
+        return AppColors.error;
+      case 'this_round':
+        return AppColors.info;
+      default:
+        return AppColors.primary;
+    }
+  }
+
+  String _getTagDisplayName(String tag) {
+    switch (tag) {
+      case 'old':
+        return 'Old';
+      case 'new':
+        return 'New';
+      case 'favorite':
+        return 'Favorite';
+      case 'this_round':
+        return 'This Round';
+      default:
+        return tag;
+    }
+  }
+
+  String _getLastUsedText() {
+    final lastUsed = song.lastPerformed ?? song.lastPracticed;
+    if (lastUsed == null) return 'Never used';
+    return DateUtils.formatRelativeTime(lastUsed);
+  }
+
+  Widget _buildTags() {
+    if (song.tags.isEmpty) return const SizedBox.shrink();
+
+    return Wrap(
+      spacing: 4,
+      children: song.tags.map((tag) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(
+            color: AppColors.withValues(_getTagColor(tag), 0.1),
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(color: _getTagColor(tag)),
+          ),
+          child: Text(
+            _getTagDisplayName(tag),
+            style: AppTextStyles.caption.copyWith(
+              color: _getTagColor(tag),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildStats() {
+    if (!showStats) return const SizedBox.shrink();
+
+    return Row(
+      children: [
+        // Performance Count
+        if (song.performanceCount > 0) ...[
+          Row(
+            children: [
+              const Icon(Icons.star, size: 14, color: AppColors.warning),
+              const SizedBox(width: 4),
+              Text(
+                song.performanceCount.toString(),
+                style: AppTextStyles.caption,
+              ),
+            ],
+          ),
+          const SizedBox(width: 12),
+        ],
+
+        // Audio Indicator
+        if (song.audioPath != null)
+          const Icon(Icons.audio_file, size: 14, color: AppColors.primary),
+
+        // Last Used
+        Expanded(
+          child: Text(
+            _getLastUsedText(),
+            style: AppTextStyles.caption,
+            textAlign: TextAlign.end,
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: ListTile(
+        leading: const Icon(Icons.music_note, color: AppColors.primary),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              song.title,
+              style: AppTextStyles.bodyLarge.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 4),
+            _buildTags(),
+          ],
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Text(
+              'Language: ${song.language == 'amharic' ? 'Amharic' : 'Kembatigna'}',
+              style: AppTextStyles.caption,
+            ),
+            const SizedBox(height: 4),
+            _buildStats(),
+          ],
+        ),
+        trailing: PopupMenuButton<String>(
+          onSelected: (value) {
+            switch (value) {
+              case 'performed':
+                onPerformed();
+                break;
+              case 'practiced':
+                onPracticed();
+                break;
+            }
+          },
+          itemBuilder: (context) => [
+            const PopupMenuItem(
+              value: 'performed',
+              child: Text('Mark as Performed'),
+            ),
+            const PopupMenuItem(
+              value: 'practiced',
+              child: Text('Mark as Practiced'),
+            ),
+          ],
+        ),
+        onTap: onTap,
+      ),
+    );
+  }
+}

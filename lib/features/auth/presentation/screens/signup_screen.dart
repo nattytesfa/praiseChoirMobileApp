@@ -4,6 +4,7 @@ import 'package:praise_choir_app/config/routes.dart';
 import 'package:praise_choir_app/core/utils/validators.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
+import 'package:praise_choir_app/features/songs/song_routes.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -72,7 +73,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               // Guests go to the public screen
               Navigator.pushNamedAndRemoveUntil(
                 context,
-                Routes.home,
+                SongRoutes.songLibrary,
+
                 (route) => false,
               );
             } else if (user.approvalStatus == 'pending') {
@@ -86,7 +88,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               // Approved members/leaders go home
               Navigator.pushNamedAndRemoveUntil(
                 context,
-                Routes.home,
+                Routes.mainNavigationShell,
                 (route) => false,
               );
             }

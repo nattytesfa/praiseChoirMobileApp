@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/config/locale_cubit.dart';
 import 'package:praise_choir_app/config/routes.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
+import 'package:praise_choir_app/features/songs/song_routes.dart';
 import '../cubit/auth_cubit.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -58,11 +59,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 } else if (user.role == 'guest') {
                   Navigator.pushNamedAndRemoveUntil(
                     context,
-                    '/songs_public',
+                    SongRoutes.songLibrary,
+
                     (route) => false,
                   );
                 } else {
-                  Navigator.pushReplacementNamed(context, Routes.home);
+                  Navigator.pushReplacementNamed(
+                    context,
+                    Routes.mainNavigationShell,
+                  );
                 }
               } else if (state is AuthError) {
                 ScaffoldMessenger.of(context).showSnackBar(
