@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:praise_choir_app/config/locale_cubit.dart';
 import 'package:praise_choir_app/config/routes.dart';
 import 'package:praise_choir_app/core/theme/app_theme.dart' show AppTheme;
+import 'package:praise_choir_app/core/widgets/common/network/sync_cubit.dart';
 import 'package:praise_choir_app/features/admin/presentation/cubit/admin_cubit.dart';
 import 'package:praise_choir_app/features/auth/data/auth_repository.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
@@ -30,6 +31,7 @@ class ChoirApp extends StatelessWidget {
           ),
           BlocProvider(create: (context) => LocaleCubit()),
           BlocProvider(create: (context) => SongCubit()),
+          BlocProvider(create: (context) => SyncCubit()),
         ],
 
         child: BlocBuilder<LocaleCubit, LocaleState>(
