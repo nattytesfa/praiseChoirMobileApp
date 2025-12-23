@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:praise_choir_app/core/theme/app_colors.dart';
+import 'package:praise_choir_app/core/theme/theme_cubit.dart';
 import 'package:praise_choir_app/core/widgets/common/network/network_status_indicator.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
@@ -78,11 +80,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(
-                    Icons.brightness_4_rounded,
+                  icon: Icon(
+                    // Logic: If dark mode is active, show the "Sun" icon, else "Moon"
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Icons.light_mode_rounded
+                        : Icons.dark_mode_rounded,
                     color: Colors.white,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    // This calls your Cubit to toggle the global state
+                    context.read<ThemeCubit>().toggleTheme();
+                  },
                 ),
                 IconButton(
                   icon: const Icon(Icons.logout_rounded, color: Colors.white),
@@ -112,14 +120,31 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ],
           ),
         ),
-        body: const TabBarView(
-          children: [
-            // ... must match the number of widgets here!
-            Center(child: Text("English Song List")), // Widget for Tab 1
-            Center(child: Text("የአማርኛ መዝሙር ዝርዝር")), // Widget for Tab 2
-            // SongListView(language: 'en'), // Placeholder for English songs
-            // SongListView(language: 'am'), // Placeholder for Amharic songs
-          ],
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: Theme.of(context).brightness == Brightness.dark
+                  ? [
+                      AppColors.darkBackground,
+                      AppColors.gray900,
+                    ] // Dark mode gradient
+                  : [
+                      AppColors.primary,
+                      AppColors.primaryLight,
+                    ], // Light mode gradient
+            ),
+          ),
+          child: const TabBarView(
+            children: [
+              // ... must match the number of widgets here!
+              Center(child: Text("English Song List")), // Widget for Tab 1
+              Center(child: Text("የአማርኛ መዝሙር ዝርዝር")), // Widget for Tab 2
+              // SongListView(language: 'en'), // Placeholder for English songs
+              // SongListView(language: 'am'), // Placeholder for Amharic songs
+            ],
+          ),
         ),
       ),
     );

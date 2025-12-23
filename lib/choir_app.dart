@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:praise_choir_app/config/locale_cubit.dart';
 import 'package:praise_choir_app/config/routes.dart';
 import 'package:praise_choir_app/core/theme/app_theme.dart' show AppTheme;
+import 'package:praise_choir_app/core/theme/theme_cubit.dart';
 import 'package:praise_choir_app/core/widgets/common/network/sync_cubit.dart';
 import 'package:praise_choir_app/features/admin/presentation/cubit/admin_cubit.dart';
 import 'package:praise_choir_app/features/auth/data/auth_repository.dart';
@@ -24,6 +25,7 @@ class ChoirApp extends StatelessWidget {
       ],
       child: MultiBlocProvider(
         providers: [
+          BlocProvider(create: (context) => ThemeCubit()),
           BlocProvider(create: (context) => LocaleCubit()),
           // In ChoirApp build method
           BlocProvider(
@@ -38,25 +40,29 @@ class ChoirApp extends StatelessWidget {
           BlocProvider(create: (context) => SyncCubit()),
         ],
 
-        child: BlocBuilder<LocaleCubit, LocaleState>(
-          builder: (context, state) {
-            return MaterialApp(
-              locale: state
-                  .locale, // This ensures the app actually changes language
-              title: 'PCS',
-              theme: AppTheme.lightTheme,
-              darkTheme: AppTheme.darkTheme,
-              themeMode: ThemeMode.system,
-              onGenerateRoute: Routes.onGenerateRoute,
-              localizationsDelegates: const [
-                AppLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              supportedLocales: const [Locale('en'), Locale('am')],
-              initialRoute: Routes.splash,
-              debugShowCheckedModeBanner: false,
+        child: BlocBuilder<ThemeCubit, ThemeMode>(
+          builder: (context, themeMode) {
+            return BlocBuilder<LocaleCubit, LocaleState>(
+              builder: (context, state) {
+                return MaterialApp(
+                  locale: state
+                      .locale, // This ensures the app actually changes language
+                  title: 'PCS',
+                  theme: AppTheme.lightTheme,
+                  darkTheme: AppTheme.darkTheme,
+                  themeMode: themeMode,
+                  onGenerateRoute: Routes.onGenerateRoute,
+                  localizationsDelegates: const [
+                    AppLocalizations.delegate,
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                  ],
+                  supportedLocales: const [Locale('en'), Locale('am')],
+                  initialRoute: Routes.splash,
+                  debugShowCheckedModeBanner: false,
+                );
+              },
             );
           },
         ),
