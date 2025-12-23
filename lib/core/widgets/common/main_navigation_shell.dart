@@ -19,35 +19,45 @@ class MainNavigationShell extends StatelessWidget {
         ? authState.user.role
         : 'guest';
 
-    return PersistentTabView(
-      tabs: [
-        // TAB 1: ALWAYS VISIBLE
-        PersistentTabConfig(
-          screen: const HomeScreen(), // Your existing HomeScreen code
-          item: ItemConfig(icon: const Icon(Icons.music_note), title: "Songs"),
-        ),
+    return Scaffold(
+      extendBody: true,
+      body: PersistentTabView(
+        tabs: [
+          // TAB 1: ALWAYS VISIBLE
+          PersistentTabConfig(
+            screen: const HomeScreen(), // Your existing HomeScreen code
+            item: ItemConfig(
+              icon: const Icon(Icons.music_note),
+              title: "Songs",
+            ),
+          ),
 
-        // TAB 2 & 3: HIDDEN FROM GUESTS
-        if (role != 'guest') ...[
-          PersistentTabConfig(
-            screen: const AnnouncementScreen(),
-            item: ItemConfig(icon: const Icon(Icons.campaign), title: "News"),
-          ),
-          PersistentTabConfig(
-            screen: const ChatScreen(),
-            item: ItemConfig(icon: const Icon(Icons.chat), title: "Chat"),
-          ),
+          // TAB 2 & 3: HIDDEN FROM GUESTS
+          if (role != 'guest') ...[
+            PersistentTabConfig(
+              screen: const AnnouncementScreen(),
+              item: ItemConfig(icon: const Icon(Icons.campaign), title: "News"),
+            ),
+            PersistentTabConfig(
+              screen: const ChatScreen(),
+              item: ItemConfig(icon: const Icon(Icons.chat), title: "Chat"),
+            ),
+          ],
+
+          // TAB 4: ONLY FOR ADMINS
+          if (role == 'admin' || role == 'leader')
+            PersistentTabConfig(
+              screen: const AdminDashboard(),
+              item: ItemConfig(
+                icon: const Icon(Icons.security),
+                title: "Admin",
+              ),
+            ),
         ],
 
-        // TAB 4: ONLY FOR ADMINS
-        if (role == 'admin' || role == 'leader')
-          PersistentTabConfig(
-            screen: const AdminDashboard(),
-            item: ItemConfig(icon: const Icon(Icons.security), title: "Admin"),
-          ),
-      ],
-      navBarBuilder: (navBarConfig) =>
-          Style1BottomNavBar(navBarConfig: navBarConfig),
+        navBarBuilder: (navBarConfig) =>
+            Style1BottomNavBar(navBarConfig: navBarConfig),
+      ),
     );
   }
 }
