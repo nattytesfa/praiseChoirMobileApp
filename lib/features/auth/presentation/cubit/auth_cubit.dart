@@ -73,7 +73,13 @@ class AuthCubit extends Cubit<AuthState> {
       await authRepository.logout(); // Call repo to clear Firebase/Hive
       emit(AuthUnauthenticated()); // Tell UI to go back to Login screen
       if (!context.mounted) return;
-      Navigator.pushNamed(context, Routes.login);
+      // Use the root navigator to ensure we clear the app's top-level
+      // navigation stack (avoids nested navigator contexts leaving the
+      // `MainNavigationShell` in the background).
+      Navigator.of(
+        context,
+        rootNavigator: true,
+      ).pushNamedAndRemoveUntil(Routes.login, (route) => false);
     } catch (e) {
       emit(AuthError("Logout failed: $e"));
     }
