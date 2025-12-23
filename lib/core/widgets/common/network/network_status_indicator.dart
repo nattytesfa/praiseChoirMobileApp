@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:praise_choir_app/core/widgets/common/network/network_cubit.dart';
+import 'package:praise_choir_app/core/widgets/common/network/sync_cubit.dart';
 
 class NetworkStatusIndicator extends StatefulWidget {
   const NetworkStatusIndicator({super.key});
@@ -31,16 +31,35 @@ class _NetworkStatusIndicatorState extends State<NetworkStatusIndicator>
 
   @override
   Widget build(BuildContext context) {
-    final networkStatus = context.watch<NetworkCubit>().state;
-    bool hasInternet = networkStatus == NetworkStatus.connected;
-    String label = hasInternet ? "Updating" : "Waiting for network";
+    final syncStatus = context.watch<SyncCubit>().state;
+
+    String label;
+    Color textColor = Colors.white;
+
+    switch (syncStatus) {
+      case SyncStatus.waiting:
+        label = "Waiting for network";
+        textColor = Colors.white70; // Dim the text when offline
+        break;
+      case SyncStatus.updating:
+        label = "Updating";
+        break;
+      case SyncStatus.synced:
+        // You can return an empty widget or a "Check" icon when done
+        return const Icon(
+          Icons.cloud_done_rounded,
+          color: Colors.greenAccent,
+          size: 16,
+        );
+    }
+
     String dots = "." * (_dotCount % 4);
 
     return Text(
       "$label$dots",
-      style: const TextStyle(
-        fontSize: 13,
-        color: Colors.white,
+      style: TextStyle(
+        fontSize: 12,
+        color: textColor,
         fontWeight: FontWeight.w400,
       ),
     );

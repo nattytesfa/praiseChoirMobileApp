@@ -1,12 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:praise_choir_app/core/widgets/common/network_status_indicator.dart';
+import 'package:praise_choir_app/core/widgets/common/network/network_status_indicator.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
+import 'package:praise_choir_app/features/songs/data/song_repository.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+ 
+ @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    
+    // SCENARIO 1: App Startup
+    // Trigger sync as soon as the home screen is first built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SongRepository>().syncEverything();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // SCENARIO 3: On Resume
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // App came back from background (e.g., user checked a text then came back)
+      context.read<SongRepository>().syncEverything();
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -79,7 +112,7 @@ class HomeScreen extends StatelessWidget {
     return Drawer(
       width:
           MediaQuery.of(context).size.width *
-          0, // Takes 80% width, 100% height
+          0.6, // Takes 60% width, 100% height
       child: Column(
         children: [
           // 1. Full Height Header

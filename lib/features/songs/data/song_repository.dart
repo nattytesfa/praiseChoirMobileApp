@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:praise_choir_app/core/widgets/common/network/sync_cubit.dart';
 import 'package:praise_choir_app/features/songs/domain/entities/song_entity.dart';
 import 'models/song_model.dart';
 
@@ -8,6 +9,7 @@ class HiveBoxes {
 
 class SongRepository {
   late Box<SongModel> _songBox;
+  DateTime? _lastSyncTime;
 
   SongRepository() {
     _songBox = Hive.box<SongModel>(HiveBoxes.songs);
@@ -136,5 +138,21 @@ class SongRepository {
     }
 
     return result;
+  }
+
+  Future<void> syncEverything() async {
+    // Only sync if it's been more than 10 minutes since the last one
+    if (_lastSyncTime != null &&
+        DateTime.now().difference(_lastSyncTime!).inMinutes < 10) {
+      return;
+    }
+
+    SyncCubit().setSyncing(true);
+    try {
+      // Perform Firebase/Hive logic...
+      _lastSyncTime = DateTime.now();
+    } finally {
+      SyncCubit().setSyncing(false);
+    }
   }
 }

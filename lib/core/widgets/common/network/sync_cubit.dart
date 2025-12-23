@@ -10,15 +10,27 @@ class SyncCubit extends Cubit<SyncStatus> {
   StreamSubscription? _subscription;
 
   SyncCubit() : super(SyncStatus.synced) {
-    // Listen for internet changes
-    _subscription = _connectivity.onConnectivityChanged.listen((result) {
-      if (result.contains(ConnectivityResult.none)) {
-        emit(SyncStatus.waiting); // "Waiting for network..."
-      } else {
-        // When internet returns, it's usually "Synced" unless a sync is triggered
-        emit(SyncStatus.synced); 
-      }
-    });
+    _init();
+  }
+
+  Future<void> _init() async {
+    // Check initial state immediately on startup
+    final result = await _connectivity.checkConnectivity();
+    _handleConnectivity(result);
+
+    // Then listen for future changes
+    _subscription = _connectivity.onConnectivityChanged.listen(
+      _handleConnectivity,
+    );
+  }
+
+  void _handleConnectivity(List<ConnectivityResult> result) {
+    if (result.contains(ConnectivityResult.none)) {
+      emit(SyncStatus.waiting);
+    } else if (state == SyncStatus.waiting) {
+      // Only go back to 'synced' if we were previously 'waiting'
+      emit(SyncStatus.synced);
+    }
   }
 
   // Call this from your SongRepository when starting/ending a fetch
