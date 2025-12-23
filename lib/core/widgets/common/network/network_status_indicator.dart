@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:praise_choir_app/core/widgets/common/network/network_cubit.dart';
 
 class NetworkStatusIndicator extends StatefulWidget {
   const NetworkStatusIndicator({super.key});
@@ -29,8 +31,8 @@ class _NetworkStatusIndicatorState extends State<NetworkStatusIndicator>
 
   @override
   Widget build(BuildContext context) {
-    // This will eventually be connected to your Network Cubit
-    late bool hasInternet = true;
+    final networkStatus = context.watch<NetworkCubit>().state;
+    bool hasInternet = networkStatus == NetworkStatus.connected;
     String label = hasInternet ? "Updating" : "Waiting for network";
     String dots = "." * (_dotCount % 4);
 
