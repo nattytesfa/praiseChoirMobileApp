@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:praise_choir_app/core/widgets/common/network/sync_cubit.dart';
 import 'package:praise_choir_app/features/songs/domain/entities/song_entity.dart';
 import 'models/song_model.dart';
 
@@ -147,12 +146,11 @@ class SongRepository {
       return;
     }
 
-    SyncCubit().setSyncing(true);
     try {
-      // Perform Firebase/Hive logic...
+      // Perform Firebase/Hive logic... (no SyncCubit access here)
       _lastSyncTime = DateTime.now();
     } finally {
-      SyncCubit().setSyncing(false);
+      // no-op: Sync state should be handled by callers or a higher-level cubit
     }
   }
 }

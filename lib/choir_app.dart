@@ -9,6 +9,7 @@ import 'package:praise_choir_app/features/admin/presentation/cubit/admin_cubit.d
 import 'package:praise_choir_app/features/auth/data/auth_repository.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.dart';
+import 'package:praise_choir_app/features/songs/data/song_repository.dart';
 import 'package:praise_choir_app/l10n/arb/app_localizations.dart';
 
 class ChoirApp extends StatelessWidget {
@@ -16,8 +17,11 @@ class ChoirApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider(
-      create: (context) => AuthRepository(),
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(create: (context) => AuthRepository()),
+        RepositoryProvider(create: (context) => SongRepository()),
+      ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider(create: (context) => LocaleCubit()),

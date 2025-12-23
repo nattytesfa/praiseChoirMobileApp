@@ -4,6 +4,7 @@ import 'package:praise_choir_app/core/widgets/common/network/network_status_indi
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/songs/data/song_repository.dart';
+import 'package:praise_choir_app/core/widgets/common/network/sync_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,16 +14,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
- 
- @override
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    
+
     // SCENARIO 1: App Startup
     // Trigger sync as soon as the home screen is first built
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<SongRepository>().syncEverything();
+      _performSync();
     });
   }
 
@@ -37,9 +37,30 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       // App came back from background (e.g., user checked a text then came back)
-      context.read<SongRepository>().syncEverything();
+      _performSync();
     }
   }
+
+  Future<void> _performSync() async {
+    try {
+      context.read<SyncCubit>().setSyncing(true);
+    } catch (_) {
+      // If SyncCubit isn't available for some reason, proceed without updating UI
+    }
+
+    try {
+      await context.read<SongRepository>().syncEverything();
+    } catch (e) {
+      // Log or handle sync error if desired; avoid crashing the app
+    } finally {
+      try {
+        context.read<SyncCubit>().setSyncing(false);
+      } catch (_) {
+        // ignore
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
