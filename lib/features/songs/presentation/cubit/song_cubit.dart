@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:praise_choir_app/core/widgets/common/network/sync_cubit.dart';
 import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
 import 'package:praise_choir_app/features/songs/data/song_repository.dart';
 import 'song_state.dart';
@@ -7,7 +8,7 @@ class SongCubit extends Cubit<SongState> {
   final SongRepository songRepository;
 
   SongCubit({SongRepository? repository})
-    : songRepository = repository ?? SongRepository(),
+    : songRepository = repository ?? SongRepository(SyncCubit()),
       super(SongInitial()) {
     loadSongs();
   }

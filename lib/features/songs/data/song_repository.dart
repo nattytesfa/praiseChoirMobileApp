@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
+import 'package:praise_choir_app/core/services/song_service.dart';
+import 'package:praise_choir_app/core/widgets/common/network/sync_cubit.dart';
 import 'package:praise_choir_app/features/songs/domain/entities/song_entity.dart';
 import 'models/song_model.dart';
 
@@ -8,9 +11,11 @@ class HiveBoxes {
 
 class SongRepository {
   late Box<SongModel> _songBox;
+  final SyncCubit? syncCubit;
   DateTime? _lastSyncTime;
+  final SongService _songService = SongService();
 
-  SongRepository() {
+  SongRepository(this.syncCubit) {
     _songBox = Hive.box<SongModel>(HiveBoxes.songs);
   }
 
@@ -50,10 +55,7 @@ class SongRepository {
   }
 
   Future<void> updateSong(SongModel song) async {
-    final index = _songBox.values.toList().indexWhere((s) => s.id == song.id);
-    if (index != -1) {
-      await _songBox.putAt(index, song);
-    }
+    await _songBox.put(song.id, song); // Faster and safer than putAt
   }
 
   Future<void> deleteSong(String songId) async {
@@ -140,17 +142,27 @@ class SongRepository {
   }
 
   Future<void> syncEverything() async {
-    // Only sync if it's been more than 10 minutes since the last one
     if (_lastSyncTime != null &&
         DateTime.now().difference(_lastSyncTime!).inMinutes < 10) {
       return;
     }
 
+    syncCubit?.updateStatus(SyncStatus.updating);
+
     try {
-      // Perform Firebase/Hive logic... (no SyncCubit access here)
+      // 2. Get data from Firebase
+      List<SongModel> remoteSongs = await _songService.fetchAllSongs();
+
+      // 3. Save to Hive (Update if exists, add if new)
+      for (var song in remoteSongs) {
+        await _songBox.put(song.id, song);
+      }
       _lastSyncTime = DateTime.now();
-    } finally {
-      // no-op: Sync state should be handled by callers or a higher-level cubit
+      syncCubit?.updateStatus(SyncStatus.synced);
+    } catch (e, stackTrace) {
+      debugPrint('Sync Error: $e');
+      debugPrint('Stack Trace: $stackTrace');
+      syncCubit?.updateStatus(SyncStatus.error);
     }
   }
 }

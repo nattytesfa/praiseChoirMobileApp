@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
 
-class LyricsDisplay extends StatelessWidget {
+class LyricsDisplay extends StatefulWidget {
   final String lyrics;
   final VoidCallback onFullscreen;
   final bool showActions;
@@ -14,12 +15,54 @@ class LyricsDisplay extends StatelessWidget {
     this.showActions = true,
   });
 
-  Widget _buildStanza(String stanza, int index) {
+  @override
+  State<LyricsDisplay> createState() => _LyricsDisplayState();
+}
+
+class _LyricsDisplayState extends State<LyricsDisplay>
+    with AutomaticKeepAliveClientMixin {
+  double _fontSize = 18.0;
+
+  @override
+  bool get wantKeepAlive => true;
+
+  Widget _buildFontSizeControls() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          const Icon(
+            Icons.text_fields,
+            size: 16,
+            color: AppColors.textSecondary,
+          ),
+          IconButton(
+            icon: const Icon(Icons.remove_circle_outline, size: 20),
+            onPressed: () => setState(() => _fontSize -= 2),
+          ),
+          Text(_fontSize.toInt().toString(), style: AppTextStyles.labelMedium),
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline, size: 20),
+            onPressed: () => setState(() => _fontSize += 2),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStanza(String stanza) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: SelectableText(
+        // Changed from Text to SelectableText
         stanza,
-        style: AppTextStyles.bodyLarge.copyWith(height: 1.6),
+        style: TextStyle(
+          fontSize: _fontSize,
+          height: 1.7, // Slightly increased for Amharic legibility
+          color: Theme.of(context).textTheme.bodyLarge?.color,
+        ),
         textAlign: TextAlign.center,
       ),
     );
@@ -38,7 +81,7 @@ class LyricsDisplay extends StatelessWidget {
   }
 
   Widget _buildActions() {
-    if (!showActions) return const SizedBox.shrink();
+    if (!widget.showActions) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -46,7 +89,7 @@ class LyricsDisplay extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ElevatedButton.icon(
-            onPressed: onFullscreen,
+            onPressed: widget.onFullscreen,
             icon: const Icon(Icons.fullscreen),
             label: const Text('Fullscreen'),
             style: ElevatedButton.styleFrom(
@@ -58,7 +101,10 @@ class LyricsDisplay extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.copy),
             onPressed: () {
-              // Copy lyrics to clipboard
+              Clipboard.setData(ClipboardData(text: widget.lyrics));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Lyrics copied to clipboard')),
+              );
             },
             tooltip: 'Copy Lyrics',
           ),
@@ -69,25 +115,31 @@ class LyricsDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final stanzas = _splitLyricsIntoStanzas(lyrics);
+    super.build(context); // Required for KeepAlive
+    final stanzas = _splitLyricsIntoStanzas(widget.lyrics);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          // Lyrics Content
-          Column(
-            children: stanzas.asMap().entries.map((entry) {
-              final index = entry.key;
-              final stanza = entry.value;
-              return _buildStanza(stanza, index);
-            }).toList(),
+    return Column(
+      children: [
+        if (widget.showActions) _buildFontSizeControls(),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                // Lyrics Content
+                Column(
+                  children: stanzas.asMap().entries.map((entry) {
+                    return _buildStanza(entry.value);
+                  }).toList(),
+                ),
+
+                // Actions
+                _buildActions(),
+              ],
+            ),
           ),
-
-          // Actions
-          _buildActions(),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

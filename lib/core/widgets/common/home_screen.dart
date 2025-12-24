@@ -3,10 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/theme/theme_cubit.dart';
 import 'package:praise_choir_app/core/widgets/common/network/network_status_indicator.dart';
+import 'package:praise_choir_app/core/widgets/common/network/sync_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/songs/data/song_repository.dart';
-import 'package:praise_choir_app/core/widgets/common/network/sync_cubit.dart';
+import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.dart';
+import 'package:praise_choir_app/features/songs/presentation/widgets/song_list_view.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -56,7 +58,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       // Log or handle sync error if desired; avoid crashing the app
     } finally {
       try {
-        context.read<SyncCubit>().setSyncing(false);
+        if (mounted) {
+          context.read<SyncCubit>().setSyncing(false);
+        }
       } catch (_) {
         // ignore
       }
@@ -65,9 +69,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
+    return BlocListener<SyncCubit, SyncStatus>(
+      listener: (context, state) {
+        if (state == SyncStatus.error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Sync failed. Please check your connection.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        } else if (state == SyncStatus.synced) {
+           // Reload songs when sync is complete
+           context.read<SongCubit>().loadSongs();
+        }
+      },
+      child: DefaultTabController(
+        length: 2,
+        child: Scaffold(
         extendBodyBehindAppBar: true,
         extendBody: true,
         drawer: _buildFullVerticalMenu(context),
@@ -79,6 +97,32 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           actions: [
             Row(
               children: [
+                BlocBuilder<SyncCubit, SyncStatus>(
+                  builder: (context, state) {
+                    if (state == SyncStatus.updating) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                    return IconButton(
+                      icon: const Icon(Icons.sync),
+                      onPressed: () {
+                        // This triggers the repository method we updated earlier
+                        context.read<SongRepository>().syncEverything();
+                      },
+                    );
+                  },
+                ),
                 IconButton(
                   icon: Icon(
                     // Logic: If dark mode is active, show the "Sun" icon, else "Moon"
@@ -137,16 +181,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
           child: const TabBarView(
             children: [
-              // ... must match the number of widgets here!
-              Center(child: Text("English Song List")), // Widget for Tab 1
-              Center(child: Text("የአማርኛ መዝሙር ዝርዝር")), // Widget for Tab 2
-              // SongListView(language: 'en'), // Placeholder for English songs
-              // SongListView(language: 'am'), // Placeholder for Amharic songs
+              SongListView(language: 'en'),
+              SongListView(language: 'am'),
             ],
           ),
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildFullVerticalMenu(BuildContext context) {

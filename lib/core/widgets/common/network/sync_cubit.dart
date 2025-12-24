@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-enum SyncStatus { waiting, updating, synced }
+enum SyncStatus { idle, waiting, updating, synced, error }
 
 class SyncCubit extends Cubit<SyncStatus> {
   final Connectivity _connectivity = Connectivity();
@@ -38,6 +38,10 @@ class SyncCubit extends Cubit<SyncStatus> {
     if (state != SyncStatus.waiting) {
       emit(isSyncing ? SyncStatus.updating : SyncStatus.synced);
     }
+  }
+
+  void updateStatus(SyncStatus newStatus) {
+    emit(newStatus);
   }
 
   @override

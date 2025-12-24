@@ -1,9 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive/hive.dart';
 
 part 'song_model.g.dart';
 
 @HiveType(typeId: 1)
-class SongModel {
+class SongModel extends HiveObject {
   @HiveField(0)
   final String id;
 
@@ -14,7 +15,7 @@ class SongModel {
   final String lyrics;
 
   @HiveField(3)
-  final String language; // 'kembatigna' or 'amharic'
+  final String language; // 'kembatgna' or 'amharic'
 
   @HiveField(4)
   final List<String> tags; // ['old', 'new', 'favorite', 'this_round']
@@ -43,6 +44,9 @@ class SongModel {
   @HiveField(12)
   final List<RecordingNote> recordingNotes;
 
+  @HiveField(13)
+  final String? songNumber;
+
   SongModel({
     required this.id,
     required this.title,
@@ -57,6 +61,7 @@ class SongModel {
     this.performanceCount = 0,
     this.versions = const [],
     this.recordingNotes = const [],
+    this.songNumber,
   });
 
   Map<String, dynamic> toJson() {
@@ -74,32 +79,63 @@ class SongModel {
       'performanceCount': performanceCount,
       'versions': versions.map((v) => v.toJson()).toList(),
       'recordingNotes': recordingNotes.map((n) => n.toJson()).toList(),
+      'songNumber': songNumber,
     };
+  }
+
+  static DateTime _parseDate(dynamic value) {
+    if (value is Timestamp) {
+      return value.toDate();
+    } else if (value is String) {
+      return DateTime.tryParse(value) ?? DateTime.now();
+    } else if (value is DateTime) {
+      return value;
+    }
+    return DateTime.now();
+  }
+
+  static DateTime? _parseNullableDate(dynamic value) {
+    if (value == null) return null;
+    if (value is Timestamp) {
+      return value.toDate();
+    } else if (value is String) {
+      return DateTime.tryParse(value);
+    } else if (value is DateTime) {
+      return value;
+    }
+    return null;
   }
 
   factory SongModel.fromJson(Map<String, dynamic> json) {
     return SongModel(
-      id: json['id'],
-      title: json['title'],
-      lyrics: json['lyrics'],
-      language: json['language'],
-      tags: List<String>.from(json['tags']),
-      audioPath: json['audioPath'],
-      addedBy: json['addedBy'],
-      dateAdded: DateTime.parse(json['dateAdded']),
-      lastPerformed: json['lastPerformed'] != null
-          ? DateTime.parse(json['lastPerformed'])
-          : null,
-      lastPracticed: json['lastPracticed'] != null
-          ? DateTime.parse(json['lastPracticed'])
-          : null,
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? 'Untitled',
+      lyrics: json['lyrics']?.toString() ?? '',
+      language: json['language']?.toString() ?? 'en',
+      tags: json['tags'] != null
+          ? (json['tags'] as List).map((e) => e.toString()).toList()
+          : [],
+      audioPath: json['audioPath']?.toString(),
+      addedBy: json['addedBy']?.toString() ?? 'Unknown',
+      songNumber: json['songNumber']?.toString(),
+      dateAdded: _parseDate(json['dateAdded']),
+      lastPerformed: _parseNullableDate(json['lastPerformed']),
+      lastPracticed: _parseNullableDate(json['lastPracticed']),
       performanceCount: json['performanceCount'] ?? 0,
-      versions: (json['versions'] as List? ?? [])
-          .map((v) => SongVersion.fromJson(v))
-          .toList(),
-      recordingNotes: (json['recordingNotes'] as List? ?? [])
-          .map((n) => RecordingNote.fromJson(n))
-          .toList(),
+      versions: json['versions'] != null
+          ? (json['versions'] as List)
+                .whereType<Map>()
+                .map((v) => SongVersion.fromJson(Map<String, dynamic>.from(v)))
+                .toList()
+          : [],
+      recordingNotes: json['recordingNotes'] != null
+          ? (json['recordingNotes'] as List)
+                .whereType<Map>()
+                .map(
+                  (n) => RecordingNote.fromJson(Map<String, dynamic>.from(n)),
+                )
+                .toList()
+          : [],
     );
   }
 
@@ -109,6 +145,7 @@ class SongModel {
     String? language,
     List<String>? tags,
     String? audioPath,
+    String? songNumber,
     DateTime? lastPerformed,
     DateTime? lastPracticed,
     int? performanceCount,
@@ -129,6 +166,7 @@ class SongModel {
       performanceCount: performanceCount ?? this.performanceCount,
       versions: versions ?? this.versions,
       recordingNotes: recordingNotes ?? this.recordingNotes,
+      songNumber: songNumber ?? this.songNumber,
     );
   }
 }
@@ -170,11 +208,11 @@ class SongVersion {
 
   factory SongVersion.fromJson(Map<String, dynamic> json) {
     return SongVersion(
-      id: json['id'],
-      name: json['name'],
-      audioPath: json['audioPath'],
-      notes: json['notes'] ?? '',
-      createdAt: DateTime.parse(json['createdAt']),
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      audioPath: json['audioPath']?.toString(),
+      notes: json['notes']?.toString() ?? '',
+      createdAt: SongModel._parseDate(json['createdAt']),
     );
   }
 }
@@ -197,7 +235,8 @@ class RecordingNote {
     required this.id,
     required this.note,
     required this.addedBy,
-    required this.createdAt, String? timestamp,
+    required this.createdAt,
+    String? timestamp,
   });
 
   Map<String, dynamic> toJson() {
@@ -211,10 +250,10 @@ class RecordingNote {
 
   factory RecordingNote.fromJson(Map<String, dynamic> json) {
     return RecordingNote(
-      id: json['id'],
-      note: json['note'],
-      addedBy: json['addedBy'],
-      createdAt: DateTime.parse(json['createdAt']),
+      id: json['id']?.toString() ?? '',
+      note: json['note']?.toString() ?? '',
+      addedBy: json['addedBy']?.toString() ?? 'Unknown',
+      createdAt: SongModel._parseDate(json['createdAt']),
     );
   }
 }
