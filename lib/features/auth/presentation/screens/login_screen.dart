@@ -133,28 +133,35 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 30),
                         TextFormField(
                           controller: _emailController,
-                          decoration: const InputDecoration(
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                          ),
+                          decoration: InputDecoration(
                             filled: true,
-                            labelStyle: TextStyle(color: Colors.white60),
-                            prefixIcon: Icon(
+                            fillColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white10
+                                : Colors.black87,
+                            labelStyle: const TextStyle(color: Colors.white60),
+                            prefixIcon: const Icon(
                               Icons.alternate_email_rounded,
-                              color: Colors.white38,
+                              color: Colors.white,
                               size: 22,
                             ),
                             labelText: 'Email',
-                            enabledBorder: OutlineInputBorder(
+                            enabledBorder: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(18),
                               ),
                               borderSide: BorderSide(color: Colors.white),
                             ),
-                            focusedBorder: OutlineInputBorder(
+                            focusedBorder: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(18),
                               ),
                               borderSide: BorderSide(color: Colors.blue),
                             ),
-                            errorBorder: OutlineInputBorder(
+                            errorBorder: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(18),
                               ),
