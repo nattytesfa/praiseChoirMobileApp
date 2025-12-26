@@ -67,32 +67,24 @@ class _LyricsFullscreenState extends State<LyricsFullscreen> {
           ),
         ],
       ),
-      actions: [_buildFloatingControls()],
+      actions: [_textSizeController()],
     );
   }
 
-  Widget _buildFloatingControls() {
+  Widget _textSizeController() {
     return Row(
       children: [
-        FloatingActionButton(
-          mini: true,
-          backgroundColor: AppColors.darkPrimary,
+        IconButton(
           onPressed: _increaseTextSize,
-          child: const Icon(Icons.zoom_in),
+          icon: Icon(Icons.zoom_in, color: Colors.white),
         ),
-        const SizedBox(height: 8),
-        FloatingActionButton(
-          mini: true,
-          backgroundColor: AppColors.darkPrimary,
+        IconButton(
           onPressed: _decreaseTextSize,
-          child: const Icon(Icons.zoom_out),
+          icon: Icon(Icons.zoom_out, color: Colors.white),
         ),
-        const SizedBox(height: 8),
-        FloatingActionButton(
-          mini: true,
-          backgroundColor: AppColors.darkPrimary,
+        IconButton(
           onPressed: _resetTextSize,
-          child: const Icon(Icons.refresh),
+          icon: Icon(Icons.refresh, color: Colors.white),
         ),
       ],
     );
