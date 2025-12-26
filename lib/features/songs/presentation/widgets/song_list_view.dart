@@ -62,7 +62,6 @@ class _SongListViewState extends State<SongListView> {
                         title: song.title,
                         lyrics: song.lyrics,
                         language: song.language,
-                        songTitle: '',
                       ),
                     ),
                   );

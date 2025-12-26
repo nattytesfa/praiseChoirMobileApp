@@ -55,8 +55,7 @@ class SongRoutes {
         return MaterialPageRoute(
           builder: (_) => LyricsFullscreen(
             lyrics: args['lyrics'] as String,
-            songTitle: args['songTitle'] as String,
-            title: '',
+            title: args['title'] as String,
             language: '',
           ),
           settings: settings,

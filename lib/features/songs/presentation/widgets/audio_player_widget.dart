@@ -7,12 +7,12 @@ import 'package:praise_choir_app/features/songs/presentation/cubit/audio_player_
 
 class AudioPlayerWidget extends StatefulWidget {
   final String audioPath;
-  final String songTitle;
+  final String title;
 
   const AudioPlayerWidget({
     super.key,
     required this.audioPath,
-    required this.songTitle,
+    required this.title,
   });
 
   @override
@@ -27,7 +27,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AudioPlayerCubit>().loadAudio(
         widget.audioPath,
-        widget.songTitle,
+        widget.title,
       );
     });
   }
@@ -241,7 +241,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
           onPressed: () {
             context.read<AudioPlayerCubit>().loadAudio(
               widget.audioPath,
-              widget.songTitle,
+              widget.title,
             );
           },
           child: const Text('Retry'),
@@ -282,7 +282,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            widget.songTitle,
+                            widget.title,
                             style: AppTextStyles.titleMedium,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,

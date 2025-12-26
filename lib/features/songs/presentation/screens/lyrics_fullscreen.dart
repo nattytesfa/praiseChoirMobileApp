@@ -12,7 +12,6 @@ class LyricsFullscreen extends StatefulWidget {
     required this.title,
     required this.lyrics,
     required this.language,
-    required String songTitle,
   });
 
   @override

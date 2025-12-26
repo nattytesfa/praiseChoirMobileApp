@@ -55,7 +55,6 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
           title: widget.song.title,
           lyrics: widget.song.lyrics,
           language: widget.song.language,
-          songTitle: '',
         ),
       ),
     );
@@ -100,7 +99,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
           builder: (context, authState) {
             if (authState is AuthAuthenticated) {
               final user = authState.user;
-              if (user.role == 'leader' || user.role == 'atigni') {
+              if (user.role == 'admin' || user.role == 'songwriter') {
                 return IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: _editSong,
@@ -340,7 +339,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
           widget.song.audioPath != null
               ? AudioPlayerWidget(
                   audioPath: widget.song.audioPath!,
-                  songTitle: widget.song.title,
+                  title: widget.song.title,
                 )
               : const Center(
                   child: Column(
