@@ -48,22 +48,6 @@ class _LyricsFullscreenState extends State<LyricsFullscreen> {
     });
   }
 
-  void _scrollToTop() {
-    _scrollController.animateTo(
-      0,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOut,
-    );
-  }
-
-  void _scrollToBottom() {
-    _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOut,
-    );
-  }
-
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       backgroundColor: AppColors.withValues(Colors.black, 0.8),
@@ -83,84 +67,44 @@ class _LyricsFullscreenState extends State<LyricsFullscreen> {
           ),
         ],
       ),
-      actions: [
-        // Text Size Controls
-        PopupMenuButton<double>(
-          icon: const Icon(Icons.text_fields, color: Colors.white),
-          onSelected: (scale) => setState(() => _textScale = scale),
-          itemBuilder: (context) => _textScales.map((scale) {
-            return PopupMenuItem<double>(
-              value: scale,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('${(scale * 100).toInt()}%'),
-                  if (scale == _textScale) const Icon(Icons.check, size: 16),
-                ],
-              ),
-            );
-          }).toList(),
-        ),
+      actions: [_buildFloatingControls()],
+    );
+  }
 
-        // Scroll Controls
-        PopupMenuButton<void>(
-          icon: const Icon(Icons.more_vert, color: Colors.white),
-          itemBuilder: (context) => [
-            PopupMenuItem(
-              onTap: _scrollToTop,
-              child: const Text('Scroll to Top'),
-            ),
-            PopupMenuItem(
-              onTap: _scrollToBottom,
-              child: const Text('Scroll to Bottom'),
-            ),
-            const PopupMenuDivider(),
-            PopupMenuItem(
-              onTap: _resetTextSize,
-              child: const Text('Reset Text Size'),
-            ),
-          ],
+  Widget _buildFloatingControls() {
+    return Row(
+      children: [
+        FloatingActionButton(
+          mini: true,
+          backgroundColor: AppColors.darkPrimary,
+          onPressed: _increaseTextSize,
+          child: const Icon(Icons.zoom_in),
+        ),
+        const SizedBox(height: 8),
+        FloatingActionButton(
+          mini: true,
+          backgroundColor: AppColors.darkPrimary,
+          onPressed: _decreaseTextSize,
+          child: const Icon(Icons.zoom_out),
+        ),
+        const SizedBox(height: 8),
+        FloatingActionButton(
+          mini: true,
+          backgroundColor: AppColors.darkPrimary,
+          onPressed: _resetTextSize,
+          child: const Icon(Icons.refresh),
         ),
       ],
     );
   }
 
-  Widget _buildFloatingControls() {
-    return Positioned(
-      right: 16,
-      bottom: 16,
-      child: Column(
-        children: [
-          FloatingActionButton.small(
-            heroTag: 'zoom_in',
-            onPressed: _increaseTextSize,
-            child: const Icon(Icons.zoom_in),
-          ),
-          const SizedBox(height: 8),
-          FloatingActionButton.small(
-            heroTag: 'zoom_out',
-            onPressed: _decreaseTextSize,
-            child: const Icon(Icons.zoom_out),
-          ),
-          const SizedBox(height: 8),
-          FloatingActionButton.small(
-            heroTag: 'reset',
-            onPressed: _resetTextSize,
-            child: const Icon(Icons.refresh),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildLyricsContent() {
-    return Container(
-      color: Colors.black,
-      child: Scrollbar(
+    return Scrollbar(
+      controller: _scrollController,
+      child: SingleChildScrollView(
         controller: _scrollController,
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),
+        child: Center(
           child: SelectableText(
             widget.lyrics,
             style: AppTextStyles.bodyLarge.copyWith(
@@ -177,10 +121,14 @@ class _LyricsFullscreenState extends State<LyricsFullscreen> {
 
   @override
   Widget build(BuildContext context) {
+    const primaryDark = Color(0xFF0F172A);
+
     return Scaffold(
-      backgroundColor: Colors.black,
+      extendBodyBehindAppBar: false,
+      extendBody: true,
+      backgroundColor: primaryDark,
       appBar: _buildAppBar(),
-      body: Stack(children: [_buildLyricsContent(), _buildFloatingControls()]),
+      body: _buildLyricsContent(),
     );
   }
 
