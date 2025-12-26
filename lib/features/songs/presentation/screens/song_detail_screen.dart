@@ -7,9 +7,9 @@ import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dar
 import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.dart';
 import 'package:praise_choir_app/features/songs/presentation/screens/edit_song_screen.dart';
-import 'package:praise_choir_app/features/songs/presentation/screens/lyrics_fullscreen.dart';
+import 'package:praise_choir_app/features/songs/presentation/screens/lyrics_display.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/audio_player_widget.dart';
-import 'package:praise_choir_app/features/songs/presentation/widgets/lyrics_display.dart';
+import 'package:praise_choir_app/features/songs/presentation/widgets/lyrics_fullscreen.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/recording_notes.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/version_selector.dart';
 
@@ -51,7 +51,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => LyricsFullscreen(
+        builder: (context) => LyricsDisplay(
           title: widget.song.title,
           lyrics: widget.song.lyrics,
           language: widget.song.language,
@@ -162,59 +162,6 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title and Language
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.song.title,
-                        style: AppTextStyles.headlineSmall,
-                      ),
-                      const SizedBox(height: 4),
-                      Chip(
-                        label: Text(
-                          widget.song.language == 'amharic'
-                              ? 'Amharic'
-                              : 'Kembatigna',
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        backgroundColor: AppColors.getLanguageColor(
-                          widget.song.language,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Favorite indicator
-                if (widget.song.tags.contains('favorite'))
-                  const Icon(Icons.favorite, color: AppColors.error),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            // Tags
-            if (widget.song.tags.isNotEmpty) ...[
-              Wrap(
-                spacing: 8,
-                children: widget.song.tags.map((tag) {
-                  return Chip(
-                    label: Text(
-                      _getTagDisplayName(tag),
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                    backgroundColor: AppColors.withValues(
-                      _getTagColor(tag),
-                      0.1,
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 12),
-            ],
-
             // Statistics
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -330,7 +277,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         onPageChanged: (index) => setState(() => _currentPage = index),
         children: [
           // Lyrics Tab
-          LyricsDisplay(
+          LyricsFullscreen(
             lyrics: widget.song.lyrics,
             onFullscreen: _openFullscreenLyrics,
           ),
@@ -377,36 +324,6 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         ],
       ),
     );
-  }
-
-  String _getTagDisplayName(String tag) {
-    switch (tag) {
-      case 'old':
-        return 'Old Song';
-      case 'new':
-        return 'New Song';
-      case 'favorite':
-        return 'Favorite';
-      case 'this_round':
-        return 'This Round';
-      default:
-        return tag;
-    }
-  }
-
-  Color _getTagColor(String tag) {
-    switch (tag) {
-      case 'old':
-        return AppColors.warning;
-      case 'new':
-        return AppColors.success;
-      case 'favorite':
-        return AppColors.error;
-      case 'this_round':
-        return AppColors.info;
-      default:
-        return AppColors.primary;
-    }
   }
 
   String _getLastUsedText() {

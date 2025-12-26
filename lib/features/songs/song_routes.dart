@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
 import 'package:praise_choir_app/features/songs/presentation/screens/add_song_screen.dart';
 import 'package:praise_choir_app/features/songs/presentation/screens/edit_song_screen.dart';
-import 'package:praise_choir_app/features/songs/presentation/screens/lyrics_fullscreen.dart';
+import 'package:praise_choir_app/features/songs/presentation/screens/lyrics_display.dart';
 import 'package:praise_choir_app/features/songs/presentation/screens/song_detail_screen.dart';
 import 'package:praise_choir_app/features/songs/presentation/screens/song_library_screen.dart';
 import 'package:praise_choir_app/features/songs/presentation/screens/song_search_screen.dart';
@@ -53,7 +53,7 @@ class SongRoutes {
         final Map<String, dynamic> args =
             settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => LyricsFullscreen(
+          builder: (_) => LyricsDisplay(
             lyrics: args['lyrics'] as String,
             title: args['title'] as String,
             language: '',

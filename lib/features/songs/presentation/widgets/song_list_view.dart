@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_state.dart';
-import 'package:praise_choir_app/features/songs/presentation/screens/lyrics_fullscreen.dart';
+import 'package:praise_choir_app/features/songs/presentation/screens/lyrics_display.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/song_list_item.dart';
 
 class SongListView extends StatefulWidget {
@@ -58,7 +58,7 @@ class _SongListViewState extends State<SongListView> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => LyricsFullscreen(
+                      builder: (context) => LyricsDisplay(
                         title: song.title,
                         lyrics: song.lyrics,
                         language: song.language,
