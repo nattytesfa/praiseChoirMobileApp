@@ -22,8 +22,6 @@ class SongListItem extends StatelessWidget {
 
   Color _getTagColor(String tag) {
     switch (tag) {
-      case 'old':
-        return AppColors.warning;
       case 'new':
         return AppColors.success;
       case 'favorite':
@@ -37,8 +35,6 @@ class SongListItem extends StatelessWidget {
 
   String _getTagDisplayName(String tag) {
     switch (tag) {
-      case 'old':
-        return 'Old';
       case 'new':
         return 'New';
       case 'favorite':
@@ -122,7 +118,6 @@ class SongListItem extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: ListTile(
-        leading: const Icon(Icons.music_note, color: AppColors.primary),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -134,21 +129,13 @@ class SongListItem extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 10),
             _buildTags(),
           ],
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            Text(
-              'Language: ${song.language == 'amharic' ? 'Amharic' : 'Kembatigna'}',
-              style: AppTextStyles.caption,
-            ),
-            const SizedBox(height: 4),
-            _buildStats(),
-          ],
+          children: [const SizedBox(height: 10), _buildStats()],
         ),
         trailing: PopupMenuButton<String>(
           onSelected: (value) {
@@ -158,6 +145,9 @@ class SongListItem extends StatelessWidget {
                 break;
               case 'practiced':
                 onPracticed();
+                break;
+              case 'details':
+                // onTap();
                 break;
             }
           },
@@ -170,6 +160,7 @@ class SongListItem extends StatelessWidget {
               value: 'practiced',
               child: Text('Mark as Practiced'),
             ),
+            const PopupMenuItem(value: 'details', child: Text('View Details')),
           ],
         ),
         onTap: onTap,

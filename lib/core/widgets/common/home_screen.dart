@@ -157,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             bottom: const TabBar(
               indicatorColor: Colors.white,
               tabs: [
-                Tab(text: "English"),
+                Tab(text: "Kembatgna"),
                 Tab(text: "Amharic"),
               ],
             ),
