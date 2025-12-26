@@ -79,115 +79,115 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ),
           );
         } else if (state == SyncStatus.synced) {
-           // Reload songs when sync is complete
-           context.read<SongCubit>().loadSongs();
+          // Reload songs when sync is complete
+          context.read<SongCubit>().loadSongs();
         }
       },
       child: DefaultTabController(
         length: 2,
         child: Scaffold(
-        extendBodyBehindAppBar: true,
-        extendBody: true,
-        drawer: _buildFullVerticalMenu(context),
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).primaryColor,
-          elevation: 0,
-          leadingWidth: 100,
-          // RIGHT: Profile Menu
-          actions: [
-            Row(
-              children: [
-                BlocBuilder<SyncCubit, SyncStatus>(
-                  builder: (context, state) {
-                    if (state == SyncStatus.updating) {
-                      return const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
+          extendBodyBehindAppBar: false,
+          extendBody: true,
+          drawer: _buildFullVerticalMenu(context),
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).primaryColor,
+            elevation: 0,
+            // RIGHT: Profile Menu
+            actions: [
+              Row(
+                children: [
+                  BlocBuilder<SyncCubit, SyncStatus>(
+                    builder: (context, state) {
+                      if (state == SyncStatus.updating) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
-                        ),
+                        );
+                      }
+                      return IconButton(
+                        icon: const Icon(Icons.sync),
+                        onPressed: () {
+                          // This triggers the repository method we updated earlier
+                          context.read<SongRepository>().syncEverything();
+                        },
                       );
-                    }
-                    return IconButton(
-                      icon: const Icon(Icons.sync),
-                      onPressed: () {
-                        // This triggers the repository method we updated earlier
-                        context.read<SongRepository>().syncEverything();
-                      },
-                    );
-                  },
-                ),
-                IconButton(
-                  icon: Icon(
-                    // Logic: If dark mode is active, show the "Sun" icon, else "Moon"
-                    Theme.of(context).brightness == Brightness.dark
-                        ? Icons.light_mode_rounded
-                        : Icons.dark_mode_rounded,
-                    color: Colors.white,
+                    },
                   ),
-                  onPressed: () {
-                    // This calls your Cubit to toggle the global state
-                    context.read<ThemeCubit>().toggleTheme();
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.logout_rounded, color: Colors.white),
-                  onPressed: () => context.read<AuthCubit>().logout(context),
-                ),
+                  IconButton(
+                    icon: Icon(
+                      // Logic: If dark mode is active, show the "Sun" icon, else "Moon"
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Icons.light_mode_rounded
+                          : Icons.dark_mode_rounded,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      // This calls your Cubit to toggle the global state
+                      context.read<ThemeCubit>().toggleTheme();
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.logout_rounded, color: Colors.white),
+                    onPressed: () => context.read<AuthCubit>().logout(context),
+                  ),
+                ],
+              ),
+            ],
+
+            leading: Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.menu, color: Colors.white),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
+            ),
+
+            // MIDDLE: Network Status Animation
+            title: const NetworkStatusIndicator(),
+            centerTitle: true,
+            // TABS: For English and Amharic Song Filtering
+            bottom: const TabBar(
+              indicatorColor: Colors.white,
+              tabs: [
+                Tab(text: "English"),
+                Tab(text: "Amharic"),
               ],
             ),
-          ],
-
-          leading: Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white),
-              onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+          body: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: Theme.of(context).brightness == Brightness.dark
+                    ? [
+                        AppColors.darkBackground,
+                        AppColors.gray900,
+                      ] // Dark mode gradient
+                    : [
+                        AppColors.primary,
+                        AppColors.primaryLight,
+                      ], // Light mode gradient
+              ),
             ),
-          ),
-
-          // MIDDLE: Network Status Animation
-          title: const NetworkStatusIndicator(),
-          centerTitle: true,
-          // TABS: For English and Amharic Song Filtering
-          bottom: const TabBar(
-            indicatorColor: Colors.white,
-            tabs: [
-              Tab(text: "English"),
-              Tab(text: "አማርኛ"),
-            ],
-          ),
-        ),
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: Theme.of(context).brightness == Brightness.dark
-                  ? [
-                      AppColors.darkBackground,
-                      AppColors.gray900,
-                    ] // Dark mode gradient
-                  : [
-                      AppColors.primary,
-                      AppColors.primaryLight,
-                    ], // Light mode gradient
+            child: TabBarView(
+              children: const [
+                SongListView(language: 'en'),
+                SongListView(language: 'am'),
+              ],
             ),
-          ),
-          child: const TabBarView(
-            children: [
-              SongListView(language: 'en'),
-              SongListView(language: 'am'),
-            ],
           ),
         ),
       ),
-    ));
+    );
   }
 
   Widget _buildFullVerticalMenu(BuildContext context) {

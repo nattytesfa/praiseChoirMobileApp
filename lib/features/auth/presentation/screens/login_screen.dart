@@ -64,10 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     (route) => false,
                   );
                 } else {
-                  Navigator.pushReplacementNamed(
-                    context,
-                    Routes.mainNavigationShell,
-                  );
+                  Navigator.pushReplacementNamed(context, Routes.mainNavigationShell);
                 }
               } else if (state is AuthError) {
                 ScaffoldMessenger.of(context).showSnackBar(
