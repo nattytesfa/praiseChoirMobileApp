@@ -33,8 +33,6 @@ class SongListItem extends StatelessWidget {
     switch (tag) {
       case 'new':
         return AppColors.success;
-      case 'favorite':
-        return AppColors.error;
       case 'this_round':
         return AppColors.info;
       default:
@@ -46,8 +44,6 @@ class SongListItem extends StatelessWidget {
     switch (tag) {
       case 'new':
         return 'New';
-      case 'favorite':
-        return 'Favorite';
       case 'this_round':
         return 'This Round';
       default:
@@ -62,11 +58,12 @@ class SongListItem extends StatelessWidget {
   }
 
   Widget _buildTags() {
-    if (song.tags.isEmpty) return const SizedBox.shrink();
+    final displayTags = song.tags.where((tag) => tag != 'favorite').toList();
+    if (displayTags.isEmpty) return const SizedBox.shrink();
 
     return Wrap(
       spacing: 4,
-      children: song.tags.map((tag) {
+      children: displayTags.map((tag) {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
           decoration: BoxDecoration(
