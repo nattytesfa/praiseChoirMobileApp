@@ -115,6 +115,15 @@ class SongCubit extends Cubit<SongState> {
     }
   }
 
+  void deleteSongVersion(String songId, String versionId) async {
+    try {
+      await songRepository.deleteSongVersion(songId, versionId);
+      loadSongs(); // Reload to remove version
+    } catch (e) {
+      emit(SongError('Failed to delete song version'));
+    }
+  }
+
   void addRecordingNote(String songId, RecordingNote note) async {
     try {
       await songRepository.addRecordingNote(songId, note);

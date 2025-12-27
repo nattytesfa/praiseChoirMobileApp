@@ -55,7 +55,16 @@ class SongRepository {
   }
 
   Future<void> updateSong(SongModel song) async {
-    await _songBox.put(song.id, song); // Faster and safer than putAt
+    final existingSong = _songBox.values.cast<SongModel?>().firstWhere(
+      (s) => s?.id == song.id,
+      orElse: () => null,
+    );
+
+    if (existingSong != null) {
+      await _songBox.put(existingSong.key, song);
+    } else {
+      await _songBox.put(song.id, song);
+    }
   }
 
   Future<void> deleteSong(String songId) async {
@@ -66,33 +75,75 @@ class SongRepository {
   }
 
   Future<void> markSongPerformed(String songId) async {
-    final song = _songBox.values.firstWhere((s) => s.id == songId);
-    final updatedSong = song.copyWith(
-      lastPerformed: DateTime.now(),
-      performanceCount: song.performanceCount + 1,
+    final song = _songBox.values.cast<SongModel?>().firstWhere(
+      (s) => s?.id == songId,
+      orElse: () => null,
     );
-    await updateSong(updatedSong);
+
+    if (song != null) {
+      final updatedSong = song.copyWith(
+        lastPerformed: DateTime.now(),
+        performanceCount: song.performanceCount + 1,
+      );
+      await _songBox.put(song.key, updatedSong);
+    }
   }
 
   Future<void> markSongPracticed(String songId) async {
-    final song = _songBox.values.firstWhere((s) => s.id == songId);
-    final updatedSong = song.copyWith(lastPracticed: DateTime.now());
-    await updateSong(updatedSong);
+    final song = _songBox.values.cast<SongModel?>().firstWhere(
+      (s) => s?.id == songId,
+      orElse: () => null,
+    );
+
+    if (song != null) {
+      final updatedSong = song.copyWith(lastPracticed: DateTime.now());
+      await _songBox.put(song.key, updatedSong);
+    }
   }
 
   Future<void> addSongVersion(String songId, SongVersion version) async {
-    final song = _songBox.values.firstWhere((s) => s.id == songId);
-    final updatedVersions = List<SongVersion>.from(song.versions)..add(version);
-    final updatedSong = song.copyWith(versions: updatedVersions);
-    await updateSong(updatedSong);
+    final song = _songBox.values.cast<SongModel?>().firstWhere(
+      (s) => s?.id == songId,
+      orElse: () => null,
+    );
+
+    if (song != null) {
+      final updatedVersions = List<SongVersion>.from(song.versions)
+        ..add(version);
+      final updatedSong = song.copyWith(versions: updatedVersions);
+      await _songBox.put(song.key, updatedSong);
+    } else {
+      throw Exception('Song not found: $songId');
+    }
+  }
+
+  Future<void> deleteSongVersion(String songId, String versionId) async {
+    final song = _songBox.values.cast<SongModel?>().firstWhere(
+      (s) => s?.id == songId,
+      orElse: () => null,
+    );
+
+    if (song != null) {
+      final updatedVersions = song.versions
+          .where((v) => v.id != versionId)
+          .toList();
+      final updatedSong = song.copyWith(versions: updatedVersions);
+      await _songBox.put(song.key, updatedSong);
+    }
   }
 
   Future<void> addRecordingNote(String songId, RecordingNote note) async {
-    final song = _songBox.values.firstWhere((s) => s.id == songId);
-    final updatedNotes = List<RecordingNote>.from(song.recordingNotes)
-      ..add(note);
-    final updatedSong = song.copyWith(recordingNotes: updatedNotes);
-    await updateSong(updatedSong);
+    final song = _songBox.values.cast<SongModel?>().firstWhere(
+      (s) => s?.id == songId,
+      orElse: () => null,
+    );
+
+    if (song != null) {
+      final updatedNotes = List<RecordingNote>.from(song.recordingNotes)
+        ..add(note);
+      final updatedSong = song.copyWith(recordingNotes: updatedNotes);
+      await _songBox.put(song.key, updatedSong);
+    }
   }
 
   Future<List<SongEntity>> getRotatedSongs({
