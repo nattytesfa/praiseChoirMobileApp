@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:praise_choir_app/core/constants/app_constants.dart';
 import 'package:praise_choir_app/core/widgets/common/empty_state.dart';
 import 'package:praise_choir_app/core/widgets/common/loading_indicator.dart';
 import 'package:praise_choir_app/core/widgets/display/role_badge.dart';
@@ -9,7 +8,8 @@ import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dar
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_state.dart';
-import '../widgets/song_card.dart';
+import 'package:praise_choir_app/features/songs/presentation/screens/song_detail_screen.dart';
+import '../widgets/song_list_item.dart';
 import '../widgets/song_filter_sheet.dart';
 import '../cubit/song_cubit.dart';
 
@@ -120,17 +120,28 @@ class _SongLibraryScreenState extends State<SongLibraryScreen> {
                     itemCount: songsToShow.length,
                     itemBuilder: (context, index) {
                       final song = songsToShow[index];
-                      return SongCard(
+                      return SongListItem(
                         song: song,
                         onTap: () {
-                          // Navigate to song detail
-                          // Navigator.pushNamed(context, '/song-detail', arguments: song);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  SongDetailScreen(song: song),
+                            ),
+                          );
                         },
                         onPerformed: () {
                           context.read<SongCubit>().markSongPerformed(song.id);
                         },
                         onPracticed: () {
                           context.read<SongCubit>().markSongPracticed(song.id);
+                        },
+                        onDelete: () {
+                          _confirmDelete(context, song);
+                        },
+                        onFavorite: () {
+                          context.read<SongCubit>().toggleFavorite(song.id);
                         },
                       );
                     },
@@ -148,29 +159,43 @@ class _SongLibraryScreenState extends State<SongLibraryScreen> {
       ),
       floatingActionButton: Builder(
         builder: (context) {
-          try {
-            // If AuthCubit is not provided (testing mode), this will throw.
-            // In that case we simply don't show the FAB.
-            context.read<AuthCubit>();
-            return BlocBuilder<AuthCubit, AuthState>(
-              builder: (context, authState) {
-                if (authState is AuthAuthenticated) {
-                  final user = authState.user;
-                  if (user.role == AppConstants.roleLeader ||
-                      user.role == AppConstants.roleSongwriter) {
-                    return FloatingActionButton(
-                      onPressed: _addNewSong,
-                      child: const Icon(Icons.add),
-                    );
-                  }
-                }
-                return const SizedBox.shrink();
-              },
-            );
-          } catch (_) {
-            return const SizedBox.shrink();
-          }
+          return BlocBuilder<AuthCubit, AuthState>(
+            builder: (context, state) {
+              if (state is AuthAuthenticated &&
+                  (state.user.role == 'admin' ||
+                      state.user.role == 'songwriter')) {
+                return FloatingActionButton(
+                  onPressed: _addNewSong,
+                  child: const Icon(Icons.add),
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          );
         },
+      ),
+    );
+  }
+
+  void _confirmDelete(BuildContext context, SongModel song) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Song'),
+        content: Text('Are you sure you want to delete "${song.title}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.read<SongCubit>().deleteSong(song.id);
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
       ),
     );
   }

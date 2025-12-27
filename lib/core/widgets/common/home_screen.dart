@@ -8,6 +8,7 @@ import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dar
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/songs/data/song_repository.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.dart';
+import 'package:praise_choir_app/features/songs/presentation/screens/favorites_screen.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/song_list_view.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -224,7 +225,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               padding: EdgeInsets.zero,
               children: [
                 _drawerItem(Icons.person_outline, "My Profile", () {}),
-                _drawerItem(Icons.favorite_border, "Favorites", () {}),
+                _drawerItem(Icons.favorite_border, "Favorites", () {
+                  Navigator.pop(context); // Close drawer
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FavoritesScreen(),
+                    ),
+                  );
+                }),
                 _drawerItem(Icons.payment, "Payment History", () {}),
                 _drawerItem(Icons.settings_outlined, "Settings", () {}),
                 const Divider(),

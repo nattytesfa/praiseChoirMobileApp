@@ -72,6 +72,9 @@ class _SongListViewState extends State<SongListView> {
                 onPracticed: () {
                   // Handle practiced action
                 },
+                onFavorite: () {
+                  context.read<SongCubit>().toggleFavorite(song.id);
+                },
               );
             },
           );

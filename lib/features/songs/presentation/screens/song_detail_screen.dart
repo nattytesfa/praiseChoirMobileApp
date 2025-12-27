@@ -7,10 +7,10 @@ import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dar
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.dart';
+import 'package:praise_choir_app/features/songs/presentation/cubit/song_state.dart';
 import 'package:praise_choir_app/features/songs/presentation/screens/edit_song_screen.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/audio_player_widget.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/lyrics_fullscreen.dart';
-import 'package:praise_choir_app/features/songs/presentation/widgets/recording_notes.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/version_selector.dart';
 
 class SongDetailScreen extends StatefulWidget {
@@ -30,7 +30,6 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     {'title': 'Lyrics', 'icon': Icons.music_note},
     {'title': 'Audio', 'icon': Icons.audio_file},
     {'title': 'Versions', 'icon': Icons.layers},
-    {'title': 'Notes', 'icon': Icons.note},
   ];
 
   void _markAsPerformed() {
@@ -172,15 +171,15 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
               children: [
                 _buildStatItem(
                   Icons.star,
-                  'Performances',
                   widget.song.performanceCount.toString(),
+                  'Rated',
                 ),
                 _buildStatItem(
                   Icons.calendar_today,
-                  'Last Used',
                   _getLastUsedText(),
+                  'Last Used',
                 ),
-                _buildStatItem(Icons.person, 'Added By', widget.song.addedBy),
+                _buildStatItem(Icons.person, widget.song.addedBy, 'Added By'),
               ],
             ),
           ],
@@ -311,18 +310,31 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                 ),
 
           // Versions Tab
-          VersionSelector(
-            song: widget.song,
-            onVersionAdded: (version) {
-              // Handle version addition
-            },
-          ),
-
-          // Notes Tab
-          RecordingNotes(
-            song: widget.song,
-            onNoteAdded: (note) {
-              // Handle note addition
+          BlocBuilder<SongCubit, SongState>(
+            builder: (context, state) {
+              SongModel currentSong = widget.song;
+              if (state is SongLoaded) {
+                try {
+                  currentSong = state.songs.firstWhere(
+                    (s) => s.id == widget.song.id,
+                  );
+                } catch (_) {}
+              }
+              return VersionSelector(
+                song: currentSong,
+                onVersionAdded: (version) {
+                  context.read<SongCubit>().addSongVersion(
+                    widget.song.id,
+                    version,
+                  );
+                },
+                onVersionDeleted: (versionId) {
+                  context.read<SongCubit>().deleteSongVersion(
+                    widget.song.id,
+                    versionId,
+                  );
+                },
+              );
             },
           ),
         ],

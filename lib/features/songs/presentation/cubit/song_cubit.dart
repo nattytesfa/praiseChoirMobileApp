@@ -88,6 +88,35 @@ class SongCubit extends Cubit<SongState> {
     }
   }
 
+  void deleteSong(String songId) async {
+    try {
+      await songRepository.deleteSong(songId);
+      loadSongs(); // Reload the list
+    } catch (e) {
+      emit(SongError('Failed to delete song'));
+    }
+  }
+
+  void toggleFavorite(String songId) async {
+    try {
+      final currentState = state;
+      if (currentState is SongLoaded) {
+        final song = currentState.songs.firstWhere((s) => s.id == songId);
+        final List<String> newTags = List.from(song.tags);
+        if (newTags.contains('favorite')) {
+          newTags.remove('favorite');
+        } else {
+          newTags.add('favorite');
+        }
+        final updatedSong = song.copyWith(tags: newTags);
+        await songRepository.updateSong(updatedSong);
+        loadSongs();
+      }
+    } catch (e) {
+      emit(SongError('Failed to toggle favorite'));
+    }
+  }
+
   void markSongPerformed(String songId) async {
     try {
       await songRepository.markSongPerformed(songId);

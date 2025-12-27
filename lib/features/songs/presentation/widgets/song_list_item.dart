@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart' hide DateUtils;
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
 import 'package:praise_choir_app/core/utils/date_utils.dart';
+import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
+import 'package:praise_choir_app/features/songs/presentation/screens/song_detail_screen.dart';
 
 class SongListItem extends StatelessWidget {
   final SongModel song;
   final VoidCallback onTap;
   final VoidCallback onPerformed;
   final VoidCallback onPracticed;
+  final VoidCallback? onDelete;
+  final VoidCallback? onFavorite;
   final bool showStats;
 
   const SongListItem({
@@ -17,6 +24,8 @@ class SongListItem extends StatelessWidget {
     required this.onTap,
     required this.onPerformed,
     required this.onPracticed,
+    this.onDelete,
+    this.onFavorite,
     this.showStats = true,
   });
 
@@ -113,58 +122,105 @@ class SongListItem extends StatelessWidget {
     );
   }
 
+  void _openSongDetail(BuildContext context) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => SongDetailScreen(song: song)));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: ListTile(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              song.title,
-              style: AppTextStyles.bodyLarge.copyWith(
-                fontWeight: FontWeight.w500,
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, authState) {
+        final isAdmin =
+            authState is AuthAuthenticated && authState.user.role == 'admin';
+
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          clipBehavior: Clip.antiAlias,
+          child: Slidable(
+            endActionPane: isAdmin
+                ? ActionPane(
+                    motion: const ScrollMotion(),
+                    children: [
+                      SlidableAction(
+                        onPressed: (_) => onDelete?.call(),
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        icon: Icons.delete,
+                        label: 'Delete',
+                      ),
+                      SlidableAction(
+                        onPressed: _openSongDetail,
+                        backgroundColor: Colors.blueAccent,
+                        foregroundColor: Colors.white,
+                        icon: Icons.details,
+                        label: 'Song Detail',
+                      ),
+                      SlidableAction(
+                        onPressed: (_) => onPerformed(),
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        icon: Icons.share_rounded,
+                        label: 'Share',
+                      ),
+                    ],
+                  )
+                : ActionPane(
+                    motion: const ScrollMotion(),
+                    children: [
+                      SlidableAction(
+                        onPressed: _openSongDetail,
+                        backgroundColor: Colors.blueAccent,
+                        foregroundColor: Colors.white,
+                        icon: Icons.details,
+                        label: 'Song Detail',
+                      ),
+                      SlidableAction(
+                        onPressed: (_) => onPerformed(),
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        icon: Icons.share_rounded,
+                        label: 'Share',
+                      ),
+                    ],
+                  ),
+            child: ListTile(
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    song.title,
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 10),
+                  _buildTags(),
+                ],
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [const SizedBox(height: 10), _buildStats()],
+              ),
+              trailing: IconButton(
+                icon: Icon(
+                  song.tags.contains('favorite')
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  color: song.tags.contains('favorite')
+                      ? AppColors.error
+                      : Colors.grey,
+                ),
+                onPressed: onFavorite,
+              ),
+              onTap: onTap,
             ),
-            const SizedBox(height: 10),
-            _buildTags(),
-          ],
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [const SizedBox(height: 10), _buildStats()],
-        ),
-        trailing: PopupMenuButton<String>(
-          onSelected: (value) {
-            switch (value) {
-              case 'performed':
-                onPerformed();
-                break;
-              case 'practiced':
-                onPracticed();
-                break;
-              case 'details':
-                // onTap();
-                break;
-            }
-          },
-          itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: 'performed',
-              child: Text('Mark as Performed'),
-            ),
-            const PopupMenuItem(
-              value: 'practiced',
-              child: Text('Mark as Practiced'),
-            ),
-            const PopupMenuItem(value: 'details', child: Text('View Details')),
-          ],
-        ),
-        onTap: onTap,
-      ),
+          ),
+        );
+      },
     );
   }
 }
