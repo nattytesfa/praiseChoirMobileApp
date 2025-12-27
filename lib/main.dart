@@ -19,5 +19,6 @@ Future<void> main() async {
   await Hive.openBox('settings');
   await Hive.openBox<UserModel>('users');
   await Hive.openBox<SongModel>('songs');
+  await Hive.openBox('favorites');
   runApp(ChoirApp());
 }

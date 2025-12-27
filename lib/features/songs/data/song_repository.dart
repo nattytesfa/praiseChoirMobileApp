@@ -11,25 +11,64 @@ class HiveBoxes {
 
 class SongRepository {
   late Box<SongModel> _songBox;
+  late Box _favoritesBox;
   final SyncCubit? syncCubit;
   DateTime? _lastSyncTime;
   final SongService _songService = SongService();
 
   SongRepository(this.syncCubit) {
     _songBox = Hive.box<SongModel>(HiveBoxes.songs);
+    _favoritesBox = Hive.box('favorites');
   }
 
-  Future<List<SongModel>> getAllSongs() async {
-    return _songBox.values.toList();
+  Future<List<SongModel>> getAllSongs({String? userId}) async {
+    final songs = _songBox.values.toList();
+
+    return songs.map((song) {
+      // If no user is logged in, don't show any favorites (or use a 'guest' key if desired)
+      if (userId == null) {
+        // Ensure 'favorite' tag is removed for guests so they don't see others' favorites
+        if (song.tags.contains('favorite')) {
+          final newTags = List<String>.from(song.tags)..remove('favorite');
+          return song.copyWith(tags: newTags);
+        }
+        return song;
+      }
+
+      final key = '${userId}_${song.id}';
+      final isFavorite = _favoritesBox.containsKey(key);
+
+      // If it's a favorite locally for THIS user, ensure 'favorite' tag is present
+      if (isFavorite && !song.tags.contains('favorite')) {
+        return song.copyWith(tags: [...song.tags, 'favorite']);
+      }
+
+      // If it's NOT a favorite locally for THIS user, ensure 'favorite' tag is ABSENT
+      if (!isFavorite && song.tags.contains('favorite')) {
+        final newTags = List<String>.from(song.tags)..remove('favorite');
+        return song.copyWith(tags: newTags);
+      }
+
+      return song;
+    }).toList();
   }
 
-  Future<List<SongModel>> getSongsByTag(String tag) async {
-    final allSongs = await getAllSongs();
+  Future<void> toggleLocalFavorite(String songId, String userId) async {
+    final key = '${userId}_${songId}';
+    if (_favoritesBox.containsKey(key)) {
+      await _favoritesBox.delete(key);
+    } else {
+      await _favoritesBox.put(key, true);
+    }
+  }
+
+  Future<List<SongModel>> getSongsByTag(String tag, {String? userId}) async {
+    final allSongs = await getAllSongs(userId: userId);
     return allSongs.where((song) => song.tags.contains(tag)).toList();
   }
 
-  Future<List<SongModel>> searchSongs(String query) async {
-    final allSongs = await getAllSongs();
+  Future<List<SongModel>> searchSongs(String query, {String? userId}) async {
+    final allSongs = await getAllSongs(userId: userId);
     final lowercaseQuery = query.toLowerCase();
 
     return allSongs.where((song) {
@@ -41,8 +80,9 @@ class SongRepository {
   Future<List<SongModel>> getNeglectedSongs(
     DateTime thresholdDate, {
     required int daysThreshold,
+    String? userId,
   }) async {
-    final allSongs = await getAllSongs();
+    final allSongs = await getAllSongs(userId: userId);
     return allSongs.where((song) {
       final lastUsed =
           song.lastPerformed ?? song.lastPracticed ?? song.dateAdded;
@@ -55,15 +95,19 @@ class SongRepository {
   }
 
   Future<void> updateSong(SongModel song) async {
+    // Ensure we don't save 'favorite' tag to the shared model
+    final tagsToSave = List<String>.from(song.tags)..remove('favorite');
+    final songToSave = song.copyWith(tags: tagsToSave);
+
     final existingSong = _songBox.values.cast<SongModel?>().firstWhere(
       (s) => s?.id == song.id,
       orElse: () => null,
     );
 
     if (existingSong != null) {
-      await _songBox.put(existingSong.key, song);
+      await _songBox.put(existingSong.key, songToSave);
     } else {
-      await _songBox.put(song.id, song);
+      await _songBox.put(song.id, songToSave);
     }
   }
 

@@ -18,53 +18,60 @@ class ChoirApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiRepositoryProvider(
-      providers: [
-        RepositoryProvider(create: (context) => AuthRepository()),
-        RepositoryProvider(create: (context) => SongRepository()),
-      ],
-      child: MultiBlocProvider(
+    return BlocProvider(
+      create: (context) => SyncCubit(),
+      child: MultiRepositoryProvider(
         providers: [
-          BlocProvider(create: (context) => ThemeCubit()),
-          BlocProvider(create: (context) => LocaleCubit()),
-          // In ChoirApp build method
-          BlocProvider(
-            create: (context) =>
-                AuthCubit(context.read<AuthRepository>())..appStarted(),
+          RepositoryProvider(create: (context) => AuthRepository()),
+          RepositoryProvider(
+            create: (context) => SongRepository(context.read<SyncCubit>()),
           ),
-          BlocProvider(
-            create: (context) => AdminCubit(context.read<AuthRepository>()),
-          ),
-          BlocProvider(create: (context) => LocaleCubit()),
-          BlocProvider(create: (context) => SongCubit()),
-          BlocProvider(create: (context) => SyncCubit()),
         ],
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (context) => ThemeCubit()),
+            BlocProvider(create: (context) => LocaleCubit()),
+            BlocProvider(
+              create: (context) =>
+                  AuthCubit(context.read<AuthRepository>())..appStarted(),
+            ),
+            BlocProvider(
+              create: (context) => AdminCubit(context.read<AuthRepository>()),
+            ),
+            BlocProvider(
+              create: (context) => SongCubit(
+                repository: context.read<SongRepository>(),
+                authCubit: context.read<AuthCubit>(),
+              ),
+            ),
+          ],
 
-        child: BlocBuilder<ThemeCubit, ThemeMode>(
-          builder: (context, themeMode) {
-            return BlocBuilder<LocaleCubit, LocaleState>(
-              builder: (context, state) {
-                return MaterialApp(
-                  locale: state
-                      .locale, // This ensures the app actually changes language
-                  title: 'PCS',
-                  theme: AppTheme.lightTheme,
-                  darkTheme: AppTheme.darkTheme,
-                  themeMode: themeMode,
-                  onGenerateRoute: Routes.onGenerateRoute,
-                  localizationsDelegates: const [
-                    AppLocalizations.delegate,
-                    GlobalMaterialLocalizations.delegate,
-                    GlobalWidgetsLocalizations.delegate,
-                    GlobalCupertinoLocalizations.delegate,
-                  ],
-                  supportedLocales: const [Locale('en'), Locale('am')],
-                  initialRoute: Routes.splash,
-                  debugShowCheckedModeBanner: false,
-                );
-              },
-            );
-          },
+          child: BlocBuilder<ThemeCubit, ThemeMode>(
+            builder: (context, themeMode) {
+              return BlocBuilder<LocaleCubit, LocaleState>(
+                builder: (context, state) {
+                  return MaterialApp(
+                    locale: state
+                        .locale, // This ensures the app actually changes language
+                    title: 'PCS',
+                    theme: AppTheme.lightTheme,
+                    darkTheme: AppTheme.darkTheme,
+                    themeMode: themeMode,
+                    onGenerateRoute: Routes.onGenerateRoute,
+                    localizationsDelegates: const [
+                      AppLocalizations.delegate,
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalWidgetsLocalizations.delegate,
+                      GlobalCupertinoLocalizations.delegate,
+                    ],
+                    supportedLocales: const [Locale('en'), Locale('am')],
+                    initialRoute: Routes.splash,
+                    debugShowCheckedModeBanner: false,
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
     );

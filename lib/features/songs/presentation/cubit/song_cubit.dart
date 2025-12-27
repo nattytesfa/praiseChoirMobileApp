@@ -1,22 +1,46 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/core/widgets/common/network/sync_cubit.dart';
+import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
 import 'package:praise_choir_app/features/songs/data/song_repository.dart';
 import 'song_state.dart';
 
 class SongCubit extends Cubit<SongState> {
   final SongRepository songRepository;
+  final AuthCubit authCubit;
+  StreamSubscription? _authSubscription;
 
-  SongCubit({SongRepository? repository})
+  SongCubit({SongRepository? repository, required this.authCubit})
     : songRepository = repository ?? SongRepository(SyncCubit()),
       super(SongInitial()) {
+    // Listen to auth changes to reload songs with correct favorites
+    _authSubscription = authCubit.stream.listen((authState) {
+      loadSongs();
+    });
+
     loadSongs();
+  }
+
+  @override
+  Future<void> close() {
+    _authSubscription?.cancel();
+    return super.close();
+  }
+
+  String? get _currentUserId {
+    final state = authCubit.state;
+    if (state is AuthAuthenticated) {
+      return state.user.id;
+    }
+    return null;
   }
 
   void loadSongs() async {
     emit(SongLoading());
     try {
-      final songs = await songRepository.getAllSongs();
+      final songs = await songRepository.getAllSongs(userId: _currentUserId);
       emit(SongLoaded(songs));
     } catch (e) {
       emit(SongError('Failed to load songs'));
@@ -33,7 +57,10 @@ class SongCubit extends Cubit<SongState> {
     }
 
     try {
-      final results = await songRepository.searchSongs(query);
+      final results = await songRepository.searchSongs(
+        query,
+        userId: _currentUserId,
+      );
       emit(SongSearchResults(results));
     } catch (e) {
       emit(SongError('Failed to search songs'));
@@ -43,7 +70,10 @@ class SongCubit extends Cubit<SongState> {
   void filterSongsByTag(String tag) async {
     emit(SongLoading());
     try {
-      final songs = await songRepository.getSongsByTag(tag);
+      final songs = await songRepository.getSongsByTag(
+        tag,
+        userId: _currentUserId,
+      );
       final currentState = state;
       if (currentState is SongLoaded) {
         emit(SongLoaded(currentState.songs, filteredSongs: songs));
@@ -60,6 +90,7 @@ class SongCubit extends Cubit<SongState> {
       final neglectedSongs = await songRepository.getNeglectedSongs(
         threeMonthsAgo,
         daysThreshold: 90,
+        userId: _currentUserId,
       );
       final currentState = state;
       if (currentState is SongLoaded) {
@@ -99,19 +130,11 @@ class SongCubit extends Cubit<SongState> {
 
   void toggleFavorite(String songId) async {
     try {
-      final currentState = state;
-      if (currentState is SongLoaded) {
-        final song = currentState.songs.firstWhere((s) => s.id == songId);
-        final List<String> newTags = List.from(song.tags);
-        if (newTags.contains('favorite')) {
-          newTags.remove('favorite');
-        } else {
-          newTags.add('favorite');
-        }
-        final updatedSong = song.copyWith(tags: newTags);
-        await songRepository.updateSong(updatedSong);
-        loadSongs();
-      }
+      final userId = _currentUserId;
+      if (userId == null) return; // Or handle guest favorites differently
+
+      await songRepository.toggleLocalFavorite(songId, userId);
+      loadSongs(); // Reload to update the UI with new favorite status
     } catch (e) {
       emit(SongError('Failed to toggle favorite'));
     }
