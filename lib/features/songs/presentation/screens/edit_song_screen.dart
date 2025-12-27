@@ -26,7 +26,7 @@ class _EditSongScreenState extends State<EditSongScreen> {
   late List<String> _selectedTags;
   String? _audioPath;
 
-  final List<String> _availableTags = ['old', 'new', 'favorite', 'this_round'];
+  final List<String> _availableTags = ['new', 'favorite', 'this_round'];
   final List<Map<String, String>> _languages = [
     {'value': 'amharic', 'label': 'Amharic'},
     {'value': 'kembatigna', 'label': 'Kembatigna'},
@@ -258,8 +258,6 @@ class _EditSongScreenState extends State<EditSongScreen> {
 
   String _getTagDisplayName(String tag) {
     switch (tag) {
-      case 'old':
-        return 'Old Song';
       case 'new':
         return 'New Song';
       case 'favorite':
@@ -273,8 +271,6 @@ class _EditSongScreenState extends State<EditSongScreen> {
 
   Color _getTagColor(String tag) {
     switch (tag) {
-      case 'old':
-        return AppColors.warning;
       case 'new':
         return AppColors.success;
       case 'favorite':

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
@@ -7,7 +8,6 @@ import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dar
 import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.dart';
 import 'package:praise_choir_app/features/songs/presentation/screens/edit_song_screen.dart';
-import 'package:praise_choir_app/features/songs/presentation/screens/lyrics_display.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/audio_player_widget.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/lyrics_fullscreen.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/recording_notes.dart';
@@ -48,16 +48,25 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   }
 
   void _openFullscreenLyrics() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => LyricsDisplay(
-          title: widget.song.title,
-          lyrics: widget.song.lyrics,
-          language: widget.song.language,
+        builder: (context) => Scaffold(
+          body: SafeArea(
+            child: LyricsFullscreen(
+              lyrics: widget.song.lyrics,
+              onFullscreen: () => Navigator.pop(context),
+            ),
+          ),
         ),
       ),
-    );
+    ).then((_) {
+      SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.manual,
+        overlays: SystemUiOverlay.values,
+      );
+    });
   }
 
   void _editSong() {
@@ -76,13 +85,9 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         children: [
           Text(
             widget.song.title,
-            style: AppTextStyles.titleMedium,
+            style: AppTextStyles.titleLarge,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            widget.song.language == 'amharic' ? 'Amharic' : 'Kembatigna',
-            style: AppTextStyles.caption,
           ),
         ],
       ),
@@ -111,7 +116,6 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
           },
         ),
 
-        // More options
         PopupMenuButton<String>(
           onSelected: (value) {
             switch (value) {
