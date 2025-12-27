@@ -13,10 +13,11 @@ Future<void> main() async {
 
   Hive.registerAdapter(UserModelAdapter());
   Hive.registerAdapter(SongModelAdapter());
+  Hive.registerAdapter(SongVersionAdapter());
+  Hive.registerAdapter(RecordingNoteAdapter());
 
   await Hive.openBox('settings');
   await Hive.openBox<UserModel>('users');
   await Hive.openBox<SongModel>('songs');
-
   runApp(ChoirApp());
 }
