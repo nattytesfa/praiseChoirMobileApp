@@ -54,11 +54,28 @@ class SongRepository {
   }
 
   Future<void> toggleLocalFavorite(String songId, String userId) async {
-    final key = '${userId}_${songId}';
-    if (_favoritesBox.containsKey(key)) {
+    final key = '${userId}_$songId';
+    final isFavorite = _favoritesBox.containsKey(key);
+
+    if (isFavorite) {
       await _favoritesBox.delete(key);
     } else {
       await _favoritesBox.put(key, true);
+    }
+
+    // Update global like count
+    final song = _songBox.values.cast<SongModel?>().firstWhere(
+      (s) => s?.id == songId,
+      orElse: () => null,
+    );
+
+    if (song != null) {
+      final currentLikes = song.likeCount;
+      final newLikes = isFavorite ? currentLikes - 1 : currentLikes + 1;
+      final safeLikes = newLikes < 0 ? 0 : newLikes;
+
+      final updatedSong = song.copyWith(likeCount: safeLikes);
+      await updateSong(updatedSong);
     }
   }
 

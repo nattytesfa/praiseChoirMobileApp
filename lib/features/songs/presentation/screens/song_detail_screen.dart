@@ -159,32 +159,47 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   }
 
   Widget _buildSongHeader() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Statistics
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return BlocBuilder<SongCubit, SongState>(
+      builder: (context, state) {
+        SongModel currentSong = widget.song;
+        if (state is SongLoaded) {
+          try {
+            currentSong = state.songs.firstWhere((s) => s.id == widget.song.id);
+          } catch (_) {}
+        }
+
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildStatItem(
-                  Icons.star,
-                  widget.song.performanceCount.toString(),
-                  'Rated',
+                // Statistics
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildStatItem(
+                      Icons.favorite,
+                      currentSong.likeCount.toString(),
+                      'Likes',
+                    ),
+                    _buildStatItem(
+                      Icons.calendar_today,
+                      _getLastUsedText(currentSong),
+                      'Last Used',
+                    ),
+                    _buildStatItem(
+                      Icons.person,
+                      currentSong.addedBy,
+                      'Added By',
+                    ),
+                  ],
                 ),
-                _buildStatItem(
-                  Icons.calendar_today,
-                  _getLastUsedText(),
-                  'Last Used',
-                ),
-                _buildStatItem(Icons.person, widget.song.addedBy, 'Added By'),
               ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -342,8 +357,8 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     );
   }
 
-  String _getLastUsedText() {
-    final lastUsed = widget.song.lastPerformed ?? widget.song.lastPracticed;
+  String _getLastUsedText(SongModel song) {
+    final lastUsed = song.lastPerformed ?? song.lastPracticed;
     if (lastUsed == null) return 'Never';
 
     final now = DateTime.now();

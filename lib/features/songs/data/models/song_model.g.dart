@@ -30,13 +30,15 @@ class SongModelAdapter extends TypeAdapter<SongModel> {
       performanceCount: fields[10] as int,
       versions: (fields[11] as List).cast<SongVersion>(),
       recordingNotes: (fields[12] as List).cast<RecordingNote>(),
+      songNumber: fields[13] as String?,
+      likeCount: fields[14] as int? ?? 0,
     );
   }
 
   @override
   void write(BinaryWriter writer, SongModel obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -62,7 +64,11 @@ class SongModelAdapter extends TypeAdapter<SongModel> {
       ..writeByte(11)
       ..write(obj.versions)
       ..writeByte(12)
-      ..write(obj.recordingNotes);
+      ..write(obj.recordingNotes)
+      ..writeByte(13)
+      ..write(obj.songNumber)
+      ..writeByte(14)
+      ..write(obj.likeCount);
   }
 
   @override

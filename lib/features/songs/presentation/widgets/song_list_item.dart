@@ -91,16 +91,13 @@ class SongListItem extends StatelessWidget {
 
     return Row(
       children: [
-        // Performance Count
-        if (song.performanceCount > 0) ...[
+        // Like Count
+        if (song.likeCount > 0) ...[
           Row(
             children: [
-              const Icon(Icons.star, size: 14, color: AppColors.warning),
+              const Icon(Icons.favorite, size: 14, color: AppColors.error),
               const SizedBox(width: 4),
-              Text(
-                song.performanceCount.toString(),
-                style: AppTextStyles.caption,
-              ),
+              Text(song.likeCount.toString(), style: AppTextStyles.caption),
             ],
           ),
           const SizedBox(width: 12),
