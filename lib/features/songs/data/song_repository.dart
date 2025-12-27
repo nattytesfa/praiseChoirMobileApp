@@ -266,8 +266,19 @@ class SongRepository {
       List<SongModel> remoteSongs = await _songService.fetchAllSongs();
 
       // 3. Save to Hive (Update if exists, add if new)
-      for (var song in remoteSongs) {
-        await _songBox.put(song.id, song);
+      for (var remoteSong in remoteSongs) {
+        final localSong = _songBox.get(remoteSong.id);
+
+        // If we have a local version, preserve the likeCount if the remote one is 0
+        // (This is a workaround for when the backend doesn't support likeCount yet)
+        if (localSong != null && remoteSong.likeCount == 0) {
+          final mergedSong = remoteSong.copyWith(
+            likeCount: localSong.likeCount,
+          );
+          await _songBox.put(remoteSong.id, mergedSong);
+        } else {
+          await _songBox.put(remoteSong.id, remoteSong);
+        }
       }
       _lastSyncTime = DateTime.now();
       syncCubit?.updateStatus(SyncStatus.synced);
