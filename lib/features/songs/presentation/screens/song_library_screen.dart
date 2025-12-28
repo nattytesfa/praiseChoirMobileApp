@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/core/widgets/common/empty_state.dart';
@@ -93,66 +94,88 @@ class _SongLibraryScreenState extends State<SongLibraryScreen> {
             ),
           ),
           Expanded(
-            child: BlocBuilder<SongCubit, SongState>(
-              builder: (context, state) {
-                if (state is SongLoading) {
-                  return const LoadingIndicator();
-                } else if (state is SongError) {
-                  return Center(child: Text(state.message));
-                } else if (state is SongLoaded || state is SongSearchResults) {
-                  List<SongModel> songsToShow = [];
-
-                  if (state is SongLoaded) {
-                    songsToShow = state.filteredSongs ?? state.songs;
-                  } else if (state is SongSearchResults) {
-                    songsToShow = state.results;
-                  }
-
-                  if (songsToShow.isEmpty) {
-                    return const EmptyState(
-                      message: 'No songs found',
-                      icon: Icons.music_off,
-                      title: '',
+            child: BlocListener<SongCubit, SongState>(
+              listener: (context, state) {
+                if (state is SongLoaded && state.errorMessage != null) {
+                  if (kDebugMode) {
+                    print(
+                      'SongLibraryScreen: Showing error snackbar: ${state.errorMessage}',
                     );
                   }
-
-                  return ListView.builder(
-                    itemCount: songsToShow.length,
-                    itemBuilder: (context, index) {
-                      final song = songsToShow[index];
-                      return SongListItem(
-                        song: song,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  SongDetailScreen(song: song),
-                            ),
-                          );
-                        },
-                        onPerformed: () {
-                          context.read<SongCubit>().markSongPerformed(song.id);
-                        },
-                        onPracticed: () {
-                          context.read<SongCubit>().markSongPracticed(song.id);
-                        },
-                        onDelete: () {
-                          _confirmDelete(context, song);
-                        },
-                        onFavorite: () {
-                          context.read<SongCubit>().toggleFavorite(song.id);
-                        },
-                      );
-                    },
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.errorMessage!),
+                      backgroundColor: Colors.red,
+                    ),
                   );
                 }
-                return const EmptyState(
-                  message: 'No songs available',
-                  icon: Icons.music_note,
-                  title: '',
-                );
               },
+              child: BlocBuilder<SongCubit, SongState>(
+                builder: (context, state) {
+                  if (state is SongLoading) {
+                    return const LoadingIndicator();
+                  } else if (state is SongError) {
+                    return Center(child: Text(state.message));
+                  } else if (state is SongLoaded ||
+                      state is SongSearchResults) {
+                    List<SongModel> songsToShow = [];
+
+                    if (state is SongLoaded) {
+                      songsToShow = state.filteredSongs ?? state.songs;
+                    } else if (state is SongSearchResults) {
+                      songsToShow = state.results;
+                    }
+
+                    if (songsToShow.isEmpty) {
+                      return const EmptyState(
+                        message: 'No songs found',
+                        icon: Icons.music_off,
+                        title: '',
+                      );
+                    }
+
+                    return ListView.builder(
+                      itemCount: songsToShow.length,
+                      itemBuilder: (context, index) {
+                        final song = songsToShow[index];
+                        return SongListItem(
+                          song: song,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    SongDetailScreen(song: song),
+                              ),
+                            );
+                          },
+                          onPerformed: () {
+                            context.read<SongCubit>().markSongPerformed(
+                              song.id,
+                            );
+                          },
+                          onPracticed: () {
+                            context.read<SongCubit>().markSongPracticed(
+                              song.id,
+                            );
+                          },
+                          onDelete: () {
+                            context.read<SongCubit>().deleteSong(song.id);
+                          },
+                          onFavorite: () {
+                            context.read<SongCubit>().toggleFavorite(song.id);
+                          },
+                        );
+                      },
+                    );
+                  }
+                  return const EmptyState(
+                    message: 'No songs available',
+                    icon: Icons.music_note,
+                    title: '',
+                  );
+                },
+              ),
             ),
           ),
         ],
@@ -173,29 +196,6 @@ class _SongLibraryScreenState extends State<SongLibraryScreen> {
             },
           );
         },
-      ),
-    );
-  }
-
-  void _confirmDelete(BuildContext context, SongModel song) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Song'),
-        content: Text('Are you sure you want to delete "${song.title}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<SongCubit>().deleteSong(song.id);
-            },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
       ),
     );
   }

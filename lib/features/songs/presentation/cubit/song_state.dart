@@ -5,7 +5,7 @@ abstract class SongState extends Equatable {
   const SongState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class SongInitial extends SongState {}
@@ -15,11 +15,12 @@ class SongLoading extends SongState {}
 class SongLoaded extends SongState {
   final List<SongModel> songs;
   final List<SongModel>? filteredSongs;
+  final String? errorMessage;
 
-  const SongLoaded(this.songs, {this.filteredSongs});
+  const SongLoaded(this.songs, {this.filteredSongs, this.errorMessage});
 
   @override
-  List<Object> get props => [songs, filteredSongs ?? []];
+  List<Object?> get props => [songs, filteredSongs, errorMessage];
 }
 
 class SongError extends SongState {
@@ -28,7 +29,7 @@ class SongError extends SongState {
   const SongError(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [message];
 }
 
 class SongSearchResults extends SongState {
@@ -37,7 +38,7 @@ class SongSearchResults extends SongState {
   const SongSearchResults(this.results);
 
   @override
-  List<Object> get props => [results];
+  List<Object?> get props => [results];
 }
 
 class SongDetailLoaded extends SongState {
@@ -46,5 +47,5 @@ class SongDetailLoaded extends SongState {
   const SongDetailLoaded(this.song);
 
   @override
-  List<Object> get props => [song];
+  List<Object?> get props => [song];
 }

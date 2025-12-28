@@ -75,6 +75,9 @@ class _SongListViewState extends State<SongListView> {
                 onFavorite: () {
                   context.read<SongCubit>().toggleFavorite(song.id);
                 },
+                onDelete: () {
+                  context.read<SongCubit>().deleteSong(song.id);
+                },
               );
             },
           );

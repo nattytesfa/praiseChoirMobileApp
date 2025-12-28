@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
 import 'package:praise_choir_app/core/widgets/common/empty_state.dart';
-import 'package:praise_choir_app/core/widgets/input/search_bar.dart' as app_search;
+import 'package:praise_choir_app/core/widgets/input/search_bar.dart'
+    as app_search;
 import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_state.dart';
@@ -206,6 +207,9 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
           },
           onPracticed: () {
             context.read<SongCubit>().markSongPracticed(song.id);
+          },
+          onDelete: () {
+            context.read<SongCubit>().deleteSong(song.id);
           },
         );
       },

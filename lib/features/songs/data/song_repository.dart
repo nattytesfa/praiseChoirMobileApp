@@ -129,9 +129,44 @@ class SongRepository {
   }
 
   Future<void> deleteSong(String songId) async {
-    final index = _songBox.values.toList().indexWhere((s) => s.id == songId);
-    if (index != -1) {
-      await _songBox.deleteAt(index);
+    if (kDebugMode) {
+      print('SongRepository: Deleting song $songId');
+    }
+    // 1. Delete from Remote (Firebase)
+    // We do this first or in parallel to ensure it doesn't come back on sync
+    try {
+      if (kDebugMode) {
+        print('SongRepository: Calling SongService.deleteSong');
+      }
+      await _songService.deleteSong(songId);
+      if (kDebugMode) {
+        print('SongRepository: Remote delete successful');
+      }
+    } catch (e) {
+      debugPrint('Failed to delete from remote: $e');
+      // Rethrow so the UI knows it failed and we don't delete locally
+      // This prevents the "zombie song" issue where it disappears but comes back
+      throw Exception('Failed to delete from server: $e');
+    }
+
+    // 2. Delete from local Hive
+    if (kDebugMode) {
+      print('SongRepository: Finding local song to delete');
+    }
+    final songToDelete = _songBox.values.cast<SongModel?>().firstWhere(
+      (s) => s?.id == songId,
+      orElse: () => null,
+    );
+
+    if (songToDelete != null) {
+      if (kDebugMode) {
+        print('SongRepository: Deleting local song with key ${songToDelete.key}');
+      }
+      await _songBox.delete(songToDelete.key);
+    } else {
+      if (kDebugMode) {
+        print('SongRepository: Local song not found');
+      }
     }
   }
 

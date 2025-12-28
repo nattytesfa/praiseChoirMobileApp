@@ -28,12 +28,7 @@ class SongFilterSheet extends StatelessWidget {
             spacing: 8,
             children: [
               _buildFilterChip('All', onTap: () => onTagSelected('')),
-              _buildFilterChip('Old', onTap: () => onTagSelected('old')),
               _buildFilterChip('New', onTap: () => onTagSelected('new')),
-              _buildFilterChip(
-                'Favorite',
-                onTap: () => onTagSelected('favorite'),
-              ),
               _buildFilterChip(
                 'This Round',
                 onTap: () => onTagSelected('this_round'),

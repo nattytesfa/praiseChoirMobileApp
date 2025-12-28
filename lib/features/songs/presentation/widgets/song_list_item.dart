@@ -1,9 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide DateUtils;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
-import 'package:praise_choir_app/core/utils/date_utils.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
@@ -49,12 +49,6 @@ class SongListItem extends StatelessWidget {
       default:
         return tag;
     }
-  }
-
-  String _getLastUsedText() {
-    final lastUsed = song.lastPerformed ?? song.lastPracticed;
-    if (lastUsed == null) return 'Never used';
-    return DateUtils.formatRelativeTime(lastUsed);
   }
 
   Widget _buildTags() {
@@ -103,17 +97,45 @@ class SongListItem extends StatelessWidget {
         // Audio Indicator
         if (song.audioPath != null)
           const Icon(Icons.audio_file, size: 14, color: AppColors.primary),
-
-        // Last Used
-        Expanded(
-          child: Text(
-            _getLastUsedText(),
-            style: AppTextStyles.caption,
-            textAlign: TextAlign.end,
-          ),
-        ),
       ],
     );
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Song'),
+        content: const Text('Are you sure you want to delete this song?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      if (kDebugMode) {
+        print('SongListItem: Delete confirmed by user');
+      }
+      if (onDelete != null) {
+        if (kDebugMode) {
+          print('SongListItem: Calling onDelete callback');
+        }
+        onDelete?.call();
+      } else {
+        if (kDebugMode) {
+          print('SongListItem: onDelete callback is NULL');
+        }
+      }
+    }
   }
 
   void _openSongDetail(BuildContext context) {
@@ -138,7 +160,7 @@ class SongListItem extends StatelessWidget {
                     motion: const ScrollMotion(),
                     children: [
                       SlidableAction(
-                        onPressed: (_) => onDelete?.call(),
+                        onPressed: (context) => _confirmDelete(context),
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                         icon: Icons.delete,
