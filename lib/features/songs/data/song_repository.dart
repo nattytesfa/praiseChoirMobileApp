@@ -157,7 +157,10 @@ class SongRepository {
     );
 
     if (song != null) {
-      final updatedSong = song.copyWith(lastPracticed: DateTime.now());
+      final updatedSong = song.copyWith(
+        lastPracticed: DateTime.now(),
+        practiceCount: song.practiceCount + 1,
+      );
       await _songBox.put(song.key, updatedSong);
     }
   }

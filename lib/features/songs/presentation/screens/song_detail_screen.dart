@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide DateUtils;
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
@@ -9,6 +9,7 @@ import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_state.dart';
 import 'package:praise_choir_app/features/songs/presentation/screens/edit_song_screen.dart';
+import 'package:praise_choir_app/features/songs/presentation/screens/song_info.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/audio_player_widget.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/lyrics_fullscreen.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/version_selector.dart';
@@ -27,6 +28,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   int _currentPage = 0;
 
   final List<Map<String, dynamic>> _tabs = [
+    {'title': 'Info', 'icon': Icons.info_outline},
     {'title': 'Lyrics', 'icon': Icons.music_note},
     {'title': 'Audio', 'icon': Icons.audio_file},
     {'title': 'Versions', 'icon': Icons.layers},
@@ -158,65 +160,6 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     );
   }
 
-  Widget _buildSongHeader() {
-    return BlocBuilder<SongCubit, SongState>(
-      builder: (context, state) {
-        SongModel currentSong = widget.song;
-        if (state is SongLoaded) {
-          try {
-            currentSong = state.songs.firstWhere((s) => s.id == widget.song.id);
-          } catch (_) {}
-        }
-
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Statistics
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildStatItem(
-                      Icons.favorite,
-                      currentSong.likeCount.toString(),
-                      'Likes',
-                    ),
-                    _buildStatItem(
-                      Icons.calendar_today,
-                      _getLastUsedText(currentSong),
-                      'Last Used',
-                    ),
-                    _buildStatItem(
-                      Icons.person,
-                      currentSong.addedBy,
-                      'Added By',
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildStatItem(IconData icon, String label, String value) {
-    return Column(
-      children: [
-        Icon(icon, size: 20, color: AppColors.textSecondary),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold),
-        ),
-        Text(label, style: AppTextStyles.caption),
-      ],
-    );
-  }
-
   Widget _buildTabBar() {
     return Container(
       decoration: BoxDecoration(
@@ -294,6 +237,20 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         controller: _pageController,
         onPageChanged: (index) => setState(() => _currentPage = index),
         children: [
+          // Info Tab
+          BlocBuilder<SongCubit, SongState>(
+            builder: (context, state) {
+              SongModel currentSong = widget.song;
+              if (state is SongLoaded) {
+                try {
+                  currentSong = state.songs.firstWhere(
+                    (s) => s.id == widget.song.id,
+                  );
+                } catch (_) {}
+              }
+              return SongInfo(song: currentSong);
+            },
+          ),
           // Lyrics Tab
           LyricsFullscreen(
             lyrics: widget.song.lyrics,
@@ -357,31 +314,12 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     );
   }
 
-  String _getLastUsedText(SongModel song) {
-    final lastUsed = song.lastPerformed ?? song.lastPracticed;
-    if (lastUsed == null) return 'Never';
-
-    final now = DateTime.now();
-    final difference = now.difference(lastUsed);
-
-    if (difference.inDays == 0) return 'Today';
-    if (difference.inDays == 1) return 'Yesterday';
-    if (difference.inDays < 7) return '${difference.inDays}d ago';
-    if (difference.inDays < 30) {
-      return '${(difference.inDays / 7).floor()}w ago';
-    }
-    return '${(difference.inDays / 30).floor()}mo ago';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
       body: Column(
         children: [
-          // Song Header
-          _buildSongHeader(),
-
           // Tab Bar
           _buildTabBar(),
 

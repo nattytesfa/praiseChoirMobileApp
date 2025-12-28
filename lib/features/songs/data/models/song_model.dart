@@ -18,7 +18,7 @@ class SongModel extends HiveObject {
   final String language; // 'kembatgna' or 'amharic'
 
   @HiveField(4)
-  final List<String> tags; // ['old', 'new', 'favorite', 'this_round']
+  final List<String> tags; // [ 'new', 'favorite', 'this_round']
 
   @HiveField(5)
   final String? audioPath;
@@ -50,6 +50,9 @@ class SongModel extends HiveObject {
   @HiveField(14)
   final int likeCount;
 
+  @HiveField(15)
+  final int practiceCount;
+
   SongModel({
     required this.id,
     required this.title,
@@ -66,6 +69,7 @@ class SongModel extends HiveObject {
     this.recordingNotes = const [],
     this.songNumber,
     this.likeCount = 0,
+    this.practiceCount = 0,
   });
 
   Map<String, dynamic> toJson() {
@@ -85,6 +89,7 @@ class SongModel extends HiveObject {
       'recordingNotes': recordingNotes.map((n) => n.toJson()).toList(),
       'songNumber': songNumber,
       'likeCount': likeCount,
+      'practiceCount': practiceCount,
     };
   }
 
@@ -128,6 +133,7 @@ class SongModel extends HiveObject {
       lastPracticed: _parseNullableDate(json['lastPracticed']),
       performanceCount: json['performanceCount'] ?? 0,
       likeCount: json['likeCount'] ?? 0,
+      practiceCount: json['practiceCount'] ?? 0,
       versions: json['versions'] != null
           ? (json['versions'] as List)
                 .whereType<Map>()
@@ -158,6 +164,7 @@ class SongModel extends HiveObject {
     List<SongVersion>? versions,
     List<RecordingNote>? recordingNotes,
     int? likeCount,
+    int? practiceCount,
   }) {
     return SongModel(
       id: id,
@@ -175,6 +182,7 @@ class SongModel extends HiveObject {
       recordingNotes: recordingNotes ?? this.recordingNotes,
       songNumber: songNumber ?? this.songNumber,
       likeCount: likeCount ?? this.likeCount,
+      practiceCount: practiceCount ?? this.practiceCount,
     );
   }
 }
