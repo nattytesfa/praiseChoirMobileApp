@@ -17,4 +17,28 @@ class SongService {
       throw Exception("Failed to fetch songs from Firebase: $e");
     }
   }
+
+  Future<void> deleteSong(String songId) async {
+    try {
+      await _firestore.collection('songs').doc(songId).delete();
+    } catch (e) {
+      throw Exception("Failed to delete song from Firebase: $e");
+    }
+  }
+
+  Future<void> addSong(SongModel song) async {
+    try {
+      await _firestore.collection('songs').doc(song.id).set(song.toJson());
+    } catch (e) {
+      throw Exception("Failed to add song to Firebase: $e");
+    }
+  }
+
+  Future<void> updateSong(SongModel song) async {
+    try {
+      await _firestore.collection('songs').doc(song.id).update(song.toJson());
+    } catch (e) {
+      throw Exception("Failed to update song in Firebase: $e");
+    }
+  }
 }

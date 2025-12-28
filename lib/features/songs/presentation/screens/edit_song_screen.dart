@@ -27,10 +27,6 @@ class _EditSongScreenState extends State<EditSongScreen> {
   String? _audioPath;
 
   final List<String> _availableTags = ['new', 'favorite', 'this_round'];
-  final List<Map<String, String>> _languages = [
-    {'value': 'amharic', 'label': 'Amharic'},
-    {'value': 'kembatigna', 'label': 'Kembatigna'},
-  ];
 
   @override
   void initState() {
@@ -50,7 +46,7 @@ class _EditSongScreenState extends State<EditSongScreen> {
     if (_formKey.currentState!.validate()) {
       final updatedSong = widget.song.copyWith(
         title: _titleController.text.trim(),
-        lyrics: _lyricsController.text.trim(),
+        lyrics: _lyricsController.text,
         language: _selectedLanguage,
         tags: _selectedTags,
         audioPath: _audioPath,
@@ -81,32 +77,6 @@ class _EditSongScreenState extends State<EditSongScreen> {
         _selectedTags.add(tag);
       }
     });
-  }
-
-  Widget _buildLanguageSelector() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Language', style: AppTextStyles.inputLabel),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          children: _languages.map((lang) {
-            final isSelected = _selectedLanguage == lang['value'];
-            return ChoiceChip(
-              label: Text(lang['label']!),
-              selected: isSelected,
-              onSelected: (_) =>
-                  setState(() => _selectedLanguage = lang['value']!),
-              selectedColor: AppColors.primary,
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.white : AppColors.textPrimary,
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
   }
 
   Widget _buildTagSelector() {
@@ -197,65 +167,6 @@ class _EditSongScreenState extends State<EditSongScreen> {
     );
   }
 
-  Widget _buildSongInfo() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Song Information', style: AppTextStyles.titleMedium),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                const Icon(
-                  Icons.person,
-                  size: 16,
-                  color: AppColors.textSecondary,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Added by: ${widget.song.addedBy}',
-                  style: AppTextStyles.caption,
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                const Icon(
-                  Icons.calendar_today,
-                  size: 16,
-                  color: AppColors.textSecondary,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Added: ${_formatDate(widget.song.dateAdded)}',
-                  style: AppTextStyles.caption,
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                const Icon(
-                  Icons.music_note,
-                  size: 16,
-                  color: AppColors.textSecondary,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Performances: ${widget.song.performanceCount}',
-                  style: AppTextStyles.caption,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   String _getTagDisplayName(String tag) {
     switch (tag) {
       case 'new':
@@ -280,10 +191,6 @@ class _EditSongScreenState extends State<EditSongScreen> {
       default:
         return AppColors.primary;
     }
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
   }
 
   @override
@@ -323,10 +230,6 @@ class _EditSongScreenState extends State<EditSongScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Song Info
-                _buildSongInfo(),
-                const SizedBox(height: 20),
-
                 // Title
                 CustomTextField(
                   controller: _titleController,
@@ -342,11 +245,6 @@ class _EditSongScreenState extends State<EditSongScreen> {
                   label: '',
                 ),
                 const SizedBox(height: 20),
-
-                // Language
-                _buildLanguageSelector(),
-                const SizedBox(height: 20),
-
                 // Tags
                 _buildTagSelector(),
                 const SizedBox(height: 20),

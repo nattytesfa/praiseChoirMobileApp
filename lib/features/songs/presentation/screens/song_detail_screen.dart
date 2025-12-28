@@ -34,6 +34,16 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     {'title': 'Versions', 'icon': Icons.layers},
   ];
 
+  SongModel get _currentSong {
+    final state = context.read<SongCubit>().state;
+    if (state is SongLoaded) {
+      try {
+        return state.songs.firstWhere((s) => s.id == widget.song.id);
+      } catch (_) {}
+    }
+    return widget.song;
+  }
+
   void _markAsPerformed() {
     context.read<SongCubit>().markSongPerformed(widget.song.id);
     ScaffoldMessenger.of(
@@ -56,7 +66,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         builder: (context) => Scaffold(
           body: SafeArea(
             child: LyricsFullscreen(
-              lyrics: widget.song.lyrics,
+              lyrics: _currentSong.lyrics,
               onFullscreen: () => Navigator.pop(context),
             ),
           ),
@@ -74,18 +84,18 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EditSongScreen(song: widget.song),
+        builder: (context) => EditSongScreen(song: _currentSong),
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(SongModel song) {
     return AppBar(
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            widget.song.title,
+            song.title,
             style: AppTextStyles.titleLarge,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -231,38 +241,24 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     );
   }
 
-  Widget _buildContentPages() {
+  Widget _buildContentPages(SongModel song) {
     return Expanded(
       child: PageView(
         controller: _pageController,
         onPageChanged: (index) => setState(() => _currentPage = index),
         children: [
           // Info Tab
-          BlocBuilder<SongCubit, SongState>(
-            builder: (context, state) {
-              SongModel currentSong = widget.song;
-              if (state is SongLoaded) {
-                try {
-                  currentSong = state.songs.firstWhere(
-                    (s) => s.id == widget.song.id,
-                  );
-                } catch (_) {}
-              }
-              return SongInfo(song: currentSong);
-            },
-          ),
+          SongInfo(song: song),
+
           // Lyrics Tab
           LyricsFullscreen(
-            lyrics: widget.song.lyrics,
+            lyrics: song.lyrics,
             onFullscreen: _openFullscreenLyrics,
           ),
 
           // Audio Tab
-          widget.song.audioPath != null
-              ? AudioPlayerWidget(
-                  audioPath: widget.song.audioPath!,
-                  title: widget.song.title,
-                )
+          song.audioPath != null
+              ? AudioPlayerWidget(audioPath: song.audioPath!, title: song.title)
               : const Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -282,30 +278,15 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                 ),
 
           // Versions Tab
-          BlocBuilder<SongCubit, SongState>(
-            builder: (context, state) {
-              SongModel currentSong = widget.song;
-              if (state is SongLoaded) {
-                try {
-                  currentSong = state.songs.firstWhere(
-                    (s) => s.id == widget.song.id,
-                  );
-                } catch (_) {}
-              }
-              return VersionSelector(
-                song: currentSong,
-                onVersionAdded: (version) {
-                  context.read<SongCubit>().addSongVersion(
-                    widget.song.id,
-                    version,
-                  );
-                },
-                onVersionDeleted: (versionId) {
-                  context.read<SongCubit>().deleteSongVersion(
-                    widget.song.id,
-                    versionId,
-                  );
-                },
+          VersionSelector(
+            song: song,
+            onVersionAdded: (version) {
+              context.read<SongCubit>().addSongVersion(widget.song.id, version);
+            },
+            onVersionDeleted: (versionId) {
+              context.read<SongCubit>().deleteSongVersion(
+                widget.song.id,
+                versionId,
               );
             },
           ),
@@ -316,17 +297,28 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: Column(
-        children: [
-          // Tab Bar
-          _buildTabBar(),
+    return BlocBuilder<SongCubit, SongState>(
+      builder: (context, state) {
+        SongModel currentSong = widget.song;
+        if (state is SongLoaded) {
+          try {
+            currentSong = state.songs.firstWhere((s) => s.id == widget.song.id);
+          } catch (_) {}
+        }
 
-          // Content Pages
-          _buildContentPages(),
-        ],
-      ),
+        return Scaffold(
+          appBar: _buildAppBar(currentSong),
+          body: Column(
+            children: [
+              // Tab Bar
+              _buildTabBar(),
+
+              // Content Pages
+              _buildContentPages(currentSong),
+            ],
+          ),
+        );
+      },
     );
   }
 

@@ -18,6 +18,8 @@ class SongInfo extends StatelessWidget {
         children: [
           _buildInfoSection('General Info', [
             _buildInfoRow('Song Number', song.songNumber ?? '-'),
+            _buildInfoRow('Title', song.title),
+            _buildInfoRow('Song Writer', song.writer ?? 'Unknown'),
             _buildInfoRow('Language', song.language),
             _buildInfoRow('Added By', song.addedBy),
             _buildInfoRow('Date Added', DateUtils.formatDate(song.dateAdded)),
@@ -41,10 +43,7 @@ class SongInfo extends StatelessWidget {
                   ? DateUtils.formatDate(song.lastPracticed!)
                   : 'Never',
             ),
-            _buildInfoRow(
-              'Times Practiced',
-              song.practiceCount.toString(),
-            ),
+            _buildInfoRow('Times Practiced', song.practiceCount.toString()),
           ]),
           const SizedBox(height: 24),
           if (song.tags.isNotEmpty) ...[

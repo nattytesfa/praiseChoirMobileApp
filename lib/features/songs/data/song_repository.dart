@@ -108,13 +108,31 @@ class SongRepository {
   }
 
   Future<void> addSong(SongModel song) async {
-    await _songBox.add(song);
+    // 1. Add to Remote (Firebase)
+    try {
+      await _songService.addSong(song);
+    } catch (e) {
+      debugPrint('Failed to add to remote: $e');
+      throw Exception('Failed to add to server: $e');
+    }
+
+    // 2. Add to local Hive
+    // We use put with ID to ensure consistency with sync
+    await _songBox.put(song.id, song);
   }
 
   Future<void> updateSong(SongModel song) async {
     // Ensure we don't save 'favorite' tag to the shared model
     final tagsToSave = List<String>.from(song.tags)..remove('favorite');
     final songToSave = song.copyWith(tags: tagsToSave);
+
+    // 1. Update Remote (Firebase)
+    try {
+      await _songService.updateSong(songToSave);
+    } catch (e) {
+      debugPrint('Failed to update remote: $e');
+      throw Exception('Failed to update server: $e');
+    }
 
     final existingSong = _songBox.values.cast<SongModel?>().firstWhere(
       (s) => s?.id == song.id,
@@ -160,7 +178,9 @@ class SongRepository {
 
     if (songToDelete != null) {
       if (kDebugMode) {
-        print('SongRepository: Deleting local song with key ${songToDelete.key}');
+        print(
+          'SongRepository: Deleting local song with key ${songToDelete.key}',
+        );
       }
       await _songBox.delete(songToDelete.key);
     } else {

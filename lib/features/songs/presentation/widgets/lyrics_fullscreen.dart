@@ -50,28 +50,20 @@ class _LyricsFullscreenState extends State<LyricsFullscreen>
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: SelectableText(
-        // Changed from Text to SelectableText
         stanza,
         style: TextStyle(
           fontSize: _fontSize,
           height: 1.7, // Slightly increased for Amharic legibility
           color: Theme.of(context).textTheme.bodyLarge?.color,
         ),
-        textAlign: TextAlign.center,
+        textAlign: TextAlign.start,
       ),
     );
   }
 
   List<String> _splitLyricsIntoStanzas(String lyrics) {
-    // Split by double newlines (stanzas) or single newlines (lines within stanzas)
-    final stanzas = lyrics.split('\n\n');
-
-    // If no double newlines found, split by single newlines
-    if (stanzas.length == 1 && stanzas.first.contains('\n')) {
-      return lyrics.split('\n');
-    }
-
-    return stanzas;
+    // Split by double newlines (stanzas)
+    return lyrics.split('\n\n');
   }
 
   Widget _buildActions() {
