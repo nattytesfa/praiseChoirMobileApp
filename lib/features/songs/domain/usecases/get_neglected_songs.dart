@@ -6,13 +6,15 @@ class GetNeglectedSongs {
 
   GetNeglectedSongs(this.repository);
 
-  Future<List<SongModel>> call({int daysThreshold = 90}) async {
-    final thresholdDate = DateTime.now().subtract(
-      Duration(days: daysThreshold),
-    );
+  Future<List<SongModel>> call(
+    DateTime thresholdDate, {
+    required int daysThreshold,
+    String? userId,
+  }) async {
     return await repository.getNeglectedSongs(
       thresholdDate,
       daysThreshold: daysThreshold,
+      userId: userId,
     );
   }
 }

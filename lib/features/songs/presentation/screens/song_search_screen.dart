@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:praise_choir_app/core/theme/app_colors.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
 import 'package:praise_choir_app/core/widgets/common/empty_state.dart';
 import 'package:praise_choir_app/core/widgets/input/search_bar.dart'
@@ -8,7 +8,7 @@ import 'package:praise_choir_app/core/widgets/input/search_bar.dart'
 import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_state.dart';
-import 'package:praise_choir_app/features/songs/presentation/screens/song_detail_screen.dart';
+import 'package:praise_choir_app/features/songs/presentation/screens/lyrics_display.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/song_list_item.dart';
 
 class SongSearchScreen extends StatefulWidget {
@@ -21,7 +21,9 @@ class SongSearchScreen extends StatefulWidget {
 class _SongSearchScreenState extends State<SongSearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
+  final Box _settingsBox = Hive.box('settings');
 
+  List<String> _recentSearches = [];
   String _currentQuery = '';
   String _selectedFilter = 'all';
   String _selectedLanguage = 'all';
@@ -30,7 +32,6 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
     {'value': 'all', 'label': 'All Songs'},
     {'value': 'with_audio', 'label': 'With Audio'},
     {'value': 'favorites', 'label': 'Favorites'},
-    {'value': 'old', 'label': 'Old Songs'},
     {'value': 'new', 'label': 'New Songs'},
   ];
 
@@ -43,10 +44,41 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
   @override
   void initState() {
     super.initState();
+    _loadRecentSearches();
     _searchFocusNode.requestFocus();
   }
 
+  void _loadRecentSearches() {
+    final searches = _settingsBox.get(
+      'recent_searches',
+      defaultValue: <String>[],
+    );
+    if (searches is List) {
+      setState(() {
+        _recentSearches = searches.cast<String>().toList();
+      });
+    }
+  }
+
+  void _saveRecentSearch(String query) {
+    if (query.trim().isEmpty) return;
+
+    final searches = List<String>.from(_recentSearches);
+    searches.remove(query); // Remove if exists to move to top
+    searches.insert(0, query); // Add to top
+
+    if (searches.length > 10) {
+      searches.removeLast(); // Keep only last 10
+    }
+
+    _settingsBox.put('recent_searches', searches);
+    setState(() {
+      _recentSearches = searches;
+    });
+  }
+
   void _onSearch(String query) {
+    _saveRecentSearch(query);
     setState(() {
       _currentQuery = query;
     });
@@ -87,7 +119,35 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
   }
 
   List<SongModel> _filterResults(List<SongModel> results) {
-    var filtered = results;
+    // 1. Dedup by ID first
+    final uniqueById = {for (var s in results) s.id: s}.values.toList();
+
+    // 2. Dedup by Title (keeping the "best" version)
+    final Map<String, SongModel> uniqueByTitle = {};
+
+    for (var song in uniqueById) {
+      final title = song.title.trim().toLowerCase();
+
+      if (!uniqueByTitle.containsKey(title)) {
+        uniqueByTitle[title] = song;
+      } else {
+        final existing = uniqueByTitle[title]!;
+        // Logic to decide which one to keep
+        bool existingIsFav = existing.tags.contains('favorite');
+        bool currentIsFav = song.tags.contains('favorite');
+
+        if (!existingIsFav && currentIsFav) {
+          uniqueByTitle[title] = song; // Replace with favorite
+        } else if (existingIsFav == currentIsFav) {
+          // If both are fav or both not fav, check audio
+          if (existing.audioPath == null && song.audioPath != null) {
+            uniqueByTitle[title] = song;
+          }
+        }
+      }
+    }
+
+    var filtered = uniqueByTitle.values.toList();
 
     // Apply language filter
     if (_selectedLanguage != 'all') {
@@ -198,7 +258,11 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => SongDetailScreen(song: song),
+                builder: (context) => LyricsDisplay(
+                  title: song.title,
+                  lyrics: song.lyrics,
+                  language: song.language,
+                ),
               ),
             );
           },
@@ -235,8 +299,9 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
   }
 
   Widget _buildRecentSearches() {
-    // In a real app, you would load recent searches from storage
-    final recentSearches = ['worship', 'praise', 'traditional'];
+    if (_recentSearches.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,63 +310,17 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
           padding: const EdgeInsets.all(16),
           child: Text('Recent Searches', style: AppTextStyles.titleMedium),
         ),
-        Wrap(
-          spacing: 8,
-          children: recentSearches.map((search) {
-            return ActionChip(
-              label: Text(search),
-              onPressed: () {
-                _searchController.text = search;
-                _onSearch(search);
-              },
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildQuickFilters() {
-    final quickFilters = [
-      {'icon': Icons.favorite, 'label': 'Favorites', 'filter': 'favorites'},
-      {'icon': Icons.history, 'label': 'Old Songs', 'filter': 'old'},
-      {'icon': Icons.new_releases, 'label': 'New Songs', 'filter': 'new'},
-      {'icon': Icons.audio_file, 'label': 'With Audio', 'filter': 'with_audio'},
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
         Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text('Quick Filters', style: AppTextStyles.titleMedium),
-        ),
-        SizedBox(
-          height: 80,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            children: quickFilters.map((filter) {
-              return Container(
-                margin: const EdgeInsets.only(right: 12),
-                child: Column(
-                  children: [
-                    IconButton(
-                      icon: Icon(filter['icon'] as IconData),
-                      onPressed: () {
-                        _onFilterChanged(filter['filter'] as String?);
-                      },
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppColors.primary.withValues(),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      filter['label'] as String,
-                      style: AppTextStyles.caption,
-                    ),
-                  ],
-                ),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Wrap(
+            spacing: 8,
+            children: _recentSearches.map((search) {
+              return ActionChip(
+                label: Text(search),
+                onPressed: () {
+                  _searchController.text = search;
+                  _onSearch(search);
+                },
               );
             }).toList(),
           ),
@@ -318,6 +337,9 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
         children: [
           // Search Header with Filters
           _buildSearchHeader(),
+          const SizedBox(height: 14),
+          Text('Recent Searches', style: AppTextStyles.titleMedium),
+          const SizedBox(height: 14),
 
           // Results
           Expanded(
@@ -337,9 +359,7 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
 
                 if (state is SongLoaded && _currentQuery.isEmpty) {
                   // Show recent searches and quick filters when no search is active
-                  return ListView(
-                    children: [_buildQuickFilters(), _buildRecentSearches()],
-                  );
+                  return ListView(children: [_buildRecentSearches()]);
                 }
 
                 if (state is SongLoaded) {

@@ -6,10 +6,10 @@ class SearchSongs {
 
   SearchSongs(this.repository);
 
-  Future<List<SongModel>> call(String query) async {
+  Future<List<SongModel>> call(String query, {String? userId}) async {
     if (query.isEmpty) {
-      return await repository.getAllSongs();
+      return await repository.getAllSongs(userId: userId);
     }
-    return await repository.searchSongs(query);
+    return await repository.searchSongs(query, userId: userId);
   }
 }

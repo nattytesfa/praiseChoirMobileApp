@@ -6,6 +6,16 @@ import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dar
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
 import 'package:praise_choir_app/features/songs/data/song_repository.dart';
+import 'package:praise_choir_app/features/songs/domain/usecases/add_song.dart';
+import 'package:praise_choir_app/features/songs/domain/usecases/delete_song.dart';
+import 'package:praise_choir_app/features/songs/domain/usecases/filter_songs.dart';
+import 'package:praise_choir_app/features/songs/domain/usecases/get_neglected_songs.dart';
+import 'package:praise_choir_app/features/songs/domain/usecases/get_songs.dart';
+import 'package:praise_choir_app/features/songs/domain/usecases/manage_song_versions.dart';
+import 'package:praise_choir_app/features/songs/domain/usecases/search_songs.dart';
+import 'package:praise_choir_app/features/songs/domain/usecases/toggle_favorite.dart';
+import 'package:praise_choir_app/features/songs/domain/usecases/track_song_usage.dart';
+import 'package:praise_choir_app/features/songs/domain/usecases/update_song.dart';
 import 'song_state.dart';
 
 class SongCubit extends Cubit<SongState> {
@@ -13,9 +23,31 @@ class SongCubit extends Cubit<SongState> {
   final AuthCubit authCubit;
   StreamSubscription? _authSubscription;
 
+  late final AddSong addSongUseCase;
+  late final GetSongs getSongsUseCase;
+  late final UpdateSong updateSongUseCase;
+  late final DeleteSong deleteSongUseCase;
+  late final SearchSongs searchSongsUseCase;
+  late final GetNeglectedSongs getNeglectedSongsUseCase;
+  late final TrackSongUsage trackSongUsageUseCase;
+  late final FilterSongs filterSongsUseCase;
+  late final ToggleFavorite toggleFavoriteUseCase;
+  late final ManageSongVersions manageSongVersionsUseCase;
+
   SongCubit({SongRepository? repository, required this.authCubit})
     : songRepository = repository ?? SongRepository(SyncCubit()),
       super(SongInitial()) {
+    addSongUseCase = AddSong(songRepository);
+    getSongsUseCase = GetSongs(songRepository);
+    updateSongUseCase = UpdateSong(songRepository);
+    deleteSongUseCase = DeleteSong(songRepository);
+    searchSongsUseCase = SearchSongs(songRepository);
+    getNeglectedSongsUseCase = GetNeglectedSongs(songRepository);
+    trackSongUsageUseCase = TrackSongUsage(songRepository);
+    filterSongsUseCase = FilterSongs(songRepository);
+    toggleFavoriteUseCase = ToggleFavorite(songRepository);
+    manageSongVersionsUseCase = ManageSongVersions(songRepository);
+
     // Listen to auth changes to reload songs with correct favorites
     _authSubscription = authCubit.stream.listen((authState) {
       loadSongs();
@@ -41,7 +73,7 @@ class SongCubit extends Cubit<SongState> {
   void loadSongs() async {
     emit(SongLoading());
     try {
-      final songs = await songRepository.getAllSongs(userId: _currentUserId);
+      final songs = await getSongsUseCase(userId: _currentUserId);
       emit(SongLoaded(songs));
     } catch (e) {
       emit(SongError('Failed to load songs'));
@@ -58,10 +90,7 @@ class SongCubit extends Cubit<SongState> {
     }
 
     try {
-      final results = await songRepository.searchSongs(
-        query,
-        userId: _currentUserId,
-      );
+      final results = await searchSongsUseCase(query, userId: _currentUserId);
       emit(SongSearchResults(results));
     } catch (e) {
       emit(SongError('Failed to search songs'));
@@ -71,10 +100,7 @@ class SongCubit extends Cubit<SongState> {
   void filterSongsByTag(String tag) async {
     emit(SongLoading());
     try {
-      final songs = await songRepository.getSongsByTag(
-        tag,
-        userId: _currentUserId,
-      );
+      final songs = await filterSongsUseCase.byTag(tag, userId: _currentUserId);
       final currentState = state;
       if (currentState is SongLoaded) {
         emit(SongLoaded(currentState.songs, filteredSongs: songs));
@@ -88,7 +114,7 @@ class SongCubit extends Cubit<SongState> {
     emit(SongLoading());
     try {
       final threeMonthsAgo = DateTime.now().subtract(const Duration(days: 90));
-      final neglectedSongs = await songRepository.getNeglectedSongs(
+      final neglectedSongs = await getNeglectedSongsUseCase(
         threeMonthsAgo,
         daysThreshold: 90,
         userId: _currentUserId,
@@ -104,7 +130,7 @@ class SongCubit extends Cubit<SongState> {
 
   void addSong(SongModel song) async {
     try {
-      await songRepository.addSong(song);
+      await addSongUseCase(song);
       loadSongs(); // Reload the list
     } catch (e) {
       emit(SongError('Failed to add song'));
@@ -113,7 +139,7 @@ class SongCubit extends Cubit<SongState> {
 
   void updateSong(SongModel song) async {
     try {
-      await songRepository.updateSong(song);
+      await updateSongUseCase(song);
       loadSongs(); // Reload the list
     } catch (e) {
       emit(SongError('Failed to update song'));
@@ -126,7 +152,7 @@ class SongCubit extends Cubit<SongState> {
       if (kDebugMode) {
         print('SongCubit: Attempting to delete song $songId');
       }
-      await songRepository.deleteSong(songId);
+      await deleteSongUseCase(songId);
       if (kDebugMode) {
         print('SongCubit: Delete successful, reloading songs');
       }
@@ -154,7 +180,7 @@ class SongCubit extends Cubit<SongState> {
       final userId = _currentUserId;
       if (userId == null) return; // Or handle guest favorites differently
 
-      await songRepository.toggleLocalFavorite(songId, userId);
+      await toggleFavoriteUseCase(songId, userId);
       loadSongs(); // Reload to update the UI with new favorite status
     } catch (e) {
       emit(SongError('Failed to toggle favorite'));
@@ -163,7 +189,7 @@ class SongCubit extends Cubit<SongState> {
 
   void markSongPerformed(String songId) async {
     try {
-      await songRepository.markSongPerformed(songId);
+      await trackSongUsageUseCase.markPerformed(songId);
       loadSongs(); // Reload to update last performed date
     } catch (e) {
       emit(SongError('Failed to mark song as performed'));
@@ -172,7 +198,7 @@ class SongCubit extends Cubit<SongState> {
 
   void markSongPracticed(String songId) async {
     try {
-      await songRepository.markSongPracticed(songId);
+      await trackSongUsageUseCase.markPracticed(songId);
       loadSongs(); // Reload to update last practiced date
     } catch (e) {
       emit(SongError('Failed to mark song as practiced'));
@@ -181,7 +207,7 @@ class SongCubit extends Cubit<SongState> {
 
   void addSongVersion(String songId, SongVersion version) async {
     try {
-      await songRepository.addSongVersion(songId, version);
+      await manageSongVersionsUseCase.addVersion(songId, version);
       loadSongs(); // Reload to include new version
     } catch (e) {
       emit(SongError('Failed to add song version'));
@@ -190,7 +216,7 @@ class SongCubit extends Cubit<SongState> {
 
   void deleteSongVersion(String songId, String versionId) async {
     try {
-      await songRepository.deleteSongVersion(songId, versionId);
+      await manageSongVersionsUseCase.deleteVersion(songId, versionId);
       loadSongs(); // Reload to remove version
     } catch (e) {
       emit(SongError('Failed to delete song version'));

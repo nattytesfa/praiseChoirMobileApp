@@ -26,7 +26,7 @@ class _AddSongScreenState extends State<AddSongScreen> {
   final List<String> _selectedTags = [];
   String? _audioPath;
 
-  final List<String> _availableTags = ['old', 'new', 'favorite', 'this_round'];
+  final List<String> _availableTags = ['new', 'favorite', 'this_round'];
   final List<Map<String, String>> _languages = [
     {'value': 'amharic', 'label': 'Amharic'},
     {'value': 'kembatigna', 'label': 'Kembatigna'},

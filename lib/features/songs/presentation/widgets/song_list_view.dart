@@ -6,8 +6,8 @@ import 'package:praise_choir_app/features/songs/presentation/screens/lyrics_disp
 import 'package:praise_choir_app/features/songs/presentation/widgets/song_list_item.dart';
 
 class SongListView extends StatefulWidget {
-  final String language;
-  const SongListView({super.key, required this.language});
+  final String? language;
+  const SongListView({super.key, this.language});
 
   @override
   State<SongListView> createState() => _SongListViewState();
@@ -29,6 +29,9 @@ class _SongListViewState extends State<SongListView> {
           return const Center(child: CircularProgressIndicator());
         } else if (state is SongLoaded) {
           final songs = state.songs.where((song) {
+            if (widget.language == null || widget.language == 'all') {
+              return true;
+            }
             // Assuming 'am' for Amharic and 'en' for English/Kembatgna or others
             // Adjust logic based on actual language codes in SongModel
             if (widget.language == 'am') {

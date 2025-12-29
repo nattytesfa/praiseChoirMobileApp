@@ -10,6 +10,7 @@ import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dar
 import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_state.dart';
 import 'package:praise_choir_app/features/songs/presentation/screens/song_detail_screen.dart';
+import 'package:praise_choir_app/features/songs/song_routes.dart';
 import '../widgets/song_list_item.dart';
 import '../widgets/song_filter_sheet.dart';
 import '../cubit/song_cubit.dart';
@@ -22,7 +23,6 @@ class SongLibraryScreen extends StatefulWidget {
 }
 
 class _SongLibraryScreenState extends State<SongLibraryScreen> {
-  final _searchController = TextEditingController();
   UserModel? _currentUser;
 
   @override
@@ -59,7 +59,7 @@ class _SongLibraryScreenState extends State<SongLibraryScreen> {
 
   void _addNewSong() {
     // Navigate to add song screen
-    Navigator.pushNamed(context, '/add-song');
+    Navigator.pushNamed(context, SongRoutes.add);
   }
 
   @override
@@ -68,6 +68,10 @@ class _SongLibraryScreenState extends State<SongLibraryScreen> {
       appBar: AppBar(
         title: const Text('Song Library'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () => Navigator.pushNamed(context, SongRoutes.search),
+          ),
           if (_currentUser != null) RoleBadge(role: _currentUser!.role),
           IconButton(
             icon: const Icon(Icons.filter_list),
@@ -77,22 +81,6 @@ class _SongLibraryScreenState extends State<SongLibraryScreen> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search songs...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              onChanged: (value) {
-                context.read<SongCubit>().searchSongs(value);
-              },
-            ),
-          ),
           Expanded(
             child: BlocListener<SongCubit, SongState>(
               listener: (context, state) {

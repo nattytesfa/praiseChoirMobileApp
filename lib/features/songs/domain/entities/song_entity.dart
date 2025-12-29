@@ -76,7 +76,6 @@ class SongEntity extends Equatable {
   // Helper methods
   bool get hasAudio => audioPath != null && audioPath!.isNotEmpty;
   bool get isFavorite => tags.contains('favorite');
-  bool get isOld => tags.contains('old');
   bool get isNew => tags.contains('new');
   bool get isThisRound => tags.contains('this_round');
 

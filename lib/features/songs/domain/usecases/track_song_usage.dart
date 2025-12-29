@@ -5,11 +5,11 @@ class TrackSongUsage {
 
   TrackSongUsage(this.repository);
 
-  Future<void> call(String songId, {bool isPerformance = false}) async {
-    if (isPerformance) {
-      await repository.markSongPerformed(songId);
-    } else {
-      await repository.markSongPracticed(songId);
-    }
+  Future<void> markPerformed(String songId) async {
+    return await repository.markSongPerformed(songId);
+  }
+
+  Future<void> markPracticed(String songId) async {
+    return await repository.markSongPracticed(songId);
   }
 }
