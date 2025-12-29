@@ -62,9 +62,7 @@ class PaymentSummary extends StatelessWidget {
                   '${summary['collectionRate'].toStringAsFixed(1)}%',
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: _getCollectionRateColor(
-                      summary['collectionRate'] as double,
-                    ),
+                    color: _getCollectionRateColor(summary['collectionRate']),
                   ),
                 ),
               ],
@@ -96,7 +94,7 @@ class PaymentSummary extends StatelessWidget {
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: color.withValues(),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -118,7 +116,7 @@ class PaymentSummary extends StatelessWidget {
     );
   }
 
-  Color _getCollectionRateColor(double rate) {
+  Color _getCollectionRateColor(int rate) {
     if (rate >= 80) return Colors.green;
     if (rate >= 50) return Colors.orange;
     return Colors.red;

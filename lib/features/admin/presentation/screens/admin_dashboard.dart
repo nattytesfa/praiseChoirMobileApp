@@ -5,6 +5,7 @@ import 'package:praise_choir_app/features/admin/presentation/screens/activity_an
 import 'package:praise_choir_app/features/admin/presentation/widgets/system_health.dart';
 import 'package:praise_choir_app/features/auth/data/models/user_model.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
+import 'package:praise_choir_app/features/payment/payment_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
@@ -141,7 +142,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ),
           const SizedBox(height: 12),
           const Text(
-            "Song Overview",
+            "Songs Overview",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -238,6 +239,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 Icons.settings_applications_rounded,
                 Colors.blueGrey,
                 () => Navigator.pushNamed(context, '/admin/settings'),
+              ),
+              _buildCategoryCard(
+                context,
+                "Payment Dashboard",
+                "Manage finances",
+                Icons.payments_rounded,
+                Colors.green,
+                () => Navigator.pushNamed(context, PaymentRoutes.dashboard),
               ),
             ],
           ),

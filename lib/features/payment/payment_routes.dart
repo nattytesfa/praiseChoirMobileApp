@@ -4,25 +4,17 @@ import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dar
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/payment/data/models/payment_report_model.dart';
 import 'package:praise_choir_app/features/payment/presentation/cubit/payment_cubit.dart';
-import 'package:praise_choir_app/features/payment/presentation/screens/financial_overview.dart';
 import 'package:praise_choir_app/features/payment/presentation/screens/payment_dashboard.dart';
 import 'package:praise_choir_app/features/payment/presentation/screens/payment_reports_screen.dart';
 import 'package:praise_choir_app/features/payment/presentation/widgets/payment_history_list.dart';
 
 class PaymentRoutes {
-  static const String overview = '/payment/overview';
   static const String dashboard = '/payment/dashboard';
   static const String history = '/payment/history';
   static const String report = '/payment/report';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case overview:
-        return MaterialPageRoute(
-          builder: (_) => const FinancialOverview(),
-          settings: settings,
-        );
-
       case dashboard:
         return MaterialPageRoute(
           builder: (_) => const PaymentDashboard(),
@@ -65,16 +57,11 @@ class PaymentRoutes {
 
   static Map<String, WidgetBuilder> getRoutes() {
     return {
-      overview: (context) => const FinancialOverview(),
       dashboard: (context) => const PaymentDashboard(),
       history: (context) => const PaymentHistory(),
     };
   }
 
-  // Navigation helper methods
-  static void navigateToOverview(BuildContext context) {
-    Navigator.pushNamed(context, overview);
-  }
 
   static void navigateToDashboard(BuildContext context) {
     Navigator.pushNamed(context, dashboard);
