@@ -10,6 +10,7 @@ import 'package:praise_choir_app/features/songs/data/song_repository.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.dart';
 import 'package:praise_choir_app/features/songs/presentation/screens/favorites_screen.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/song_list_view.dart';
+import 'package:praise_choir_app/features/songs/song_routes.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -97,6 +98,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             actions: [
               Row(
                 children: [
+                  IconButton(
+                    icon: const Icon(Icons.search, color: Colors.white),
+                    onPressed: () =>
+                        Navigator.pushNamed(context, SongRoutes.search),
+                  ),
                   BlocBuilder<SyncCubit, SyncStatus>(
                     builder: (context, state) {
                       if (state == SyncStatus.updating) {

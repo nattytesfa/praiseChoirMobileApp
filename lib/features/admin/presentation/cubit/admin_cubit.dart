@@ -5,12 +5,15 @@ import 'package:praise_choir_app/features/admin/data/models/admin_stats_model.da
 import 'package:praise_choir_app/features/admin/presentation/cubit/admin_state.dart';
 import 'package:praise_choir_app/features/auth/data/auth_repository.dart';
 import 'package:praise_choir_app/features/auth/data/models/user_model.dart';
+import 'package:praise_choir_app/features/songs/data/song_repository.dart';
 
 class AdminCubit extends Cubit<AdminState> {
   final AuthRepository _authRepository;
+  final SongRepository _songRepository;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  AdminCubit(this._authRepository) : super(AdminInitial());
+  AdminCubit(this._authRepository, this._songRepository)
+    : super(AdminInitial());
 
   /// Loads real-time stats from Firestore
   Future<void> loadAdminStats() async {
@@ -25,12 +28,22 @@ class AdminCubit extends Cubit<AdminState> {
           .where((m) => m.role == 'leader' || m.role == 'admin')
           .length;
 
-      // Note: You can add SongRepository later to fill totalSongs
+      // 3. Fetch Song Stats
+      final allSongs = await _songRepository.getAllSongs();
+      final songsWithAudio = allSongs.where((s) => s.audioPath != null).length;
+      final amharicCount = allSongs
+          .where((s) => s.language.toLowerCase().trim() == 'amharic')
+          .length;
+      final kembatignaCount = allSongs.where((s) {
+        final lang = s.language.toLowerCase().trim();
+        return lang == 'kembatigna' || lang == 'kembatgna';
+      }).length;
+
       final stats = AdminStatsModel(
         totalMembers: allMembers.length,
         activeMembers: activeMembers.length,
-        totalSongs: 0, // Fill this when SongRepo is ready
-        songsWithAudio: 0,
+        totalSongs: allSongs.length,
+        songsWithAudio: songsWithAudio,
         monthlyCollectionRate: 0.0,
         unreadMessages: 0,
         upcomingEvents: 0,
@@ -38,13 +51,18 @@ class AdminCubit extends Cubit<AdminState> {
         adminCount: adminCount,
         lastSynced: DateTime.now(),
       );
-      emit(AdminStatsLoaded(stats, allMembers));
+      emit(
+        AdminStatsLoaded(
+          stats,
+          allMembers,
+          amharicSongsCount: amharicCount,
+          kembatgnaSongsCount: kembatignaCount,
+        ),
+      );
     } catch (e) {
       emit(AdminError('Failed to load: ${e.toString()}'));
     }
   }
-
- 
 
   /// Updates a member role and refreshes cloud data
   Future<void> updateMemberRole(String memberId, String newRole) async {
@@ -124,6 +142,8 @@ class AdminCubit extends Cubit<AdminState> {
           healthStatus,
           currentState.stats,
           currentState.members,
+          amharicSongsCount: currentState.amharicSongsCount,
+          kembatgnaSongsCount: currentState.kembatgnaSongsCount,
         ),
       );
     } catch (e) {
@@ -157,11 +177,19 @@ class AdminCubit extends Cubit<AdminState> {
   }
 
   Future<void> cleanupData() async {
+    // Capture state before emitting loading
+    final currentState = state;
+
     // This is a "Safety" feature: Clear local cache and reload
     emit(AdminLoading());
+
     // 1. Keep the dashboard visible by checking current state
-    if (state is! AdminStatsLoaded) return;
-    final currentState = state as AdminStatsLoaded;
+    if (currentState is! AdminStatsLoaded) {
+      // If we weren't loaded, just reload
+      await loadAdminStats();
+      return;
+    }
+
     try {
       final userBox = Hive.box<UserModel>('users');
       await userBox.clear();
@@ -179,4 +207,3 @@ class AdminCubit extends Cubit<AdminState> {
     }
   }
 }
-

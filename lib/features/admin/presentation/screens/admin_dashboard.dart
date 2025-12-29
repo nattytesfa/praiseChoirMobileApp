@@ -139,6 +139,60 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
             ],
           ),
+          const SizedBox(height: 12),
+          const Text(
+            "Song Overview",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.blueGrey,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          Row(
+            children: [
+              Expanded(
+                child: _buildStatCard(
+                  "Total Songs",
+                  state.stats.totalSongs.toString(),
+                  Icons.music_note,
+                  Colors.deepOrange,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildStatCard(
+                  "With Audio",
+                  state.stats.songsWithAudio.toString(),
+                  Icons.audio_file,
+                  Colors.teal,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildStatCard(
+                  "Amharic",
+                  state.amharicSongsCount.toString(),
+                  Icons.language,
+                  Colors.brown,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildStatCard(
+                  "Kembatgna",
+                  state.kembatgnaSongsCount.toString(),
+                  Icons.language,
+                  Colors.indigo,
+                ),
+              ),
+            ],
+          ),
 
           const SizedBox(height: 24),
 
@@ -221,9 +275,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(
-              alpha: 0.05,
-            ), 
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

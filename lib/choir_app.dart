@@ -36,7 +36,10 @@ class ChoirApp extends StatelessWidget {
                   AuthCubit(context.read<AuthRepository>())..appStarted(),
             ),
             BlocProvider(
-              create: (context) => AdminCubit(context.read<AuthRepository>()),
+              create: (context) => AdminCubit(
+                context.read<AuthRepository>(),
+                context.read<SongRepository>(),
+              ),
             ),
             BlocProvider(
               create: (context) => SongCubit(
