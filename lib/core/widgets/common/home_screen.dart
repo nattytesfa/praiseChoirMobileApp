@@ -11,6 +11,7 @@ import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.da
 import 'package:praise_choir_app/features/songs/presentation/screens/favorites_screen.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/song_list_view.dart';
 import 'package:praise_choir_app/features/songs/song_routes.dart';
+import 'package:praise_choir_app/features/payment/payment_routes.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -240,7 +241,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                   );
                 }),
-                _drawerItem(Icons.payment, "Payment History", () {}),
+                _drawerItem(Icons.payment, "Payment History", () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, PaymentRoutes.history);
+                }),
                 _drawerItem(Icons.settings_outlined, "Settings", () {}),
                 const Divider(),
                 _drawerItem(Icons.help_outline, "Support", () {}),

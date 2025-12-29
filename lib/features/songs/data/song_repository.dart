@@ -1,13 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
+import 'package:praise_choir_app/core/constants/app_constants.dart';
 import 'package:praise_choir_app/core/services/song_service.dart';
 import 'package:praise_choir_app/core/widgets/common/network/sync_cubit.dart';
 import 'package:praise_choir_app/features/songs/domain/entities/song_entity.dart';
 import 'models/song_model.dart';
-
-class HiveBoxes {
-  static const String songs = 'songs';
-}
 
 class SongRepository {
   late Box<SongModel> _songBox;
