@@ -53,7 +53,7 @@ class PaymentSummary extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Divider(color: Colors.grey[300]),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -116,7 +116,7 @@ class PaymentSummary extends StatelessWidget {
     );
   }
 
-  Color _getCollectionRateColor(int rate) {
+  Color _getCollectionRateColor(num rate) {
     if (rate >= 80) return Colors.green;
     if (rate >= 50) return Colors.orange;
     return Colors.red;

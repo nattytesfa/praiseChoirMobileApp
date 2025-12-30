@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
-import 'package:praise_choir_app/features/payment/data/models/payment_model.dart';
+import 'package:praise_choir_app/features/auth/data/auth_repository.dart';
 import 'package:praise_choir_app/features/payment/presentation/cubit/payment_cubit.dart';
 import 'package:praise_choir_app/features/payment/presentation/cubit/payment_state.dart';
-import 'package:praise_choir_app/features/payment/presentation/widgets/arrears_alert.dart';
-import 'package:praise_choir_app/features/payment/presentation/widgets/payment_summary.dart';
+import 'package:praise_choir_app/features/payment/payment_routes.dart';
+import 'package:praise_choir_app/features/payment/data/models/payment_report_model.dart';
 
 class PaymentDashboard extends StatefulWidget {
   const PaymentDashboard({super.key});
@@ -65,67 +65,54 @@ class _PaymentDashboardState extends State<PaymentDashboard> {
 
           if (state is PaymentLoaded) {
             final summary = state.summary;
-            final payments = state.payments;
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  // Overdue Alerts
-                  if (summary != null && (summary['overdueCount'] as int) > 0)
-                    ArrearsAlert(
-                      overdueCount: summary['overdueCount'] as int,
-                      onViewOverdue: () {
-                        context.read<PaymentCubit>().getOverduePayments();
-                      },
-                    ),
-
-                  if (summary != null && (summary['overdueCount'] as int) > 0)
-                    const SizedBox(height: 16),
-
-                  // Payment Summary
-                  if (summary != null) PaymentSummary(summary: summary),
-                  if (summary != null) const SizedBox(height: 16),
-
-                  // Recent Payments
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Recent Payments',
-                                style: AppTextStyles.titleMedium,
-                              ),
-                              const Spacer(),
-                              Text(
-                                '${payments.length} total',
-                                style: AppTextStyles.caption,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          ...payments
-                              .take(5)
-                              .map((payment) => _buildPaymentItem(payment)),
-                          if (payments.length > 5) ...[
-                            const SizedBox(height: 8),
-                            SizedBox(
-                              width: double.infinity,
-                              child: TextButton(
-                                onPressed: () {
-                                },
-                                child: const Text('View All Payments'),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
+                  const SizedBox(height: 16),
+                  _buildNavigationCard(
+                    context,
+                    title: 'Payment History',
+                    subtitle: 'View all payment records',
+                    icon: Icons.history,
+                    color: Colors.blue,
+                    onTap: () => Navigator.pushNamed(
+                      context,
+                      PaymentRoutes.adminHistory,
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  _buildNavigationCard(
+                    context,
+                    title: 'Payment Reports',
+                    subtitle: 'View financial analytics',
+                    icon: Icons.bar_chart,
+                    color: Colors.purple,
+                    onTap: () {
+                      if (summary != null) {
+                        final report = PaymentReportModel(
+                          id: 'report_${DateTime.now().millisecondsSinceEpoch}',
+                          month: DateTime.now(),
+                          totalMembers: summary['totalMembers'] as int,
+                          paidCount: summary['paidCount'] as int,
+                          pendingCount: summary['pendingCount'] as int,
+                          overdueCount: summary['overdueCount'] as int,
+                          collectionRate: (summary['collectionRate'] as num)
+                              .toDouble(),
+                          totalAmount: (summary['totalAmount'] as num)
+                              .toDouble(),
+                          generatedAt: DateTime.now(),
+                        );
+                        Navigator.pushNamed(
+                          context,
+                          PaymentRoutes.report,
+                          arguments: report,
+                        );
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 80),
                 ],
               ),
             );
@@ -134,66 +121,103 @@ class _PaymentDashboardState extends State<PaymentDashboard> {
           return const Center(child: CircularProgressIndicator());
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-        },
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          final paymentCubit = context.read<PaymentCubit>();
+          final authRepo = context.read<AuthRepository>();
 
-  Widget _buildPaymentItem(PaymentModel payment) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.border),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            payment.status == PaymentStatus.paid
-                ? Icons.check_circle
-                : payment.isOverdue
-                ? Icons.warning
-                : Icons.pending,
-            color: payment.status == PaymentStatus.paid
-                ? Colors.green
-                : payment.isOverdue
-                ? Colors.red
-                : Colors.orange,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Member: ${payment.memberId}', 
-                  style: AppTextStyles.bodyMedium,
+          final confirm = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Generate Monthly Payments'),
+              content: const Text(
+                'This will generate payment records for all active members for the current month. Continue?',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text('Cancel'),
                 ),
-                Text(
-                  'Due: ${_formatDate(payment.dueDate)}',
-                  style: AppTextStyles.caption,
+                TextButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  child: const Text('Generate'),
                 ),
               ],
             ),
-          ),
-          Text(
-            'ETB ${payment.amount}',
-            style: AppTextStyles.bodyMedium.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
+          );
+
+          if (confirm != true) return;
+          if (!context.mounted) return;
+
+          final users = await authRepo.getAllUsers();
+
+          if (!context.mounted) return;
+
+          final memberIds = users.map((u) => u.id).toList();
+          paymentCubit.createMonthlyPayments(memberIds);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Generating payments...')),
+          );
+        },
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.add),
+        label: const Text('Generate Payments'),
       ),
     );
   }
 
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
+  Widget _buildNavigationCard(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: color, size: 28),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

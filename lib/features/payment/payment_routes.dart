@@ -4,13 +4,16 @@ import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dar
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/payment/data/models/payment_report_model.dart';
 import 'package:praise_choir_app/features/payment/presentation/cubit/payment_cubit.dart';
+import 'package:praise_choir_app/features/payment/presentation/screens/my_payments_screen.dart';
 import 'package:praise_choir_app/features/payment/presentation/screens/payment_dashboard.dart';
 import 'package:praise_choir_app/features/payment/presentation/screens/payment_reports_screen.dart';
-import 'package:praise_choir_app/features/payment/presentation/widgets/payment_history_list.dart';
+import 'package:praise_choir_app/features/payment/presentation/widgets/payment_history.dart';
 
 class PaymentRoutes {
   static const String dashboard = '/payment/dashboard';
-  static const String history = '/payment/history';
+  static const String userPaymentHistory = '/payment/history';
+  static const String adminHistory = '/payment/admin-history';
+  static const String overdue = '/payment/overdue';
   static const String report = '/payment/report';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -21,7 +24,7 @@ class PaymentRoutes {
           settings: settings,
         );
 
-      case history:
+      case userPaymentHistory:
         return MaterialPageRoute(
           builder: (context) => BlocProvider(
             create: (context) {
@@ -31,7 +34,25 @@ class PaymentRoutes {
                   : '';
               return PaymentCubit()..loadMyPayments(userId);
             },
+            child: const MyPaymentsScreen(),
+          ),
+          settings: settings,
+        );
+
+      case adminHistory:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (context) => PaymentCubit()..loadAllPayments(),
             child: const PaymentHistory(),
+          ),
+          settings: settings,
+        );
+
+      case overdue:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (context) => PaymentCubit()..getOverduePayments(),
+            child: const PaymentHistory(title: 'Overdue Payments'),
           ),
           settings: settings,
         );
@@ -55,28 +76,27 @@ class PaymentRoutes {
     }
   }
 
-  static Map<String, WidgetBuilder> getRoutes() {
-    return {
-      dashboard: (context) => const PaymentDashboard(),
-      history: (context) => const PaymentHistory(),
-    };
-  }
+  // static Map<String, WidgetBuilder> getRoutes() {
+  //   return {
+  //     dashboard: (context) => const PaymentDashboard(),
+  //     userPaymentHistory: (context) => const PaymentHistory(),
+  //   };
+  // }
 
+  // static void navigateToDashboard(BuildContext context) {
+  //   Navigator.pushNamed(context, dashboard);
+  // }
 
-  static void navigateToDashboard(BuildContext context) {
-    Navigator.pushNamed(context, dashboard);
-  }
+  // static void navigateToHistory(BuildContext context) {
+  //   Navigator.pushNamed(context, userPaymentHistory);
+  // }
 
-  static void navigateToHistory(BuildContext context) {
-    Navigator.pushNamed(context, history);
-  }
-
-  static void navigateToReport(
-    BuildContext context,
-    PaymentReportModel report,
-  ) {
-    Navigator.pushNamed(context, report as String, arguments: report);
-  }
+  // static void navigateToReport(
+  //   BuildContext context,
+  //   PaymentReportModel report,
+  // ) {
+  //   Navigator.pushNamed(context, report as String, arguments: report);
+  // }
 
   // Modal routes
   static Future<T?> showPaymentProof<T>({

@@ -242,7 +242,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
               _buildCategoryCard(
                 context,
-                "Payment Dashboard",
+                "Payment Information",
                 "Manage finances",
                 Icons.payments_rounded,
                 Colors.green,
@@ -284,7 +284,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withValues(),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

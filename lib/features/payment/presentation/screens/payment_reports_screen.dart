@@ -52,6 +52,7 @@ class PaymentReportScreen extends StatelessWidget {
                 ),
               ),
             ),
+            
             const SizedBox(height: 16),
 
             // Summary Cards
@@ -59,7 +60,7 @@ class PaymentReportScreen extends StatelessWidget {
               crossAxisCount: 2,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: 1.2,
+              childAspectRatio: 1.5,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
               children: [
@@ -152,9 +153,8 @@ class PaymentReportScreen extends StatelessWidget {
     Color color,
   ) {
     return Card(
-      color: color.withValues(),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

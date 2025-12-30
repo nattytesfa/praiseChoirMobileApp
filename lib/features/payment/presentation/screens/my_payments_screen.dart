@@ -5,8 +5,9 @@ import 'package:praise_choir_app/core/widgets/common/loading_indicator.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/payment/presentation/cubit/payment_state.dart';
+import 'package:praise_choir_app/core/theme/app_text_styles.dart';
+import 'package:praise_choir_app/features/payment/data/models/payment_model.dart';
 import '../widgets/payment_status_card.dart';
-import '../widgets/payment_history_list.dart';
 import '../cubit/payment_cubit.dart';
 
 class MyPaymentsScreen extends StatefulWidget {
@@ -76,26 +77,20 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
               orElse: () => payments.first,
             );
 
-            return Column(
+            return ListView(
+              padding: const EdgeInsets.all(16),
               children: [
                 PaymentStatusCard(
                   payment: currentPayment,
                   onMarkAsPaid: () => _markAsPaid(currentPayment.id),
                 ),
+                const SizedBox(height: 24),
+                const Text(
+                  'Payment History',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 16),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    'Payment History',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Expanded(
-                  child: PaymentHistory(
-                    payments: payments,
-                    onMarkAsPaid: _markAsPaid,
-                  ),
-                ),
+                ...payments.map((payment) => _buildPaymentItem(payment)),
               ],
             );
           }
@@ -107,5 +102,62 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
         },
       ),
     );
+  }
+
+  Widget _buildPaymentItem(PaymentModel payment) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                _buildStatusIcon(payment.status),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Due: ${_formatDate(payment.dueDate)}',
+                        style: AppTextStyles.bodyMedium,
+                      ),
+                      if (payment.paidDate != null)
+                        Text(
+                          'Paid: ${_formatDate(payment.paidDate!)}',
+                          style: AppTextStyles.caption,
+                        ),
+                    ],
+                  ),
+                ),
+                Text(
+                  'ETB ${payment.amount}',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusIcon(PaymentStatus status) {
+    switch (status) {
+      case PaymentStatus.paid:
+        return const Icon(Icons.check_circle, color: Colors.green);
+      case PaymentStatus.overdue:
+        return const Icon(Icons.warning, color: Colors.red);
+      case PaymentStatus.pending:
+        return const Icon(Icons.pending, color: Colors.orange);
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
   }
 }

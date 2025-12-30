@@ -10,90 +10,115 @@ import 'package:praise_choir_app/features/payment/presentation/cubit/payment_sta
 class PaymentHistory extends StatelessWidget {
   final List<PaymentModel>? payments;
   final void Function(String)? onMarkAsPaid;
+  final String title;
 
-  const PaymentHistory({super.key, this.payments, this.onMarkAsPaid});
+  const PaymentHistory({
+    super.key,
+    this.payments,
+    this.onMarkAsPaid,
+    this.title = 'Payment History',
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Payment History'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-      ),
-      body: Builder(
-        builder: (context) {
-          // If payments are provided, render a simple list (used when embedded).
-          if (payments != null) {
-            final list = payments!;
-            if (list.isEmpty) {
-              return const EmptyState(
-                icon: Icons.payment,
-                title: 'No Payments',
-                message: 'No payment history available.',
-              );
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          bottom: const TabBar(
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white70,
+            indicatorColor: Colors.white,
+            tabs: [
+              Tab(text: 'Paid'),
+              Tab(text: 'Overdue'),
+              Tab(text: 'Pending'),
+            ],
+          ),
+        ),
+        body: Builder(
+          builder: (context) {
+            // If payments are provided, render the tab view with filtered lists.
+            if (payments != null) {
+              return _buildTabBarView(payments!);
             }
 
-            return ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: list.length,
-              itemBuilder: (context, index) {
-                final payment = list[index];
-                return _buildPaymentItem(payment);
-              },
-            );
-          }
+            // Otherwise, fall back to listening to PaymentCubit (full-screen route).
+            return BlocBuilder<PaymentCubit, PaymentState>(
+              builder: (context, state) {
+                if (state is PaymentLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          // Otherwise, fall back to listening to PaymentCubit (full-screen route).
-          return BlocBuilder<PaymentCubit, PaymentState>(
-            builder: (context, state) {
-              if (state is PaymentLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (state is PaymentError) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(state.message, style: AppTextStyles.bodyMedium),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () =>
-                            context.read<PaymentCubit>().loadAllPayments(),
-                        child: const Text('Retry'),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              if (state is PaymentLoaded) {
-                final list = state.payments;
-
-                if (list.isEmpty) {
-                  return const EmptyState(
-                    icon: Icons.payment,
-                    title: 'No Payments',
-                    message: 'No payment history available.',
+                if (state is PaymentError) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(state.message, style: AppTextStyles.bodyMedium),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () =>
+                              context.read<PaymentCubit>().loadAllPayments(),
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
                   );
                 }
 
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: list.length,
-                  itemBuilder: (context, index) {
-                    final payment = list[index];
-                    return _buildPaymentItem(payment);
-                  },
-                );
-              }
+                if (state is PaymentLoaded) {
+                  return _buildTabBarView(state.payments);
+                }
 
-              return const Center(child: CircularProgressIndicator());
-            },
-          );
-        },
+                return const Center(child: CircularProgressIndicator());
+              },
+            );
+          },
+        ),
       ),
+    );
+  }
+
+  Widget _buildTabBarView(List<PaymentModel> allPayments) {
+    final paid = allPayments
+        .where((p) => p.status == PaymentStatus.paid)
+        .toList();
+    final overdue = allPayments
+        .where((p) => p.status == PaymentStatus.overdue)
+        .toList();
+    final pending = allPayments
+        .where((p) => p.status == PaymentStatus.pending)
+        .toList();
+
+    return TabBarView(
+      children: [
+        _buildList(paid, 'No paid payments found.'),
+        _buildList(overdue, 'No overdue payments found.'),
+        _buildList(pending, 'No pending payments found.'),
+      ],
+    );
+  }
+
+  Widget _buildList(List<PaymentModel> list, String emptyMessage) {
+    if (list.isEmpty) {
+      return EmptyState(
+        icon: Icons.payment,
+        title: 'No Payments',
+        message: emptyMessage,
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: list.length,
+      itemBuilder: (context, index) {
+        final payment = list[index];
+        return _buildPaymentItem(payment);
+      },
     );
   }
 
@@ -114,7 +139,7 @@ class PaymentHistory extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Member: ${payment.memberId}', 
+                        'Member: ${payment.memberId}',
                         style: AppTextStyles.bodyMedium,
                       ),
                       Text(
@@ -151,8 +176,7 @@ class PaymentHistory extends StatelessWidget {
             if (payment.proofImagePath != null) ...[
               const SizedBox(height: 8),
               TextButton.icon(
-                onPressed: () {
-                },
+                onPressed: () {},
                 icon: const Icon(Icons.receipt),
                 label: const Text('View Payment Proof'),
                 style: TextButton.styleFrom(foregroundColor: AppColors.primary),
