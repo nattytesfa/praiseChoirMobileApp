@@ -11,6 +11,7 @@ import 'package:praise_choir_app/features/auth/presentation/screens/login_screen
 import 'package:praise_choir_app/features/auth/presentation/screens/signup_screen.dart';
 import 'package:praise_choir_app/features/payment/payment_routes.dart';
 import 'package:praise_choir_app/features/songs/song_routes.dart';
+import 'package:praise_choir_app/features/chat/chat_routes.dart';
 
 import '../features/events/event_routes.dart';
 
@@ -46,6 +47,9 @@ class Routes {
     }
     if (settings.name != null && settings.name!.startsWith('/events')) {
       return EventRoutes.generateRoute(settings);
+    }
+    if (settings.name != null && settings.name!.startsWith('/chat')) {
+      return ChatRoutes.generateRoute(settings);
     }
     switch (settings.name) {
       case splash:

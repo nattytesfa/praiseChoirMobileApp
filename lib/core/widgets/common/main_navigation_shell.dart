@@ -5,11 +5,25 @@ import 'package:praise_choir_app/core/widgets/common/home_screen.dart';
 import 'package:praise_choir_app/features/admin/presentation/screens/admin_dashboard.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
+import 'package:praise_choir_app/features/chat/data/chat_repository.dart';
 import 'package:praise_choir_app/features/events/presentation/screens/announcement_board.dart';
-import 'package:praise_choir_app/samples/chat_screen.dart';
+import '../../../features/chat/presentation/screens/chat_list_screen.dart';
 
-class MainNavigationShell extends StatelessWidget {
+class MainNavigationShell extends StatefulWidget {
   const MainNavigationShell({super.key});
+
+  @override
+  State<MainNavigationShell> createState() => _MainNavigationShellState();
+}
+
+class _MainNavigationShellState extends State<MainNavigationShell> {
+  final ValueNotifier<bool> _isChatVisible = ValueNotifier(false);
+
+  @override
+  void dispose() {
+    _isChatVisible.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +36,16 @@ class MainNavigationShell extends StatelessWidget {
     return Scaffold(
       extendBody: true,
       body: PersistentTabView(
+        onTabChanged: (index) {
+          // Determine if the new tab is the Chat tab
+          // Chat tab index depends on role
+          int chatIndex = -1;
+          if (role != 'guest') {
+            chatIndex = 2; // 0: Home, 1: Announcement, 2: Chat
+          }
+
+          _isChatVisible.value = (index == chatIndex);
+        },
         tabs: [
           // TAB 1: ALWAYS VISIBLE
           PersistentTabConfig(
@@ -42,8 +66,25 @@ class MainNavigationShell extends StatelessWidget {
               ),
             ),
             PersistentTabConfig(
-              screen: const ChatScreen(),
-              item: ItemConfig(icon: const Icon(Icons.chat), title: "Chat"),
+              screen: ChatListScreen(isVisibleNotifier: _isChatVisible),
+              item: ItemConfig(
+                icon: StreamBuilder<int>(
+                  stream: (authState is AuthAuthenticated)
+                      ? context.read<ChatRepository>().watchUnreadCount(
+                          authState.user.id,
+                        )
+                      : const Stream.empty(),
+                  builder: (context, snapshot) {
+                    final count = snapshot.data ?? 0;
+                    return Badge(
+                      isLabelVisible: count > 0,
+                      label: Text('$count'),
+                      child: const Icon(Icons.chat),
+                    );
+                  },
+                ),
+                title: "Chat",
+              ),
             ),
           ],
 

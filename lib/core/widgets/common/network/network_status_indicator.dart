@@ -45,12 +45,16 @@ class _NetworkStatusIndicatorState extends State<NetworkStatusIndicator>
         label = "Updating";
         break;
       case SyncStatus.synced:
-        // You can return an empty widget or a "Check" icon when done
+      case SyncStatus.idle:
         return const Icon(
           Icons.cloud_done_rounded,
           color: Colors.greenAccent,
           size: 16,
         );
+      case SyncStatus.error:
+        label = "Sync Error";
+        textColor = Colors.redAccent;
+        break;
     }
 
     String dots = "." * (_dotCount % 4);

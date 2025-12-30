@@ -18,6 +18,8 @@ import 'package:praise_choir_app/features/payment/data/payment_repository.dart';
 import 'package:praise_choir_app/features/payment/presentation/cubit/payment_cubit.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.dart';
 import 'package:praise_choir_app/features/songs/data/song_repository.dart';
+import 'package:praise_choir_app/features/chat/data/chat_repository.dart';
+import 'package:praise_choir_app/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:praise_choir_app/l10n/arb/app_localizations.dart';
 
 class ChoirApp extends StatelessWidget {
@@ -41,6 +43,7 @@ class ChoirApp extends StatelessWidget {
                 connectivityService: context.read<ConnectivityService>(),
               ),
             ),
+            RepositoryProvider(create: (context) => ChatRepository()),
           ],
           child: MultiBlocProvider(
             providers: [
@@ -67,6 +70,10 @@ class ChoirApp extends StatelessWidget {
                 create: (context) =>
                     EventCubit(eventRepository: context.read<EventRepository>())
                       ..loadEvents(),
+              ),
+              BlocProvider(
+                create: (context) =>
+                    ChatCubit(repository: context.read<ChatRepository>()),
               ),
             ],
 
