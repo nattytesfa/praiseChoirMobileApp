@@ -30,20 +30,79 @@ class PaymentRepository {
 
   Future<void> markPaymentAsPaid(
     String paymentId,
+    String proofImagePath, {
+    double additionalFee = 0,
+  }) async {
+    final Map<dynamic, PaymentModel> map = _paymentBox.toMap();
+    dynamic keyToUpdate;
+    PaymentModel? paymentToUpdate;
+
+    for (final entry in map.entries) {
+      if (entry.value.id == paymentId) {
+        keyToUpdate = entry.key;
+        paymentToUpdate = entry.value;
+        break;
+      }
+    }
+
+    if (keyToUpdate != null && paymentToUpdate != null) {
+      final updatedPayment = paymentToUpdate.copyWith(
+        status: PaymentStatus.paid,
+        paidDate: DateTime.now(),
+        proofImagePath: proofImagePath,
+        amount: paymentToUpdate.amount + additionalFee,
+      );
+      await _paymentBox.put(keyToUpdate, updatedPayment);
+    } else {
+      throw Exception('Payment not found: $paymentId');
+    }
+  }
+
+  Future<void> updatePaymentProof(
+    String paymentId,
     String proofImagePath,
   ) async {
-    final payment = _paymentBox.values.firstWhere((p) => p.id == paymentId);
-    final updatedPayment = payment.copyWith(
-      status: PaymentStatus.paid,
-      paidDate: DateTime.now(),
-      proofImagePath: proofImagePath,
-    );
+    final Map<dynamic, PaymentModel> map = _paymentBox.toMap();
+    dynamic keyToUpdate;
+    PaymentModel? paymentToUpdate;
 
-    final index = _paymentBox.values.toList().indexWhere(
-      (p) => p.id == paymentId,
-    );
-    if (index != -1) {
-      await _paymentBox.putAt(index, updatedPayment);
+    for (final entry in map.entries) {
+      if (entry.value.id == paymentId) {
+        keyToUpdate = entry.key;
+        paymentToUpdate = entry.value;
+        break;
+      }
+    }
+
+    if (keyToUpdate != null && paymentToUpdate != null) {
+      final updatedPayment = paymentToUpdate.copyWith(
+        proofImagePath: proofImagePath,
+        adminNote: 'Photo proof is changed',
+      );
+      await _paymentBox.put(keyToUpdate, updatedPayment);
+    } else {
+      throw Exception('Payment not found: $paymentId');
+    }
+  }
+
+  Future<void> removePaymentProof(String paymentId) async {
+    final Map<dynamic, PaymentModel> map = _paymentBox.toMap();
+    dynamic keyToUpdate;
+    PaymentModel? paymentToUpdate;
+
+    for (final entry in map.entries) {
+      if (entry.value.id == paymentId) {
+        keyToUpdate = entry.key;
+        paymentToUpdate = entry.value;
+        break;
+      }
+    }
+
+    if (keyToUpdate != null && paymentToUpdate != null) {
+      final updatedPayment = paymentToUpdate.copyWith(clearProof: true);
+      await _paymentBox.put(keyToUpdate, updatedPayment);
+    } else {
+      throw Exception('Payment not found: $paymentId');
     }
   }
 
@@ -63,12 +122,33 @@ class PaymentRepository {
     }
   }
 
+  Future<void> deletePaymentsForMonth(
+    DateTime month, {
+    bool includePaid = false,
+  }) async {
+    final Map<dynamic, PaymentModel> map = _paymentBox.toMap();
+    final keysToDelete = <dynamic>[];
+
+    for (final entry in map.entries) {
+      final payment = entry.value;
+      if (payment.dueDate.year == month.year &&
+          payment.dueDate.month == month.month) {
+        if (includePaid || payment.status == PaymentStatus.pending) {
+          keysToDelete.add(entry.key);
+        }
+      }
+    }
+
+    await _paymentBox.deleteAll(keysToDelete);
+  }
+
   Future<Map<String, dynamic>> getPaymentSummary(DateTime month) async {
     final payments = await getPaymentsForMonth(month);
     final totalMembers = payments.length;
-    final paidCount = payments
+    final paidPayments = payments
         .where((p) => p.status == PaymentStatus.paid)
-        .length;
+        .toList();
+    final paidCount = paidPayments.length;
     final pendingCount = payments
         .where((p) => p.status == PaymentStatus.pending)
         .length;
@@ -80,7 +160,7 @@ class PaymentRepository {
       'pendingCount': pendingCount,
       'overdueCount': overdueCount,
       'collectionRate': totalMembers > 0 ? (paidCount / totalMembers) * 100 : 0,
-      'totalAmount': paidCount * AppConstants.monthlyPaymentAmount,
+      'totalAmount': paidPayments.fold<double>(0, (sum, p) => sum + p.amount),
     };
   }
 

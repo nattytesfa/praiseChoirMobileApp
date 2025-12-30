@@ -38,6 +38,39 @@ class _PaymentDashboardState extends State<PaymentDashboard> {
             },
             icon: const Icon(Icons.refresh),
           ),
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'delete_pending') {
+                _showDeleteConfirmation(context, includePaid: false);
+              } else if (value == 'delete_all') {
+                _showDeleteConfirmation(context, includePaid: true);
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                const PopupMenuItem<String>(
+                  value: 'delete_pending',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete_outline, color: Colors.orange),
+                      SizedBox(width: 8),
+                      Text('Delete Pending Payments'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'delete_all',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete_forever, color: Colors.red),
+                      SizedBox(width: 8),
+                      Text('Delete All Payments'),
+                    ],
+                  ),
+                ),
+              ];
+            },
+          ),
         ],
       ),
       body: BlocBuilder<PaymentCubit, PaymentState>(
@@ -165,6 +198,52 @@ class _PaymentDashboardState extends State<PaymentDashboard> {
         label: const Text('Generate Payments'),
       ),
     );
+  }
+
+  Future<void> _showDeleteConfirmation(
+    BuildContext context, {
+    required bool includePaid,
+  }) async {
+    final title = includePaid
+        ? 'Delete All Payments'
+        : 'Delete Pending Payments';
+    final content = includePaid
+        ? 'This will delete ALL payments (including PAID ones) for the current month. This action cannot be undone. Are you sure?'
+        : 'This will delete all PENDING payments for the current month. Paid payments will not be affected. Are you sure?';
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true && context.mounted) {
+      context.read<PaymentCubit>().deleteMonthlyPayments(
+        includePaid: includePaid,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            includePaid
+                ? 'Deleting all payments...'
+                : 'Deleting pending payments...',
+          ),
+        ),
+      );
+    }
   }
 
   Widget _buildNavigationCard(

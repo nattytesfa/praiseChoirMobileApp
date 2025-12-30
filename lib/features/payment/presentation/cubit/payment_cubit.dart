@@ -43,17 +43,57 @@ class PaymentCubit extends Cubit<PaymentState> {
     }
   }
 
-  void markPaymentAsPaid(String paymentId, String proofImagePath) async {
+  Future<void> markPaymentAsPaid(
+    String paymentId, {
+    String proofImagePath = 'proof_path',
+    double additionalFee = 0,
+    String? memberId,
+  }) async {
     try {
-      await paymentRepository.markPaymentAsPaid(paymentId, proofImagePath);
-      final payment = paymentRepository.getAllPayments().then(
-        (payments) => payments.firstWhere((p) => p.id == paymentId),
+      await paymentRepository.markPaymentAsPaid(
+        paymentId,
+        proofImagePath,
+        additionalFee: additionalFee,
       );
-      emit(PaymentMarkedAsPaid(await payment));
-      // Reload payments to update the list
-      loadAllPayments();
+
+      // Reload the relevant list to reflect the update.
+      if (memberId != null) {
+        loadMyPayments(memberId);
+      } else {
+        loadAllPayments();
+      }
     } catch (e) {
       emit(PaymentError('Failed to mark payment as paid'));
+    }
+  }
+
+  Future<void> updatePaymentProof(
+    String paymentId,
+    String proofImagePath, {
+    String? memberId,
+  }) async {
+    try {
+      await paymentRepository.updatePaymentProof(paymentId, proofImagePath);
+      if (memberId != null) {
+        loadMyPayments(memberId);
+      } else {
+        loadAllPayments();
+      }
+    } catch (e) {
+      emit(PaymentError('Failed to update payment proof'));
+    }
+  }
+
+  Future<void> removePaymentProof(String paymentId, {String? memberId}) async {
+    try {
+      await paymentRepository.removePaymentProof(paymentId);
+      if (memberId != null) {
+        loadMyPayments(memberId);
+      } else {
+        loadAllPayments();
+      }
+    } catch (e) {
+      emit(PaymentError('Failed to remove payment proof'));
     }
   }
 
@@ -79,6 +119,20 @@ class PaymentCubit extends Cubit<PaymentState> {
       loadAllPayments();
     } catch (e) {
       emit(PaymentError('Failed to create monthly payments'));
+    }
+  }
+
+  void deleteMonthlyPayments({bool includePaid = false}) async {
+    emit(PaymentLoading());
+    try {
+      final currentMonth = DateTime(DateTime.now().year, DateTime.now().month);
+      await paymentRepository.deletePaymentsForMonth(
+        currentMonth,
+        includePaid: includePaid,
+      );
+      loadAllPayments();
+    } catch (e) {
+      emit(PaymentError('Failed to delete monthly payments'));
     }
   }
 }

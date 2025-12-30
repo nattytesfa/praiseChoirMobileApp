@@ -25,6 +25,9 @@ class PaymentModel {
   @HiveField(6)
   final String? proofImagePath;
 
+  @HiveField(7)
+  final String? adminNote;
+
   PaymentModel({
     required this.id,
     required this.memberId,
@@ -33,6 +36,7 @@ class PaymentModel {
     this.paidDate,
     required this.status,
     this.proofImagePath,
+    this.adminNote,
   });
 
   Map<String, dynamic> toJson() {
@@ -44,6 +48,7 @@ class PaymentModel {
       'paidDate': paidDate?.toIso8601String(),
       'status': status.toString(),
       'proofImagePath': proofImagePath,
+      'adminNote': adminNote,
     };
   }
 
@@ -61,22 +66,29 @@ class PaymentModel {
         orElse: () => PaymentStatus.pending,
       ),
       proofImagePath: json['proofImagePath'],
+      adminNote: json['adminNote'],
     );
   }
 
   PaymentModel copyWith({
+    double? amount,
     DateTime? paidDate,
     PaymentStatus? status,
     String? proofImagePath,
+    bool clearProof = false,
+    String? adminNote,
   }) {
     return PaymentModel(
       id: id,
       memberId: memberId,
-      amount: amount,
+      amount: amount ?? this.amount,
       dueDate: dueDate,
       paidDate: paidDate ?? this.paidDate,
       status: status ?? this.status,
-      proofImagePath: proofImagePath ?? this.proofImagePath,
+      proofImagePath: clearProof
+          ? null
+          : (proofImagePath ?? this.proofImagePath),
+      adminNote: adminNote ?? this.adminNote,
     );
   }
 
