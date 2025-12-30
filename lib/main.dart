@@ -6,10 +6,7 @@ import 'package:praise_choir_app/features/auth/data/models/user_model.dart';
 import 'package:praise_choir_app/features/payment/data/models/payment_model.dart';
 import 'package:praise_choir_app/features/payment/data/models/payment_report_model.dart';
 import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
-import 'package:praise_choir_app/features/events/data/models/event_model.dart';
-import 'package:praise_choir_app/features/events/data/models/event_type.dart';
 import 'package:praise_choir_app/features/events/data/models/announcement_model.dart';
-import 'package:praise_choir_app/features/events/data/models/poll_model.dart';
 import 'package:praise_choir_app/firebase_options.dart';
 
 Future<void> main() async {
@@ -26,11 +23,7 @@ Future<void> main() async {
   Hive.registerAdapter(PaymentReportModelAdapter());
 
   // Event adapters
-  Hive.registerAdapter(EventModelAdapter());
-  Hive.registerAdapter(EventTypeAdapter());
   Hive.registerAdapter(AnnouncementModelAdapter());
-  Hive.registerAdapter(PollModelAdapter());
-  Hive.registerAdapter(PollOptionAdapter());
 
   await Hive.openBox('settings');
   await Hive.openBox<UserModel>('users');
@@ -39,9 +32,7 @@ Future<void> main() async {
   await Hive.openBox<PaymentModel>('payments');
 
   // Event boxes
-  await Hive.openBox<EventModel>('events');
   await Hive.openBox<AnnouncementModel>('announcements');
-  await Hive.openBox<PollModel>('polls');
 
   runApp(ChoirApp());
 }

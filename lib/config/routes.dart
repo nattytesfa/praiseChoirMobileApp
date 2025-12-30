@@ -9,7 +9,10 @@ import 'package:praise_choir_app/core/widgets/common/user_list_screen.dart';
 import 'package:praise_choir_app/features/admin/admin_routes.dart';
 import 'package:praise_choir_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:praise_choir_app/features/auth/presentation/screens/signup_screen.dart';
+import 'package:praise_choir_app/features/payment/payment_routes.dart';
 import 'package:praise_choir_app/features/songs/song_routes.dart';
+
+import '../features/events/event_routes.dart';
 
 class Routes {
   static const String splash = '/';
@@ -37,6 +40,12 @@ class Routes {
     }
     if (settings.name != null && settings.name!.startsWith('/song')) {
       return SongRoutes.onGenerateRoute(settings);
+    }
+    if (settings.name != null && settings.name!.startsWith('/payment')) {
+      return PaymentRoutes.generateRoute(settings);
+    }
+    if (settings.name != null && settings.name!.startsWith('/events')) {
+      return EventRoutes.generateRoute(settings);
     }
     switch (settings.name) {
       case splash:

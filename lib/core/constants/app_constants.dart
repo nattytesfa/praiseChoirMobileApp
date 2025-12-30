@@ -9,7 +9,7 @@ class AppConstants {
   // Role constants
   static const String roleLeader = 'admin';
   static const String roleUser = 'user';
-  static const String roleSongwriter = 'Songwriter';
+  static const String roleSongwriter = 'songwriter';
   static const String roleMember = 'member';
   static const String rolePrayerGroup = 'prayer_group';
   // Grouped role list for iterating in UI
@@ -26,7 +26,6 @@ class AppConstants {
   static const String languageKembatigna = 'kembatigna';
 
   // Song tags
-  static const String tagOld = 'old';
   static const String tagNew = 'new';
   static const String tagFavorite = 'favorite';
   static const String tagThisRound = 'this_round';

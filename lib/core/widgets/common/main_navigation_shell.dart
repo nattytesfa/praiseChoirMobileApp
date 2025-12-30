@@ -5,7 +5,7 @@ import 'package:praise_choir_app/core/widgets/common/home_screen.dart';
 import 'package:praise_choir_app/features/admin/presentation/screens/admin_dashboard.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
-import 'package:praise_choir_app/samples/announcement_screen.dart';
+import 'package:praise_choir_app/features/events/presentation/screens/announcement_board.dart';
 import 'package:praise_choir_app/samples/chat_screen.dart';
 
 class MainNavigationShell extends StatelessWidget {
@@ -35,8 +35,11 @@ class MainNavigationShell extends StatelessWidget {
           // TAB 2 & 3: HIDDEN FROM GUESTS
           if (role != 'guest') ...[
             PersistentTabConfig(
-              screen: const AnnouncementScreen(),
-              item: ItemConfig(icon: const Icon(Icons.campaign), title: "News"),
+              screen: const AnnouncementBoard(),
+              item: ItemConfig(
+                icon: const Icon(Icons.announcement),
+                title: "Announcements",
+              ),
             ),
             PersistentTabConfig(
               screen: const ChatScreen(),

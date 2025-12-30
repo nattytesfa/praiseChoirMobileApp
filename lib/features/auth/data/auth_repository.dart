@@ -33,6 +33,20 @@ class AuthRepository {
     }
   }
 
+  Future<UserModel?> getUser(String id) async {
+    await _ensureInitialized();
+    // Try Hive first
+    final user = _usersBox.get(id);
+    if (user != null) return user;
+
+    // Not found in Hive, try Firestore
+    try {
+      return await getFreshUserData(id);
+    } catch (e) {
+      return null;
+    }
+  }
+
   // Inside AuthRepository.dart
   Future<List<UserModel>> getAllUsers() async {
     try {

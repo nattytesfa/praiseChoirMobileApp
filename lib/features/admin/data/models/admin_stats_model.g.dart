@@ -33,7 +33,7 @@ class AdminStatsModelAdapter extends TypeAdapter<AdminStatsModel> {
   @override
   void write(BinaryWriter writer, AdminStatsModel obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.totalMembers)
       ..writeByte(1)
@@ -49,7 +49,11 @@ class AdminStatsModelAdapter extends TypeAdapter<AdminStatsModel> {
       ..writeByte(6)
       ..write(obj.upcomingEvents)
       ..writeByte(7)
-      ..write(obj.lastUpdated);
+      ..write(obj.lastUpdated)
+      ..writeByte(8)
+      ..write(obj.adminCount)
+      ..writeByte(9)
+      ..write(obj.lastSynced);
   }
 
   @override

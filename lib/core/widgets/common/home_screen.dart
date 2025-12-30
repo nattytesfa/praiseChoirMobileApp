@@ -243,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 }),
                 _drawerItem(Icons.payment, "Payment History", () {
                   Navigator.pop(context);
-                  Navigator.pushNamed(context, PaymentRoutes.history);
+                  Navigator.pushNamed(context, PaymentRoutes.userPaymentHistory);
                 }),
                 _drawerItem(Icons.settings_outlined, "Settings", () {}),
                 const Divider(),

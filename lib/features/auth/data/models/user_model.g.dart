@@ -22,15 +22,19 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       name: fields[2] as String,
       role: fields[3] as String,
       joinDate: fields[4] as DateTime,
-      isActive: fields[5] as bool,
+      isActive: fields[5] == null ? true : fields[5] as bool,
       profileImagePath: fields[6] as String?,
+      lastLogin: fields[7] as DateTime?,
+      emailVerified: fields[8] == null ? false : fields[8] as bool,
+      approvalStatus: fields[9] == null ? 'approved' : fields[9] as String,
+      adminMessage: fields[10] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +48,15 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       ..writeByte(5)
       ..write(obj.isActive)
       ..writeByte(6)
-      ..write(obj.profileImagePath);
+      ..write(obj.profileImagePath)
+      ..writeByte(7)
+      ..write(obj.lastLogin)
+      ..writeByte(8)
+      ..write(obj.emailVerified)
+      ..writeByte(9)
+      ..write(obj.approvalStatus)
+      ..writeByte(10)
+      ..write(obj.adminMessage);
   }
 
   @override

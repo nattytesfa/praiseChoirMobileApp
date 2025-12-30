@@ -22,7 +22,7 @@ class UserModel {
   @HiveField(4)
   final DateTime joinDate;
 
-  @HiveField(5)
+  @HiveField(5, defaultValue: true)
   final bool isActive;
 
   @HiveField(6)
@@ -31,10 +31,10 @@ class UserModel {
   @HiveField(7)
   final DateTime? lastLogin;
 
-  @HiveField(8)
+  @HiveField(8, defaultValue: false)
   final bool emailVerified;
 
-  @HiveField(9)
+  @HiveField(9, defaultValue: 'approved')
   final String approvalStatus; // 'pending', 'approved', 'denied'
   @HiveField(10)
   final String? adminMessage; // Message from leader if denied

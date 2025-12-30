@@ -52,7 +52,7 @@ class AppColors {
 
   // Language Colors
   static const Color amharic = Color(0xFFD97706); // Amber
-  static const Color kembatigna = Color(0xFF7C3AED); // Purple
+  static const Color kembatgna = Color(0xFF7C3AED); // Purple
   static const Color english = Color(0xFF2563EB); // Blue
 
   // Background Colors
@@ -149,7 +149,7 @@ class AppColors {
       case 'amharic':
         return amharic;
       case 'kembatigna':
-        return kembatigna;
+        return kembatgna;
       default:
         return english;
     }

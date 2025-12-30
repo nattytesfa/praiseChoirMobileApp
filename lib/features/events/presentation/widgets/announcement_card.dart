@@ -6,13 +6,23 @@ import '../../data/models/announcement_model.dart';
 class AnnouncementCard extends StatelessWidget {
   final AnnouncementModel announcement;
   final Function(String) onMarkAsRead;
+  final Function(AnnouncementModel)? onEdit;
+  final Function(String)? onDelete;
+  final Function(AnnouncementModel)? onViewReaders;
   final bool showMarkAsRead;
+  final bool isAdmin;
+  final String currentUserId;
 
   const AnnouncementCard({
     super.key,
     required this.announcement,
     required this.onMarkAsRead,
+    this.onEdit,
+    this.onDelete,
+    this.onViewReaders,
     this.showMarkAsRead = true,
+    this.isAdmin = false,
+    required this.currentUserId,
   });
 
   @override
@@ -29,7 +39,7 @@ class AnnouncementCard extends StatelessWidget {
             Row(
               children: [
                 if (announcement.isUrgent) ...[
-                  Icon(Icons.warning, color: Colors.red, size: 16),
+                  const Icon(Icons.warning, color: Colors.red, size: 16),
                   const SizedBox(width: 4),
                 ],
                 Expanded(
@@ -60,6 +70,60 @@ class AnnouncementCard extends StatelessWidget {
                     ),
                   ),
                 ],
+                if (isAdmin)
+                  PopupMenuButton<String>(
+                    icon: Icon(Icons.more_vert, color: _getTextColor()),
+                    onSelected: (value) {
+                      switch (value) {
+                        case 'edit':
+                          onEdit?.call(announcement);
+                          break;
+                        case 'delete':
+                          onDelete?.call(announcement.id);
+                          break;
+                        case 'readers':
+                          onViewReaders?.call(announcement);
+                          break;
+                      }
+                    },
+                    itemBuilder: (BuildContext context) {
+                      return [
+                        const PopupMenuItem(
+                          value: 'edit',
+                          child: Row(
+                            children: [
+                              Icon(Icons.edit, size: 20),
+                              SizedBox(width: 8),
+                              Text('Edit'),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete, color: Colors.red, size: 20),
+                              SizedBox(width: 8),
+                              Text(
+                                'Delete',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 'readers',
+                          child: Row(
+                            children: [
+                              Icon(Icons.visibility, size: 20),
+                              SizedBox(width: 8),
+                              Text('View Readers'),
+                            ],
+                          ),
+                        ),
+                      ];
+                    },
+                  ),
               ],
             ),
             const SizedBox(height: 8),
@@ -81,9 +145,7 @@ class AnnouncementCard extends StatelessWidget {
                   ),
                 ),
                 if (showMarkAsRead &&
-                    !announcement.readBy.contains(
-                      'current_user_id',
-                    )) // TODO: Get from auth
+                    !announcement.readBy.contains(currentUserId))
                   TextButton(
                     onPressed: () => onMarkAsRead(announcement.id),
                     child: Text(
