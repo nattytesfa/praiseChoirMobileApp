@@ -7,6 +7,7 @@ import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dar
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/chat/data/chat_repository.dart';
 import 'package:praise_choir_app/features/events/presentation/screens/announcement_board.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../features/chat/presentation/screens/chat_list_screen.dart';
 
 class MainNavigationShell extends StatefulWidget {
@@ -52,7 +53,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
             screen: const HomeScreen(), // Your existing HomeScreen code
             item: ItemConfig(
               icon: const Icon(Icons.music_note),
-              title: "Songs",
+              title: 'songs'.tr(),
             ),
           ),
 
@@ -62,7 +63,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
               screen: const AnnouncementBoard(),
               item: ItemConfig(
                 icon: const Icon(Icons.announcement),
-                title: "Announcements",
+                title: 'announcements'.tr(),
               ),
             ),
             PersistentTabConfig(
@@ -83,7 +84,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
                     );
                   },
                 ),
-                title: "Chat",
+                title: 'chat'.tr(),
               ),
             ),
           ],
@@ -94,7 +95,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
               screen: const AdminDashboard(),
               item: ItemConfig(
                 icon: const Icon(Icons.security),
-                title: "Admin",
+                title: 'admin'.tr(),
               ),
             ),
         ],

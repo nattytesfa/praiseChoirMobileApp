@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/config/routes.dart';
 import 'package:praise_choir_app/core/utils/validators.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
@@ -25,8 +26,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String? _errorMessage;
 
   final List<Map<String, String>> _roles = [
-    {'value': 'member', 'label': 'Member (Needs Leader Approval)'},
-    {'value': 'guest', 'label': 'Guest (View Songs Only)'},
+    {'value': 'member', 'label': 'roleMemberLabel'},
+    {'value': 'guest', 'label': 'roleGuestLabel'},
   ];
 
   @override
@@ -59,7 +60,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Account'),
+        title: Text('createAccount'.tr()),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: _navigateToLogin,
@@ -120,24 +121,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       onPressed: isLoading ? null : _signUp,
                       child: isLoading
                           ? const CircularProgressIndicator()
-                          : const Text('Sign Up'),
+                          : Text('signUp'.tr()),
                     ),
                     const SizedBox(height: 20),
                     const Icon(Icons.music_note, size: 80, color: Colors.blue),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Join Praise Choir',
-                      style: TextStyle(
+                    Text(
+                      'joinPraiseChoir'.tr(),
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Create your account to access choir features',
+                    Text(
+                      'createAccountSubtitle'.tr(),
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey),
+                      style: const TextStyle(color: Colors.grey),
                     ),
                     const SizedBox(height: 32),
 
@@ -168,17 +169,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     // Name field
                     TextFormField(
                       controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Full Name',
-                        prefixIcon: Icon(Icons.person),
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: 'fullName'.tr(),
+                        prefixIcon: const Icon(Icons.person),
+                        border: const OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
+                          return 'enterNameError'.tr();
                         }
                         if (value.length < 2) {
-                          return 'Name must be at least 2 characters';
+                          return 'nameLengthError'.tr();
                         }
                         return null;
                       },
@@ -188,11 +189,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     // Email field
                     TextFormField(
                       controller: _emailController,
-                      decoration: const InputDecoration(
-                        labelText: 'Email Address',
-                        prefixIcon: Icon(Icons.email),
-                        border: OutlineInputBorder(),
-                        hintText: 'example@domain.com',
+                      decoration: InputDecoration(
+                        labelText: 'emailAddress'.tr(),
+                        prefixIcon: const Icon(Icons.email),
+                        border: const OutlineInputBorder(),
+                        hintText: 'emailHint'.tr(),
                       ),
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
@@ -204,11 +205,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     // Password field
                     TextFormField(
                       controller: _passwordController,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        prefixIcon: Icon(Icons.lock),
-                        border: OutlineInputBorder(),
-                        hintText: 'At least 6 characters',
+                      decoration: InputDecoration(
+                        labelText: 'password'.tr(),
+                        prefixIcon: const Icon(Icons.lock),
+                        border: const OutlineInputBorder(),
+                        hintText: 'passwordHint'.tr(),
                       ),
                       obscureText: true,
                       validator: Validators.password,
@@ -218,15 +219,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     // Confirm password field
                     TextFormField(
                       controller: _confirmPasswordController,
-                      decoration: const InputDecoration(
-                        labelText: 'Confirm Password',
-                        prefixIcon: Icon(Icons.lock_outline),
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: 'confirmPassword'.tr(),
+                        prefixIcon: const Icon(Icons.lock_outline),
+                        border: const OutlineInputBorder(),
                       ),
                       obscureText: true,
                       validator: (value) {
                         if (value != _passwordController.text) {
-                          return 'Passwords do not match';
+                          return 'passwordsDoNotMatch'.tr();
                         }
                         return null;
                       },
@@ -234,14 +235,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     const SizedBox(height: 24),
 
                     // Role selection
-                    const Text(
-                      'Select Your Role',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    Text(
+                      'selectRole'.tr(),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Leaders will verify and may assign different roles',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    Text(
+                      'roleDisclaimer'.tr(),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
@@ -253,7 +254,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       items: _roles.map((role) {
                         return DropdownMenuItem<String>(
                           value: role['value'],
-                          child: Text(role['label']!),
+                          child: Text(role['label']!.tr()),
                         );
                       }).toList(),
                       onChanged: (value) {
@@ -262,18 +263,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         });
                         if (value == 'member') {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Note: Members require leader approval after sign up.',
-                              ),
-                            ),
+                            SnackBar(content: Text('memberApprovalNote'.tr())),
                           );
                         }
                       },
 
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please select a role';
+                          return 'selectRoleError'.tr();
                         }
                         return null;
                       },
@@ -294,9 +291,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               strokeWidth: 2,
                               color: Colors.white,
                             )
-                          : const Text(
-                              'Create Account',
-                              style: TextStyle(fontSize: 16),
+                          : Text(
+                              'createAccount'.tr(),
+                              style: const TextStyle(fontSize: 16),
                             ),
                     ),
                     const SizedBox(height: 24),
@@ -308,7 +305,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
-                            'Already have an account?',
+                            'alreadyHaveAccount'.tr(),
                             style: TextStyle(color: Colors.grey[600]),
                           ),
                         ),
@@ -326,7 +323,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text('Sign In Instead'),
+                      child: Text('signInInstead'.tr()),
                     ),
                   ],
                 ),

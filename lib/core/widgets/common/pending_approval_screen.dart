@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 
@@ -28,7 +29,7 @@ class PendingApprovalScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  isDenied ? "Access Denied" : "Pending Approval",
+                  isDenied ? "accessDenied".tr() : "pendingApproval".tr(),
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -37,20 +38,22 @@ class PendingApprovalScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(
                   isDenied
-                      ? "Reason: ${user?.adminMessage}. Please contact leaders for details."
-                      : "A leader needs to verify your account before you can access choir tools.",
+                      ? "accessDeniedReason".tr(
+                          namedArgs: {'reason': user?.adminMessage ?? ''},
+                        )
+                      : "pendingApprovalMsg".tr(),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: () => context.read<AuthCubit>().logout(context),
-                  child: const Text("Return to login"),
+                  child: Text("returnToLogin".tr()),
                 ),
                 ElevatedButton.icon(
                   onPressed: () =>
                       context.read<AuthCubit>().refreshUserStatus(),
                   icon: const Icon(Icons.refresh),
-                  label: const Text("Check if Approved"),
+                  label: Text("checkIfApproved".tr()),
                 ),
               ],
             ),

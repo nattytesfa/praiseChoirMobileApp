@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
 import 'package:praise_choir_app/core/widgets/common/custom_text_field.dart';
@@ -83,7 +84,7 @@ class _EditSongScreenState extends State<EditSongScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Tags', style: AppTextStyles.inputLabel),
+        Text('tags'.tr(), style: AppTextStyles.inputLabel),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,

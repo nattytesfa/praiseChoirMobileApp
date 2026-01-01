@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide DateUtils;
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
 import 'package:praise_choir_app/core/utils/date_utils.dart';
@@ -16,39 +17,42 @@ class SongInfo extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoSection('General Info', [
-            _buildInfoRow('Song Number', song.songNumber ?? '-'),
-            _buildInfoRow('Title', song.title),
-            _buildInfoRow('Song Writer', song.writer ?? 'Unknown'),
-            _buildInfoRow('Language', song.language),
-            _buildInfoRow('Added By', song.addedBy),
-            _buildInfoRow('Date Added', DateUtils.formatDate(song.dateAdded)),
+          _buildInfoSection('generalInforamation'.tr(), [
+            _buildInfoRow('songNumber'.tr(), song.songNumber ?? '-'),
+            _buildInfoRow('title'.tr(), song.title),
+            _buildInfoRow('songWriter'.tr(), song.writer ?? 'unknown'.tr()),
+            _buildInfoRow('language'.tr(), song.language),
+            _buildInfoRow('addedBy'.tr(), song.addedBy),
+            _buildInfoRow(
+              'dateAdded'.tr(),
+              DateUtils.formatDate(song.dateAdded),
+            ),
           ]),
           const SizedBox(height: 24),
-          _buildInfoSection('Statistics', [
-            _buildInfoRow('Likes', song.likeCount.toString()),
+          _buildInfoSection('statistics'.tr(), [
+            _buildInfoRow('likes'.tr(), song.likeCount.toString()),
             _buildInfoRow(
-              'Performance Count',
+              'performanceCount'.tr(),
               song.performanceCount.toString(),
             ),
             _buildInfoRow(
-              'Last Performed',
+              'lastPerformed'.tr(),
               song.lastPerformed != null
                   ? DateUtils.formatDate(song.lastPerformed!)
-                  : 'Never',
+                  : 'never'.tr(),
             ),
             _buildInfoRow(
-              'Last Practiced',
+              'lastPracticed'.tr(),
               song.lastPracticed != null
                   ? DateUtils.formatDate(song.lastPracticed!)
-                  : 'Never',
+                  : 'never'.tr(),
             ),
-            _buildInfoRow('Times Practiced', song.practiceCount.toString()),
+            _buildInfoRow('timesPracticed'.tr(), song.practiceCount.toString()),
           ]),
           const SizedBox(height: 24),
           if (song.tags.isNotEmpty) ...[
             Text(
-              'Tags',
+              'tags'.tr(),
               style: AppTextStyles.bodyLarge.copyWith(
                 fontWeight: FontWeight.bold,
               ),

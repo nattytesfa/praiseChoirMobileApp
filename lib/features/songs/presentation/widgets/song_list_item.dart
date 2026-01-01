@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart' hide DateUtils;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -102,40 +102,24 @@ class SongListItem extends StatelessWidget {
   }
 
   Future<void> _confirmDelete(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
+    await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Song'),
-        content: const Text('Are you sure you want to delete this song?'),
+        title: Text('deleteSong'.tr()),
+        content: Text('areYouSureYouWantToDeleteThisSong?'.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr()),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Delete'),
+            child: Text('delete'.tr()),
           ),
         ],
       ),
     );
-
-    if (confirmed == true) {
-      if (kDebugMode) {
-        print('SongListItem: Delete confirmed by user');
-      }
-      if (onDelete != null) {
-        if (kDebugMode) {
-          print('SongListItem: Calling onDelete callback');
-        }
-        onDelete?.call();
-      } else {
-        if (kDebugMode) {
-          print('SongListItem: onDelete callback is NULL');
-        }
-      }
-    }
   }
 
   void _openSongDetail(BuildContext context) {
@@ -164,21 +148,21 @@ class SongListItem extends StatelessWidget {
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                         icon: Icons.delete,
-                        label: 'Delete',
+                        label: 'delete'.tr(),
                       ),
                       SlidableAction(
                         onPressed: _openSongDetail,
                         backgroundColor: Colors.blueAccent,
                         foregroundColor: Colors.white,
                         icon: Icons.details,
-                        label: 'Song Detail',
+                        label: 'songDetail'.tr(),
                       ),
                       SlidableAction(
                         onPressed: (_) => onPerformed(),
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
                         icon: Icons.share_rounded,
-                        label: 'Share',
+                        label: 'share'.tr(),
                       ),
                     ],
                   )
@@ -190,14 +174,14 @@ class SongListItem extends StatelessWidget {
                         backgroundColor: Colors.blueAccent,
                         foregroundColor: Colors.white,
                         icon: Icons.details,
-                        label: 'Song Detail',
+                        label: 'songDetail'.tr(),
                       ),
                       SlidableAction(
                         onPressed: (_) => onPerformed(),
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
                         icon: Icons.share_rounded,
-                        label: 'Share',
+                        label: 'share'.tr(),
                       ),
                     ],
                   ),
@@ -223,10 +207,10 @@ class SongListItem extends StatelessWidget {
               ),
               trailing: IconButton(
                 icon: Icon(
-                  song.tags.contains('favorite')
+                  song.tags.contains('favorite'.tr())
                       ? Icons.favorite
                       : Icons.favorite_border,
-                  color: song.tags.contains('favorite')
+                  color: song.tags.contains('favorite'.tr())
                       ? AppColors.error
                       : Colors.grey,
                 ),

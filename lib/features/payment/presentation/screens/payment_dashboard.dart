@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
 import 'package:praise_choir_app/features/auth/data/auth_repository.dart';
@@ -28,7 +29,7 @@ class _PaymentDashboardState extends State<PaymentDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Payment Dashboard'),
+        title: Text('paymentDashboard'.tr()),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         actions: [
@@ -48,23 +49,23 @@ class _PaymentDashboardState extends State<PaymentDashboard> {
             },
             itemBuilder: (BuildContext context) {
               return [
-                const PopupMenuItem<String>(
+                PopupMenuItem<String>(
                   value: 'delete_pending',
                   child: Row(
                     children: [
-                      Icon(Icons.delete_outline, color: Colors.orange),
-                      SizedBox(width: 8),
-                      Text('Delete Pending Payments'),
+                      const Icon(Icons.delete_outline, color: Colors.orange),
+                      const SizedBox(width: 8),
+                      Text('deletePendingPayments'.tr()),
                     ],
                   ),
                 ),
-                const PopupMenuItem<String>(
+                PopupMenuItem<String>(
                   value: 'delete_all',
                   child: Row(
                     children: [
-                      Icon(Icons.delete_forever, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text('Delete All Payments'),
+                      const Icon(Icons.delete_forever, color: Colors.red),
+                      const SizedBox(width: 8),
+                      Text('deleteAllPayments'.tr()),
                     ],
                   ),
                 ),
@@ -89,7 +90,7 @@ class _PaymentDashboardState extends State<PaymentDashboard> {
                   ElevatedButton(
                     onPressed: () =>
                         context.read<PaymentCubit>().loadAllPayments(),
-                    child: const Text('Retry'),
+                    child: Text('retry'.tr()),
                   ),
                 ],
               ),
@@ -106,8 +107,8 @@ class _PaymentDashboardState extends State<PaymentDashboard> {
                   const SizedBox(height: 16),
                   _buildNavigationCard(
                     context,
-                    title: 'Payment History',
-                    subtitle: 'View all payment records',
+                    title: 'paymentHistory'.tr(),
+                    subtitle: 'viewPaymentRecords'.tr(),
                     icon: Icons.history,
                     color: Colors.blue,
                     onTap: () => Navigator.pushNamed(
@@ -118,8 +119,8 @@ class _PaymentDashboardState extends State<PaymentDashboard> {
                   const SizedBox(height: 12),
                   _buildNavigationCard(
                     context,
-                    title: 'Payment Reports',
-                    subtitle: 'View financial analytics',
+                    title: 'paymentReports'.tr(),
+                    subtitle: 'viewFinancialAnalytics'.tr(),
                     icon: Icons.bar_chart,
                     color: Colors.purple,
                     onTap: () {
@@ -162,18 +163,16 @@ class _PaymentDashboardState extends State<PaymentDashboard> {
           final confirm = await showDialog<bool>(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Generate Monthly Payments'),
-              content: const Text(
-                'This will generate payment records for all active members for the current month. Continue?',
-              ),
+              title: Text('generateMonthlyPayments'.tr()),
+              content: Text('generatePaymentsConfirm'.tr()),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Cancel'),
+                  child: Text('cancel'.tr()),
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context, true),
-                  child: const Text('Generate'),
+                  child: Text('generate'.tr()),
                 ),
               ],
             ),
@@ -188,14 +187,14 @@ class _PaymentDashboardState extends State<PaymentDashboard> {
 
           final memberIds = users.map((u) => u.id).toList();
           paymentCubit.createMonthlyPayments(memberIds);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Generating payments...')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('generatingPayments'.tr())));
         },
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
-        label: const Text('Generate Payments'),
+        label: Text('generatePayments'.tr()),
       ),
     );
   }
@@ -205,11 +204,11 @@ class _PaymentDashboardState extends State<PaymentDashboard> {
     required bool includePaid,
   }) async {
     final title = includePaid
-        ? 'Delete All Payments'
-        : 'Delete Pending Payments';
+        ? 'deleteAllPayments'.tr()
+        : 'deletePendingPayments'.tr();
     final content = includePaid
-        ? 'This will delete ALL payments (including PAID ones) for the current month. This action cannot be undone. Are you sure?'
-        : 'This will delete all PENDING payments for the current month. Paid payments will not be affected. Are you sure?';
+        ? 'deleteAllPaymentsConfirm'.tr()
+        : 'deletePendingPaymentsConfirm'.tr();
 
     final confirm = await showDialog<bool>(
       context: context,
@@ -219,12 +218,12 @@ class _PaymentDashboardState extends State<PaymentDashboard> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr()),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text('delete'.tr()),
           ),
         ],
       ),
@@ -238,8 +237,8 @@ class _PaymentDashboardState extends State<PaymentDashboard> {
         SnackBar(
           content: Text(
             includePaid
-                ? 'Deleting all payments...'
-                : 'Deleting pending payments...',
+                ? 'deletingAllPayments'.tr()
+                : 'deletingPendingPayments'.tr(),
           ),
         ),
       );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/core/constants/app_constants.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
@@ -20,7 +21,7 @@ class AnnouncementBoard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Announcements'),
+        title: Text('announcements'.tr()),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -39,7 +40,7 @@ class AnnouncementBoard extends StatelessWidget {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => context.read<EventCubit>().loadEvents(),
-                    child: const Text('Retry'),
+                    child: Text('retry'.tr()),
                   ),
                 ],
               ),
@@ -50,10 +51,10 @@ class AnnouncementBoard extends StatelessWidget {
             final announcements = state.announcements;
 
             if (announcements.isEmpty) {
-              return const EmptyState(
+              return EmptyState(
                 icon: Icons.announcement,
-                title: 'No Announcements',
-                message: 'There are no announcements at the moment.',
+                title: 'noAnnouncements'.tr(),
+                message: 'noAnnouncementsMsg'.tr(),
               );
             }
 
@@ -101,14 +102,14 @@ class AnnouncementBoard extends StatelessWidget {
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
-                            title: const Text('Delete Announcement'),
-                            content: const Text(
-                              'Are you sure you want to delete this announcement?',
+                            title:  Text('deleteAnnouncement'.tr()),
+                            content:  Text(
+                              'areYouSureYouWantToDeleteThisAnnouncement?'.tr(),
                             ),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
-                                child: const Text('Cancel'),
+                                child:  Text('cancel'.tr()),
                               ),
                               TextButton(
                                 onPressed: () {
@@ -117,8 +118,8 @@ class AnnouncementBoard extends StatelessWidget {
                                     announcementId,
                                   );
                                 },
-                                child: const Text(
-                                  'Delete',
+                                child:  Text(
+                                  'delete'.tr(),
                                   style: TextStyle(color: Colors.red),
                                 ),
                               ),
@@ -130,11 +131,11 @@ class AnnouncementBoard extends StatelessWidget {
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
-                            title: const Text('Read By'),
+                            title:  Text('readBy'.tr()),
                             content: SizedBox(
                               width: double.maxFinite,
                               child: announcement.readBy.isEmpty
-                                  ? const Text('No one has read this yet.')
+                                  ?  Text('noOneHasReadThisYet.'.tr())
                                   : ListView.builder(
                                       shrinkWrap: true,
                                       itemCount: announcement.readBy.length,
@@ -148,7 +149,7 @@ class AnnouncementBoard extends StatelessWidget {
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
-                                child: const Text('Close'),
+                                child:  Text('close'.tr()),
                               ),
                             ],
                           ),

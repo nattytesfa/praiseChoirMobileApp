@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:praise_choir_app/core/constants/app_constants.dart';
@@ -43,7 +44,7 @@ class _ApproveAccessScreenState extends State<ApproveAccessScreen> {
       // await _userRepo.createUser(user);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User added (saved to Firestore)')),
+         SnackBar(content: Text('userAdded'.tr())),
       );
       _emailCtrl.clear();
       _nameCtrl.clear();
@@ -52,7 +53,7 @@ class _ApproveAccessScreenState extends State<ApproveAccessScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Failed to add user: $e')));
+      ).showSnackBar(SnackBar(content: Text('failedToAddUser: $e'.tr())));
     }
   }
 
@@ -68,14 +69,14 @@ class _ApproveAccessScreenState extends State<ApproveAccessScreen> {
       // await _userRepo.deleteUser(id);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User removed (deleted from Firestore)')),
-      );
+         SnackBar(content: Text('userRemoved'.tr()),
+      ));
       setState(() {});
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Failed to delete user: $e')));
+      ).showSnackBar(SnackBar(content: Text('failedToDeleteUser: $e'.tr())));
     }
   }
 
@@ -83,7 +84,7 @@ class _ApproveAccessScreenState extends State<ApproveAccessScreen> {
   Widget build(BuildContext context) {
     final users = _userBox.values.toList().cast<UserModel>();
     return Scaffold(
-      appBar: AppBar(title: const Text('Approve Access')),
+      appBar: AppBar(title:  Text('approveAccess'.tr())),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -95,21 +96,21 @@ class _ApproveAccessScreenState extends State<ApproveAccessScreen> {
                   TextFormField(
                     controller: _emailCtrl,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(labelText: 'Email'),
+                    decoration:  InputDecoration(labelText: 'email'.tr()),
                     validator: (v) {
-                      if (v == null || v.trim().isEmpty) return 'Enter email';
+                      if (v == null || v.trim().isEmpty) return 'enterEmail'.tr();
                       final email = v.trim();
                       final emailRegex = RegExp(r"^[^@\s]+@[^@\s]+\.[^@\s]+$");
                       if (!emailRegex.hasMatch(email)) {
-                        return 'Enter valid email';
+                        return 'enterValidEmail'.tr();
                       }
                       return null;
                     },
                   ),
                   TextFormField(
                     controller: _nameCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Name (optional)',
+                    decoration:  InputDecoration(
+                      labelText: 'name(Optional)'.tr(),
                     ),
                   ),
                   DropdownButtonFormField<String>(
@@ -119,7 +120,7 @@ class _ApproveAccessScreenState extends State<ApproveAccessScreen> {
                         .toList(),
                     onChanged: (v) =>
                         setState(() => _role = v ?? AppConstants.roleMember),
-                    decoration: const InputDecoration(labelText: 'Role'),
+                    decoration:  InputDecoration(labelText: 'role'.tr()),
                   ),
                   const SizedBox(height: 12),
                   Row(
@@ -127,7 +128,7 @@ class _ApproveAccessScreenState extends State<ApproveAccessScreen> {
                       ElevatedButton.icon(
                         onPressed: _addUser,
                         icon: const Icon(Icons.check),
-                        label: const Text('Approve / Add'),
+                        label:  Text('approveOrAdd'.tr()),
                       ),
                       const SizedBox(width: 8),
                       ElevatedButton.icon(
@@ -136,7 +137,7 @@ class _ApproveAccessScreenState extends State<ApproveAccessScreen> {
                           _nameCtrl.clear();
                         },
                         icon: const Icon(Icons.clear),
-                        label: const Text('Clear'),
+                        label:  Text('clear'.tr()),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.grey,
                         ),
@@ -149,14 +150,14 @@ class _ApproveAccessScreenState extends State<ApproveAccessScreen> {
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 8),
-            const Text(
-              'Authorized users',
+             Text(
+              'authorizedUsers'.tr(),
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Expanded(
               child: users.isEmpty
-                  ? const Center(child: Text('No authorized users yet'))
+                  ?  Center(child: Text('noAuthorizedUsersYet'.tr()))
                   : ListView.builder(
                       itemCount: users.length,
                       itemBuilder: (context, i) {

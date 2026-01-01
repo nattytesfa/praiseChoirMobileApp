@@ -1,6 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:praise_choir_app/features/admin/presentation/cubit/admin_cubit.dart';
 import 'package:praise_choir_app/features/admin/presentation/cubit/admin_state.dart';
 
@@ -21,50 +21,52 @@ class SystemHealth extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'System Health',
+                Text(
+                  'systemHealth'.tr(),
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 // Inside SystemHealth Column
                 if (stats != null)
                   Text(
-                    'Last Synced: ${DateFormat('hh:mm a').format(stats.lastSynced)}',
+                    'lastSynced: ${DateFormat('hh:mm a').format(stats.lastSynced)}'
+                        .tr(),
                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
 
                 const SizedBox(height: 12),
                 if (state is SystemHealthChecked) ...[
                   _buildHealthItem(
-                    'Users Database',
+                    'usersDatabase'.tr(),
                     state.healthStatus['users_box'],
                   ),
                   _buildHealthItem(
-                    'Songs Database',
+                    'songsDatabase'.tr(),
                     state.healthStatus['songs_box'],
                   ),
                   _buildHealthItem(
-                    'Payments Database',
+                    'paymentsDatabase'.tr(),
                     state.healthStatus['payments_box'],
                   ),
                   _buildHealthItem(
-                    'No Duplicate Users',
+                    'noDuplicateUsers'.tr(),
                     !state.healthStatus['duplicate_users'],
                   ),
                   _buildHealthItem(
-                    'Storage Healthy',
+                    'storageHealthy'.tr(),
                     state.healthStatus['storage_healthy'],
                   ),
 
                   const SizedBox(height: 16),
-                  Text('Total Users: ${state.healthStatus['total_users']}'),
-                  Text('Total Songs: ${state.healthStatus['total_songs']}'),
+                  Text('totalUsers: ${state.healthStatus['total_users']}'.tr()),
+                  Text('totalSongs: ${state.healthStatus['total_songs']}'.tr()),
                   Text(
-                    'Total Payments: ${state.healthStatus['total_payments']}',
+                    'totalPayments: ${state.healthStatus['total_payments']}'
+                        .tr(),
                   ),
                 ] else if (state is AdminLoading) ...[
                   const Center(child: CircularProgressIndicator()),
                 ] else ...[
-                  const Text('Click "Check Health" to see system status'),
+                  Text('click"checkHealth"ToSeeSystemStatus').tr(),
                 ],
                 const SizedBox(height: 16),
                 Row(
@@ -73,7 +75,7 @@ class SystemHealth extends StatelessWidget {
                       child: ElevatedButton.icon(
                         onPressed: onHealthCheck,
                         icon: const Icon(Icons.health_and_safety),
-                        label: const Text('Check Health'),
+                        label: Text('checkHealth'.tr()),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -81,7 +83,7 @@ class SystemHealth extends StatelessWidget {
                       child: ElevatedButton.icon(
                         onPressed: onCleanup,
                         icon: const Icon(Icons.cleaning_services),
-                        label: const Text('Cleanup Data'),
+                        label: Text('cleanupData'.tr()),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.redAccent,
                         ),

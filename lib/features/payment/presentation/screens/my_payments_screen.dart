@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/core/widgets/common/empty_state.dart';
 import 'package:praise_choir_app/core/widgets/common/loading_indicator.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
@@ -41,20 +42,18 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
     final source = await showDialog<ImageSource>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Payment Proof'),
-        content: const Text(
-          'Please upload a screenshot or photo of your payment receipt.',
-        ),
+        title: Text('paymentProof'.tr()),
+        content: Text('uploadProof'.tr()),
         actions: [
           TextButton.icon(
             onPressed: () => Navigator.pop(context, ImageSource.camera),
             icon: const Icon(Icons.camera_alt),
-            label: const Text('Camera'),
+            label: Text('camera'.tr()),
           ),
           TextButton.icon(
             onPressed: () => Navigator.pop(context, ImageSource.gallery),
             icon: const Icon(Icons.photo_library),
-            label: const Text('Gallery'),
+            label: Text('gallery'.tr()),
           ),
         ],
       ),
@@ -70,7 +69,7 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
 
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Processing payment...')));
+    ).showSnackBar(SnackBar(content: Text('processingPayment'.tr())));
 
     final authState = context.read<AuthCubit>().state;
     final memberId = authState is AuthAuthenticated ? authState.user.id : null;
@@ -88,18 +87,18 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
     final source = await showDialog<ImageSource>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Update Payment Proof'),
-        content: const Text('Choose image source'),
+        title: Text('updatePaymentProof'.tr()),
+        content: Text('chooseImageSource'.tr()),
         actions: [
           TextButton.icon(
             onPressed: () => Navigator.pop(context, ImageSource.camera),
             icon: const Icon(Icons.camera_alt),
-            label: const Text('Camera'),
+            label: Text('camera'.tr()),
           ),
           TextButton.icon(
             onPressed: () => Navigator.pop(context, ImageSource.gallery),
             icon: const Icon(Icons.photo_library),
-            label: const Text('Gallery'),
+            label: Text('gallery'.tr()),
           ),
         ],
       ),
@@ -114,7 +113,7 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
 
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Updating proof...')));
+    ).showSnackBar(SnackBar(content: Text('updatingProof'.tr())));
 
     final authState = context.read<AuthCubit>().state;
     final memberId = authState is AuthAuthenticated ? authState.user.id : null;
@@ -130,7 +129,7 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Payment Proof'),
+        title: Text('paymentProof'.tr()),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -139,10 +138,7 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
             else ...[
               const Icon(Icons.receipt_long, size: 64, color: Colors.grey),
               const SizedBox(height: 16),
-              const Text(
-                'This is a placeholder for the payment proof image.',
-                textAlign: TextAlign.center,
-              ),
+              Text('proofPlaceholder'.tr(), textAlign: TextAlign.center),
             ],
           ],
         ),
@@ -152,11 +148,11 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
               Navigator.pop(context);
               _editPaymentProof(paymentId);
             },
-            child: const Text('Edit'),
+            child: Text('edit'.tr()),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text('close'.tr()),
           ),
         ],
       ),
@@ -166,11 +162,11 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
   String _getStatusText(PaymentStatus status) {
     switch (status) {
       case PaymentStatus.paid:
-        return 'Paid';
+        return 'paid'.tr();
       case PaymentStatus.pending:
-        return 'Pending';
+        return 'pending'.tr();
       case PaymentStatus.overdue:
-        return 'Overdue';
+        return 'overdue'.tr();
     }
   }
 
@@ -188,7 +184,7 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('My Payments')),
+      appBar: AppBar(title: Text('myPayments'.tr())),
       body: BlocConsumer<PaymentCubit, PaymentState>(
         listener: (context, state) {
           if (state is PaymentError) {
@@ -206,8 +202,8 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
             final payments = state.payments;
 
             if (payments.isEmpty) {
-              return const EmptyState(
-                message: 'No payment records found',
+              return EmptyState(
+                message: 'noPaymentRecords'.tr(),
                 icon: Icons.payment,
                 title: '',
               );
@@ -234,17 +230,20 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
                   onViewProof: _showPaymentProof,
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'Payment History',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  'paymentHistory'.tr(),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 ...payments.map((payment) => _buildPaymentItem(payment)),
               ],
             );
           }
-          return const EmptyState(
-            message: 'No payment data available',
+          return EmptyState(
+            message: 'noPaymentData'.tr(),
             icon: Icons.payment,
             title: '',
           );
@@ -295,12 +294,12 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Due: ${_formatDate(payment.dueDate)}',
+                        '${'due'.tr()}: ${_formatDate(payment.dueDate)}',
                         style: AppTextStyles.caption,
                       ),
                       if (payment.paidDate != null)
                         Text(
-                          'Paid: ${_formatDate(payment.paidDate!)}',
+                          '${'paid'.tr()}: ${_formatDate(payment.paidDate!)}',
                           style: AppTextStyles.caption,
                         ),
                     ],
@@ -318,8 +317,10 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
             if (payment.status != PaymentStatus.paid) ...[
               Text(
                 payment.status == PaymentStatus.overdue
-                    ? 'Includes ETB 5.00 overdue fee. Total: ETB ${totalDue.toStringAsFixed(2)}'
-                    : 'Total: ETB ${totalDue.toStringAsFixed(2)}',
+                    ? 'overdueFeeMessage'.tr(
+                        args: [totalDue.toStringAsFixed(2)],
+                      )
+                    : 'totalAmount'.tr(args: [totalDue.toStringAsFixed(2)]),
                 style: const TextStyle(fontSize: 12, color: Colors.red),
               ),
               const SizedBox(height: 8),
@@ -333,7 +334,7 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
                         : AppColors.primary,
                   ),
                   child: Text(
-                    'Pay ETB ${totalDue.toStringAsFixed(2)}',
+                    'payAmount'.tr(args: [totalDue.toStringAsFixed(2)]),
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
@@ -347,7 +348,7 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
                   onPressed: () =>
                       _showPaymentProof(payment.proofImagePath!, payment.id),
                   icon: const Icon(Icons.receipt),
-                  label: const Text('View Proof'),
+                  label: Text('viewProof'.tr()),
                   style: TextButton.styleFrom(
                     foregroundColor: AppColors.primary,
                   ),

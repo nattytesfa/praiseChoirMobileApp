@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
@@ -164,7 +165,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('${speed}x Speed'),
+                      Text('${speed}xspeed'.tr()),
                       if (speed == state.playbackSpeed)
                         const Icon(Icons.check, size: 16),
                     ],
@@ -200,7 +201,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Volume'),
+        title:  Text('volume'.tr()),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -216,7 +217,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child:  Text('close'.tr()),
           ),
         ],
       ),
@@ -229,7 +230,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
       children: [
         const Icon(Icons.error_outline, size: 64, color: AppColors.error),
         const SizedBox(height: 16),
-        Text('Audio Error', style: AppTextStyles.headlineSmall),
+        Text('audioError'.tr(), style: AppTextStyles.headlineSmall),
         const SizedBox(height: 8),
         Text(
           message,
@@ -244,7 +245,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
               widget.title,
             );
           },
-          child: const Text('Retry'),
+          child:  Text('retry'.tr()),
         ),
       ],
     );
@@ -256,7 +257,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
       children: [
         const CircularProgressIndicator(),
         const SizedBox(height: 16),
-        Text('Loading Audio...', style: AppTextStyles.bodyMedium),
+        Text('loadingAudio...'.tr(), style: AppTextStyles.bodyMedium),
       ],
     );
   }
@@ -287,7 +288,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          Text('Audio Player', style: AppTextStyles.caption),
+                          Text('audioPlayer'.tr(), style: AppTextStyles.caption),
                         ],
                       ),
                     ),

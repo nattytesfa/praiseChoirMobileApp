@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/core/widgets/common/empty_state.dart';
@@ -13,7 +14,7 @@ class FavoritesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Favorites')),
+      appBar: AppBar(title: Text('favorites'.tr())),
       body: BlocBuilder<SongCubit, SongState>(
         builder: (context, state) {
           if (state is SongLoading) {
@@ -24,10 +25,10 @@ class FavoritesScreen extends StatelessWidget {
                 .toList();
 
             if (favoriteSongs.isEmpty) {
-              return const EmptyState(
-                message: 'No favorite songs yet',
+              return EmptyState(
+                message: 'noFavoriteSongsYet'.tr(),
                 icon: Icons.favorite_border,
-                title: 'Favorites',
+                title: 'favorites'.tr(),
               );
             }
 

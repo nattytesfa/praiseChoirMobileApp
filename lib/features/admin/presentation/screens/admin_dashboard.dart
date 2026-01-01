@@ -8,6 +8,7 @@ import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dar
 import 'package:praise_choir_app/features/payment/payment_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 
 import '../cubit/admin_cubit.dart';
@@ -47,12 +48,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Leader Dashboard'),
+        title: Text('leaderDashboard'.tr()),
         actions: [
           IconButton(icon: const Icon(Icons.refresh), onPressed: _loadStats),
           IconButton(
             icon: const Icon(Icons.how_to_reg),
-            tooltip: 'Approvals',
+            tooltip: 'approvals'.tr(),
             onPressed: () => Navigator.pushNamed(context, '/admin/approvals'),
           ),
         ],
@@ -80,7 +81,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
             );
           }
-          return const Center(child: Text('Initializing Dashboard...'));
+          return Center(child: Text('initializingDashboard'.tr()));
         },
       ),
     );
@@ -99,9 +100,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
           _buildRequestTile(context, pendingCount),
           const SizedBox(height: 24),
 
-          const Text(
-            "Performance Overview",
-            style: TextStyle(
+          Text(
+            "performanceOverview".tr(),
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.blueGrey,
@@ -114,7 +115,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             children: [
               Expanded(
                 child: _buildStatCard(
-                  "Members",
+                  "members".tr(),
                   state.stats.totalMembers.toString(),
                   Icons.people,
                   Colors.blue,
@@ -123,7 +124,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildStatCard(
-                  "Leaders",
+                  "leaders".tr(),
                   state.stats.adminCount.toString(),
                   Icons.shield,
                   Colors.purple,
@@ -132,7 +133,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildStatCard(
-                  "Active",
+                  "active".tr(),
                   state.stats.activeMembers.toString(),
                   Icons.bolt,
                   Colors.green,
@@ -141,9 +142,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
-            "Songs Overview",
-            style: TextStyle(
+          Text(
+            "songsOverview".tr(),
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.blueGrey,
@@ -155,7 +156,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             children: [
               Expanded(
                 child: _buildStatCard(
-                  "Total Songs",
+                  "totalSongs".tr(),
                   state.stats.totalSongs.toString(),
                   Icons.music_note,
                   Colors.deepOrange,
@@ -164,7 +165,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildStatCard(
-                  "With Audio",
+                  "withAudio".tr(),
                   state.stats.songsWithAudio.toString(),
                   Icons.audio_file,
                   Colors.teal,
@@ -177,7 +178,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             children: [
               Expanded(
                 child: _buildStatCard(
-                  "Amharic",
+                  "amharic".tr(),
                   state.amharicSongsCount.toString(),
                   Icons.language,
                   Colors.brown,
@@ -186,7 +187,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildStatCard(
-                  "Kembatgna",
+                  "kembatgna".tr(),
                   state.kembatgnaSongsCount.toString(),
                   Icons.language,
                   Colors.indigo,
@@ -197,9 +198,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
           const SizedBox(height: 24),
 
-          const Text(
-            "Management Categories",
-            style: TextStyle(
+          Text(
+            "managementCategories".tr(),
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.blueGrey,
@@ -218,32 +219,32 @@ class _AdminDashboardState extends State<AdminDashboard> {
             children: [
               _buildCategoryCard(
                 context,
-                "Member Management",
-                "Manage roles & status",
+                "memberManagement".tr(),
+                "manageRolesStatus".tr(),
                 Icons.group_work_rounded,
                 Colors.orange,
                 () => Navigator.pushNamed(context, '/admin/members'),
               ),
               _buildCategoryCard(
                 context,
-                "Usage Analytics",
-                "View song activity",
+                "usageAnalytics".tr(),
+                "viewSongActivity".tr(),
                 Icons.bar_chart_rounded,
                 Colors.indigo,
                 () => Navigator.pushNamed(context, '/admin/analytics'),
               ),
               _buildCategoryCard(
                 context,
-                "System Settings",
-                "Global app config",
+                "systemSettings".tr(),
+                "globalAppConfig".tr(),
                 Icons.settings_applications_rounded,
                 Colors.blueGrey,
                 () => Navigator.pushNamed(context, '/admin/settings'),
               ),
               _buildCategoryCard(
                 context,
-                "Payment Information",
-                "Manage finances",
+                "paymentInformation".tr(),
+                "manageFinances".tr(),
                 Icons.payments_rounded,
                 Colors.green,
                 () => Navigator.pushNamed(context, PaymentRoutes.dashboard),
@@ -252,9 +253,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ),
 
           const SizedBox(height: 24),
-          const Text(
-            "System Diagnostic",
-            style: TextStyle(
+          Text(
+            "systemDiagnostic".tr(),
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.blueGrey,
@@ -352,14 +353,12 @@ void _confirmCleanup(BuildContext context) {
   showDialog(
     context: context,
     builder: (dialogContext) => AlertDialog(
-      title: const Text('Cleanup Local Cache?'),
-      content: const Text(
-        'This will clear your local Hive database and redownload everything from Firestore. Use this if you see data errors.',
-      ),
+      title: Text('cleanupLocalCache'.tr()),
+      content: Text('cleanupCacheConfirm'.tr()),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(dialogContext),
-          child: const Text('Cancel'),
+          child: Text('cancel'.tr()),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -377,12 +376,12 @@ void _confirmCleanup(BuildContext context) {
             // 3. Optional: Show a snackbar when done
             if (context.mounted) {
               Navigator.pushNamed(context, AdminRoutes.adminDashboard);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('System re-synced successfully!')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('systemResynced'.tr())));
             }
           },
-          child: const Text('Clear & Sync'),
+          child: Text('clearAndSync'.tr()),
         ),
       ],
     ),
@@ -474,9 +473,9 @@ Widget _buildRequestTile(BuildContext context, int count) {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Manage Requests",
-                  style: TextStyle(
+                Text(
+                  "manageRequests".tr(),
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
@@ -484,8 +483,8 @@ Widget _buildRequestTile(BuildContext context, int count) {
                 ),
                 Text(
                   count > 0
-                      ? "$count new requests to review"
-                      : "No new requests",
+                      ? "newRequestsCount".tr(args: [count.toString()])
+                      : "noNewRequests".tr(),
                   style: TextStyle(
                     fontSize: 13,
                     color: count > 0 ? Colors.orange[800] : Colors.grey[600],
@@ -545,27 +544,27 @@ void _showRequestsModal(BuildContext context) {
                 children: [
                   // 1. PENDING SECTION
                   if (pending.isNotEmpty) ...[
-                    _buildSectionHeader("Pending Requests", Colors.orange),
+                    _buildSectionHeader("pendingRequests".tr(), Colors.orange),
                     ...pending.map((u) => _buildUserTile(context, u)),
                   ],
 
                   // 2. DENIED SECTION
                   if (denied.isNotEmpty) ...[
-                    _buildSectionHeader("Denied Members", Colors.red),
+                    _buildSectionHeader("deniedMembers".tr(), Colors.red),
                     ...denied.map((u) => _buildUserTile(context, u)),
                   ],
 
                   // 3. APPROVED SECTION
                   if (approved.isNotEmpty) ...[
-                    _buildSectionHeader("Approved Members", Colors.green),
+                    _buildSectionHeader("approvedMembers".tr(), Colors.green),
                     ...approved.map((u) => _buildUserTile(context, u)),
                   ],
 
                   if (state.members.isEmpty)
-                    const Center(
+                    Center(
                       child: Padding(
-                        padding: EdgeInsets.all(40.0),
-                        child: Text("No users found"),
+                        padding: const EdgeInsets.all(40.0),
+                        child: Text("noUsersFound".tr()),
                       ),
                     ),
                 ],
@@ -605,7 +604,7 @@ Widget _buildUserTile(BuildContext context, UserModel user) {
     title: Text(user.name, style: const TextStyle(fontWeight: FontWeight.w600)),
     subtitle: Text(
       user.approvalStatus == 'denied'
-          ? "Reason: ${user.adminMessage}"
+          ? "${'reason'.tr()}: ${user.adminMessage}"
           : user.email,
     ),
     trailing: Wrap(
@@ -635,15 +634,15 @@ void _showDenyDialog(BuildContext context, String userId) {
   showDialog(
     context: context,
     builder: (dialogContext) => AlertDialog(
-      title: const Text("Reason for Denial"),
+      title: Text("reasonForDenial".tr()),
       content: TextField(
         controller: controller,
-        decoration: const InputDecoration(hintText: "Enter reason..."),
+        decoration: InputDecoration(hintText: "enterReason".tr()),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(dialogContext),
-          child: const Text("Cancel"),
+          child: Text("cancel".tr()),
         ),
         ElevatedButton(
           onPressed: () {
@@ -656,7 +655,7 @@ void _showDenyDialog(BuildContext context, String userId) {
               Navigator.pop(dialogContext);
             }
           },
-          child: const Text("Deny"),
+          child: Text("deny".tr()),
         ),
       ],
     ),

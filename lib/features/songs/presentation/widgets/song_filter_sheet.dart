@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class SongFilterSheet extends StatelessWidget {
   final Function(String) onTagSelected;
@@ -18,30 +19,30 @@ class SongFilterSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Filter Songs',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Text(
+            'filterSongs'.tr(),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          const Text('By Tag:'),
+          Text('byTag'.tr()),
           Wrap(
             spacing: 8,
             children: [
-              _buildFilterChip('All', onTap: () => onTagSelected('')),
-              _buildFilterChip('New', onTap: () => onTagSelected('new')),
+              _buildFilterChip('all'.tr(), onTap: () => onTagSelected('')),
+              _buildFilterChip('new'.tr(), onTap: () => onTagSelected('new')),
               _buildFilterChip(
-                'This Round',
+                'thisRound'.tr(),
                 onTap: () => onTagSelected('this_round'),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          const Text('Special Filters:'),
+          Text('specialFilters'.tr()),
           const SizedBox(height: 8),
           ListTile(
             leading: const Icon(Icons.warning, color: Colors.orange),
-            title: const Text('Neglected Songs'),
-            subtitle: const Text('Songs not used in 3+ months'),
+            title: Text('neglectedSongs'.tr()),
+            subtitle: Text('neglectedSongsSubtitle'.tr()),
             onTap: onNeglectedSongs,
           ),
           const SizedBox(height: 16),
@@ -49,7 +50,7 @@ class SongFilterSheet extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
+              child: Text('close'.tr()),
             ),
           ),
         ],

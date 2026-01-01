@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/core/constants/app_constants.dart';
@@ -104,7 +105,7 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Usage Analytics'),
+        title: Text('usageAnalytics'.tr()),
         actions: [
           IconButton(
             icon: const Icon(Icons.calendar_today),
@@ -124,7 +125,7 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
                 children: [
                   // Summary Cards
                   _buildAnalyticsCard(
-                    'Active Members',
+                    'activeMembers'.tr(),
                     '${state.stats.activeMembers}/${state.stats.totalMembers}',
                     '${((state.stats.activeMembers / state.stats.totalMembers) * 100).toStringAsFixed(1)}% active',
                     Icons.people,
@@ -132,7 +133,7 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
                   ),
                   const SizedBox(height: 12),
                   _buildAnalyticsCard(
-                    'Song Completion',
+                    'songCompletion'.tr(),
                     '${state.stats.songsWithAudio}/${state.stats.totalSongs}',
                     '${((state.stats.songsWithAudio / state.stats.totalSongs) * 100).toStringAsFixed(1)}% with audio',
                     Icons.music_note,
@@ -140,17 +141,17 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
                   ),
                   const SizedBox(height: 12),
                   _buildAnalyticsCard(
-                    'Payment Collection',
+                    'paymentCollection'.tr(),
                     '${state.stats.monthlyCollectionRate.toStringAsFixed(1)}%',
-                    'Monthly collection rate',
+                    'monthlyCollectionRate'.tr(),
                     Icons.payment,
                     Colors.blue,
                   ),
                   const SizedBox(height: 12),
                   _buildAnalyticsCard(
-                    'System Usage',
+                    'systemUsage'.tr(),
                     '${state.stats.unreadMessages}',
-                    'Unread messages',
+                    'unreadMessages'.tr(),
                     Icons.chat,
                     Colors.orange,
                   ),
@@ -158,8 +159,8 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
                   const SizedBox(height: 24),
 
                   // Detailed Analytics
-                  const Text(
-                    'Detailed Analytics',
+                  Text(
+                    'detailedAnalytics'.tr(),
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
@@ -171,26 +172,26 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Member Activity',
+                          Text(
+                            'memberActivity'.tr(),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12),
                           _buildActivityItem(
-                            'Total Members',
+                            'TotalMembers'.tr(),
                             state.stats.totalMembers.toString(),
                             Icons.people,
                           ),
                           _buildActivityItem(
-                            'Active Members',
+                            'activeMembers'.tr(),
                             state.stats.activeMembers.toString(),
                             Icons.person,
                           ),
                           _buildActivityItem(
-                            'Inactive Members',
+                            'inactiveMembers'.tr(),
                             (state.stats.totalMembers -
                                     state.stats.activeMembers)
                                 .toString(),
@@ -210,8 +211,8 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Song Library Health',
+                          Text(
+                            'songLibraryHealth'.tr(),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -219,15 +220,15 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
                           ),
                           const SizedBox(height: 12),
                           _buildSongHealthItem(
-                            'Total Songs',
+                            'totalSongs'.tr(),
                             state.stats.totalSongs,
                           ),
                           _buildSongHealthItem(
-                            'Songs with Audio',
+                            'songsWithAudio'.tr(),
                             state.stats.songsWithAudio,
                           ),
                           _buildSongHealthItem(
-                            'Songs without Audio',
+                            'songsWithoutAudio'.tr(),
                             state.stats.totalSongs - state.stats.songsWithAudio,
                           ),
                           const SizedBox(height: 8),
@@ -252,8 +253,8 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Financial Health',
+                          Text(
+                            'financialHealth'.tr(),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -261,15 +262,15 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
                           ),
                           const SizedBox(height: 12),
                           _buildFinancialItem(
-                            'Collection Rate',
+                            'collectionRate'.tr(),
                             '${state.stats.monthlyCollectionRate.toStringAsFixed(1)}%',
                           ),
                           _buildFinancialItem(
-                            'Expected Revenue',
+                            'expectedRevenue'.tr(),
                             '${(state.stats.totalMembers * AppConstants.monthlyPaymentAmount).toStringAsFixed(0)} ETB',
                           ),
                           _buildFinancialItem(
-                            'Actual Revenue',
+                            'actualRevenue'.tr(),
                             '${((state.stats.monthlyCollectionRate / 100) * state.stats.totalMembers * AppConstants.monthlyPaymentAmount).toStringAsFixed(0)} ETB',
                           ),
                           const SizedBox(height: 8),
@@ -288,7 +289,8 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
 
                   const SizedBox(height: 16),
                   Text(
-                    'Last updated: ${_formatDateTime(state.stats.lastUpdated)}',
+                    'lastUpdated: ${_formatDateTime(state.stats.lastUpdated)}'
+                        .tr(),
                     style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                 ],
@@ -297,7 +299,7 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
           } else if (state is AdminError) {
             return Center(child: Text(state.message));
           }
-          return const Center(child: Text('No analytics data available'));
+          return Center(child: Text('NoAnalyticsDataAvailable'.tr()));
         },
       ),
     );

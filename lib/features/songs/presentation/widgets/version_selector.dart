@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
 import 'package:praise_choir_app/core/widgets/common/custom_text_field.dart';
@@ -29,11 +30,11 @@ class _VersionSelectorState extends State<VersionSelector> {
 
   // Default version types
   final List<Map<String, String>> _defaultTypes = [
-    {'value': 'traditional', 'label': 'Traditional'},
-    {'value': 'modern', 'label': 'Modern'},
-    {'value': 'acoustic', 'label': 'Acoustic'},
-    {'value': 'choir', 'label': 'Choir Arrangement'},
-    {'value': 'solo', 'label': 'Solo Version'},
+    {'value': 'traditional', 'label': 'traditional'.tr()},
+    {'value': 'modern', 'label': 'modern'.tr()},
+    {'value': 'acoustic', 'label': 'acoustic'.tr()},
+    {'value': 'choir', 'label': 'choirArrangement'.tr()},
+    {'value': 'solo', 'label': 'soloVersion'.tr()},
   ];
 
   // Current list of types (defaults + custom ones found in song)
@@ -155,7 +156,7 @@ class _VersionSelectorState extends State<VersionSelector> {
 
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Version added successfully')));
+    ).showSnackBar(SnackBar(content: Text('versionAddedSuccess'.tr())));
   }
 
   @override
@@ -192,14 +193,14 @@ class _VersionSelectorState extends State<VersionSelector> {
             children: [
               Center(
                 child: Text(
-                  'Add Song Version',
+                  'addSongVersion'.tr(),
                   style: AppTextStyles.titleLarge,
                 ),
               ),
               const SizedBox(height: 16),
 
               // Version Type Chips
-              Text('Version Type', style: AppTextStyles.inputLabel),
+              Text('versionType'.tr(), style: AppTextStyles.inputLabel),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -228,11 +229,11 @@ class _VersionSelectorState extends State<VersionSelector> {
               // Custom Name Field
               CustomTextField(
                 controller: _nameController,
-                label: 'Custom Name (Optional)',
-                hintText: 'Enter custom version name',
+                label: 'customNameOptional'.tr(),
+                hintText: 'enterCustomVersionName'.tr(),
                 validator: (value) {
                   if (value != null && value.length > 50) {
-                    return 'Name must be less than 50 characters';
+                    return 'nameTooLong'.tr();
                   }
                   return null;
                 },
@@ -245,7 +246,7 @@ class _VersionSelectorState extends State<VersionSelector> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _addVersion,
-                  child: const Text('Add Version'),
+                  child: Text('addVersion'.tr()),
                 ),
               ),
             ],
@@ -257,18 +258,18 @@ class _VersionSelectorState extends State<VersionSelector> {
 
   Widget _buildExistingVersions() {
     if (widget.song.versions.isEmpty) {
-      return const Card(
-        margin: EdgeInsets.symmetric(horizontal: 16),
+      return Card(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
           child: Center(
             child: Column(
               children: [
-                Icon(Icons.music_note, size: 48, color: Colors.grey),
-                SizedBox(height: 8),
+                const Icon(Icons.music_note, size: 48, color: Colors.grey),
+                const SizedBox(height: 8),
                 Text(
-                  'No versions added yet',
-                  style: TextStyle(color: Colors.grey),
+                  'noVersionsAdded'.tr(),
+                  style: const TextStyle(color: Colors.grey),
                 ),
               ],
             ),
@@ -285,7 +286,9 @@ class _VersionSelectorState extends State<VersionSelector> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Existing Versions (${widget.song.versions.length})',
+              'existingVersions'.tr(
+                args: [widget.song.versions.length.toString()],
+              ),
               style: AppTextStyles.titleMedium,
             ),
             const SizedBox(height: 12),
@@ -334,7 +337,7 @@ class _VersionSelectorState extends State<VersionSelector> {
                 ],
                 const SizedBox(height: 4),
                 Text(
-                  'Added ${_formatDate(version.createdAt)}',
+                  'addedDate'.tr(args: [_formatDate(version.createdAt)]),
                   style: AppTextStyles.caption.copyWith(color: Colors.grey),
                 ),
               ],
@@ -361,19 +364,22 @@ class _VersionSelectorState extends State<VersionSelector> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Version'),
-        content: Text('Are you sure you want to delete "${version.name}"?'),
+        title: Text('deleteVersion'.tr()),
+        content: Text('deleteVersionConfirm'.tr(args: [version.name])),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr()),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               widget.onVersionDeleted(version.id);
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text(
+              'delete'.tr(),
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),

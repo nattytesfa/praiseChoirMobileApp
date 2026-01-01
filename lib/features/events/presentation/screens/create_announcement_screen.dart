@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/core/constants/app_constants.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
@@ -45,9 +46,9 @@ class _CreateAnnouncementScreenState extends State<CreateAnnouncementScreen> {
     if (_formKey.currentState!.validate()) {
       final authState = context.read<AuthCubit>().state;
       if (authState is! AuthAuthenticated) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You must be logged in to post.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('loginToPost'.tr())));
         return;
       }
 
@@ -81,8 +82,8 @@ class _CreateAnnouncementScreenState extends State<CreateAnnouncementScreen> {
       appBar: AppBar(
         title: Text(
           widget.announcement != null
-              ? 'Edit Announcement'
-              : 'New Announcement',
+              ? 'editAnnouncement'.tr()
+              : 'newAnnouncement'.tr(),
         ),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
@@ -90,9 +91,9 @@ class _CreateAnnouncementScreenState extends State<CreateAnnouncementScreen> {
       body: BlocListener<EventCubit, EventState>(
         listener: (context, state) {
           if (state is AnnouncementCreated) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Announcement posted successfully')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('announcementPosted'.tr())));
             Navigator.pop(context);
           } else if (state is EventError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -112,14 +113,14 @@ class _CreateAnnouncementScreenState extends State<CreateAnnouncementScreen> {
               children: [
                 TextFormField(
                   controller: _titleController,
-                  decoration: const InputDecoration(
-                    labelText: 'Title',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: 'title'.tr(),
+                    border: const OutlineInputBorder(),
                     hintText: 'e.g., Rehearsal Cancelled',
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter a title';
+                      return 'enterTitle'.tr();
                     }
                     return null;
                   },
@@ -127,26 +128,24 @@ class _CreateAnnouncementScreenState extends State<CreateAnnouncementScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _contentController,
-                  decoration: const InputDecoration(
-                    labelText: 'Content',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: 'content'.tr(),
+                    border: const OutlineInputBorder(),
                     hintText: 'Enter the details of your announcement...',
                     alignLabelWithHint: true,
                   ),
                   maxLines: 5,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter content';
+                      return 'enterContent'.tr();
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 16),
                 SwitchListTile(
-                  title: const Text('Mark as Urgent'),
-                  subtitle: const Text(
-                    'Urgent announcements are highlighted and pinned.',
-                  ),
+                  title: Text('markAsUrgent'.tr()),
+                  subtitle: Text('urgentDescription'.tr()),
                   value: _isUrgent,
                   onChanged: (value) {
                     setState(() {
@@ -178,7 +177,11 @@ class _CreateAnnouncementScreenState extends State<CreateAnnouncementScreen> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text('Post Announcement'),
+                            : Text(
+                                widget.announcement != null
+                                    ? 'updateAnnouncement'.tr()
+                                    : 'postAnnouncement'.tr(),
+                              ),
                       );
                     },
                   ),

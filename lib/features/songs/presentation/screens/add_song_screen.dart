@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
 import 'package:praise_choir_app/core/widgets/common/custom_text_field.dart';
@@ -28,8 +29,8 @@ class _AddSongScreenState extends State<AddSongScreen> {
 
   final List<String> _availableTags = ['new', 'favorite', 'this_round'];
   final List<Map<String, String>> _languages = [
-    {'value': 'amharic', 'label': 'Amharic'},
-    {'value': 'kembatigna', 'label': 'Kembatigna'},
+    {'value': 'amharic', 'label': 'amharic'},
+    {'value': 'kembatigna', 'label': 'kembatgna'},
   ];
 
   void _addSong() {
@@ -83,14 +84,14 @@ class _AddSongScreenState extends State<AddSongScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Language', style: AppTextStyles.inputLabel),
+        Text('language'.tr(), style: AppTextStyles.inputLabel),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           children: _languages.map((lang) {
             final isSelected = _selectedLanguage == lang['value'];
             return ChoiceChip(
-              label: Text(lang['label']!),
+              label: Text(lang['label']!.tr()),
               selected: isSelected,
               onSelected: (_) =>
                   setState(() => _selectedLanguage = lang['value']!),

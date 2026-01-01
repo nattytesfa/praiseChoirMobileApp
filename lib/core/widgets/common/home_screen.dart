@@ -12,6 +12,8 @@ import 'package:praise_choir_app/features/songs/presentation/screens/favorites_s
 import 'package:praise_choir_app/features/songs/presentation/widgets/song_list_view.dart';
 import 'package:praise_choir_app/features/songs/song_routes.dart';
 import 'package:praise_choir_app/features/payment/payment_routes.dart';
+import 'package:praise_choir_app/config/routes.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -162,11 +164,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             title: const NetworkStatusIndicator(),
             centerTitle: true,
             // TABS: For English and Amharic Song Filtering
-            bottom: const TabBar(
+            bottom: TabBar(
               indicatorColor: Colors.white,
               tabs: [
-                Tab(text: "Kembatgna"),
-                Tab(text: "Amharic"),
+                Tab(text: "kembatgna".tr()),
+                Tab(text: "amharic".tr()),
               ],
             ),
           ),
@@ -231,8 +233,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                _drawerItem(Icons.person_outline, "My Profile", () {}),
-                _drawerItem(Icons.favorite_border, "Favorites", () {
+                _drawerItem(Icons.person_outline, "myProfile".tr(), () {}),
+                _drawerItem(Icons.favorite_border, "favorites".tr(), () {
                   Navigator.pop(context); // Close drawer
                   Navigator.push(
                     context,
@@ -241,14 +243,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                   );
                 }),
-                _drawerItem(Icons.payment, "Payment History", () {
+                _drawerItem(Icons.payment, "paymentHistory".tr(), () {
                   Navigator.pop(context);
-                  Navigator.pushNamed(context, PaymentRoutes.userPaymentHistory);
+                  Navigator.pushNamed(
+                    context,
+                    PaymentRoutes.userPaymentHistory,
+                  );
                 }),
-                _drawerItem(Icons.settings_outlined, "Settings", () {}),
+                _drawerItem(Icons.settings_outlined, "settings".tr(), () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, Routes.userSettings);
+                }),
                 const Divider(),
-                _drawerItem(Icons.help_outline, "Support", () {}),
-                _drawerItem(Icons.info_outline, "About App", () {}),
+                _drawerItem(Icons.help_outline, "support".tr(), () {}),
+                _drawerItem(Icons.info_outline, "aboutApp".tr(), () {}),
               ],
             ),
           ),

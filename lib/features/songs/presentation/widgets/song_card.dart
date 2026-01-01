@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
 
@@ -16,17 +17,17 @@ class SongCard extends StatelessWidget {
   });
 
   String _getTimeAgo(DateTime? date) {
-    if (date == null) return 'Never';
+    if (date == null) return 'never'.tr();
 
     final now = DateTime.now();
     final difference = now.difference(date);
 
     if (difference.inDays > 0) {
-      return '${difference.inDays} days ago';
+      return '${difference.inDays} daysAgo'.tr();
     } else if (difference.inHours > 0) {
-      return '${difference.inHours} hours ago';
+      return '${difference.inHours} hoursAgo'.tr();
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} minutes ago';
+      return '${difference.inMinutes} minutesAgo'.tr();
     } else {
       return 'Just now';
     }
@@ -61,7 +62,7 @@ class SongCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Language: ${song.language}',
+              'language: ${song.language}'.tr(),
               style: const TextStyle(fontSize: 12),
             ),
             if (song.tags.isNotEmpty) ...[
@@ -82,7 +83,7 @@ class SongCard extends StatelessWidget {
             ],
             const SizedBox(height: 4),
             Text(
-              'Last performed: ${_getTimeAgo(song.lastPerformed)}',
+              'lastPerformed: ${_getTimeAgo(song.lastPerformed)}'.tr(),
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
@@ -96,13 +97,13 @@ class SongCard extends StatelessWidget {
             }
           },
           itemBuilder: (context) => [
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'performed',
-              child: Text('Mark as Performed'),
+              child: Text('markAsPerformed'.tr()),
             ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'practiced',
-              child: Text('Mark as Practiced'),
+              child: Text('markAspracticed'.tr()),
             ),
           ],
         ),

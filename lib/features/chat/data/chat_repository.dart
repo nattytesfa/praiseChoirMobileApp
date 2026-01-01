@@ -78,13 +78,13 @@ class ChatRepository {
     }
   }
 
-  Future<void> ensureGeneralChatExists() async {
-    const generalChatId = 'general';
-    final exists = _chatBox.values.any((c) => c.id == generalChatId);
+  Future<void> ensuregroupChatExists() async {
+    const groupChatId = 'general';
+    final exists = _chatBox.values.any((c) => c.id == groupChatId);
 
     if (!exists) {
       final chat = ChatModel(
-        id: generalChatId,
+        id: groupChatId,
         name: 'General Chat',
         type: ChatType.group,
         memberIds: [], // Open to everyone

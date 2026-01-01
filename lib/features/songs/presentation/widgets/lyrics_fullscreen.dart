@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
@@ -76,7 +77,7 @@ class _LyricsFullscreenState extends State<LyricsFullscreen>
       onPressed: () {
         Clipboard.setData(ClipboardData(text: widget.lyrics));
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Lyrics copied to clipboard')),
+           SnackBar(content: Text('lyricsCopiedToClipboard'.tr())),
         );
       },
       child: const Icon(Icons.copy, size: 20),

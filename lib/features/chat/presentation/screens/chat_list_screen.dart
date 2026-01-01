@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -37,7 +38,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
       final authState = context.read<AuthCubit>().state;
       if (authState is AuthAuthenticated) {
         _currentUserId = authState.user.id;
-        context.read<ChatCubit>().joinGeneralChat(_currentUserId);
+        context.read<ChatCubit>().joingroupChat(_currentUserId);
       }
     });
   }
@@ -54,11 +55,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Read by'),
+        title: Text('readBy'.tr()),
         content: SizedBox(
           width: double.maxFinite,
           child: users.isEmpty
-              ? const Text('No one has read this message yet.')
+              ? Text('noOneRead'.tr())
               : ListView.builder(
                   shrinkWrap: true,
                   itemCount: users.length,
@@ -81,7 +82,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text('close'.tr()),
           ),
         ],
       ),
@@ -93,7 +94,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
     return Scaffold(
       appBar: _isSelectionMode
           ? AppBar(
-              title: Text('${_selectedMessageIds.length} selected'),
+              title: Text('${_selectedMessageIds.length} ${'selected'.tr()}'),
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               leading: IconButton(
@@ -119,7 +120,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
               ],
             )
           : AppBar(
-              title: const Text('General Chat'),
+              title: Text('groupChat'.tr()),
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
@@ -148,8 +149,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         ElevatedButton(
                           onPressed: () => context
                               .read<ChatCubit>()
-                              .joinGeneralChat(_currentUserId),
-                          child: const Text('Retry'),
+                              .joingroupChat(_currentUserId),
+                          child: Text('retry'.tr()),
                         ),
                       ],
                     ),
@@ -160,10 +161,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   final messages = state.messages;
 
                   if (messages.isEmpty) {
-                    return const EmptyState(
+                    return EmptyState(
                       icon: Icons.chat,
-                      title: 'No Messages',
-                      message: 'Start the conversation!',
+                      title: 'noMessages'.tr(),
+                      message: 'startConversation'.tr(),
                     );
                   }
 

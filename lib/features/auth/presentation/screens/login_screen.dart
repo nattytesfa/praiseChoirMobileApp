@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:praise_choir_app/config/locale_cubit.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/config/routes.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/songs/song_routes.dart';
@@ -64,7 +64,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     (route) => false,
                   );
                 } else {
-                  Navigator.pushReplacementNamed(context, Routes.mainNavigationShell);
+                  Navigator.pushReplacementNamed(
+                    context,
+                    Routes.mainNavigationShell,
+                  );
                 }
               } else if (state is AuthError) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -110,9 +113,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const Text(
-                          'Welcome to PCS Notebook',
-                          style: TextStyle(
+                        Text(
+                          'welcomeMessage'.tr(),
+                          style: const TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
@@ -120,9 +123,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        const Text(
-                          'Enter your credentials to continue',
-                          style: TextStyle(
+                        Text(
+                          'enterCredentials'.tr(),
+                          style: const TextStyle(
                             fontSize: 15,
                             color: Colors.blueGrey,
                           ),
@@ -145,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Colors.white,
                               size: 22,
                             ),
-                            labelText: 'Email',
+                            labelText: 'email'.tr(),
                             enabledBorder: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(18),
@@ -168,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
-                              return 'Enter email';
+                              return 'enterEmail'.tr();
                             }
                             return null;
                           },
@@ -176,22 +179,22 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 20),
                         TextFormField(
                           controller: _passwordController,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             filled: true,
-                            labelStyle: TextStyle(color: Colors.white60),
-                            prefixIcon: Icon(
+                            labelStyle: const TextStyle(color: Colors.white60),
+                            prefixIcon: const Icon(
                               Icons.lock_person_rounded,
                               color: Colors.white38,
                               size: 22,
                             ),
-                            labelText: 'Password',
-                            enabledBorder: OutlineInputBorder(
+                            labelText: 'password'.tr(),
+                            enabledBorder: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(18),
                               ),
                               borderSide: BorderSide(color: Colors.white),
                             ),
-                            focusedBorder: OutlineInputBorder(
+                            focusedBorder: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(18),
                               ),
@@ -208,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           obscureText: true,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Enter password';
+                              return 'enterPassword'.tr();
                             }
                             return null;
                           },
@@ -229,9 +232,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 elevation: 0,
                               ),
-                              child: const Text(
-                                'Sign in',
-                                style: TextStyle(
+                              child: Text(
+                                'signIn'.tr(),
+                                style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -246,11 +249,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text("Don't have an account?"),
+                              Text('noAccount'.tr()),
                               TextButton(
                                 onPressed: () =>
                                     Navigator.pushNamed(context, '/signup'),
-                                child: const Text('Sign Up'),
+                                child: Text('signUp'.tr()),
                               ),
                             ],
                           ),
@@ -270,7 +273,7 @@ class _LoginScreenState extends State<LoginScreen> {
   // --- UI Components ---
 
   Widget _buildLanguageToggle(BuildContext context) {
-    final isAmharic = context.watch<LocaleCubit>().state.isAmharic;
+    final isAmharic = context.locale.languageCode == 'am';
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
@@ -283,12 +286,12 @@ class _LoginScreenState extends State<LoginScreen> {
           _langChip(
             'EN',
             !isAmharic,
-            () => context.read<LocaleCubit>().setEnglish(),
+            () => context.setLocale(const Locale('en')),
           ),
           _langChip(
             'አማ',
             isAmharic,
-            () => context.read<LocaleCubit>().setAmharic(),
+            () => context.setLocale(const Locale('am')),
           ),
         ],
       ),

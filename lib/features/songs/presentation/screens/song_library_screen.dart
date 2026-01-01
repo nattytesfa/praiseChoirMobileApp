@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/core/widgets/common/empty_state.dart';
 import 'package:praise_choir_app/core/widgets/common/loading_indicator.dart';
 import 'package:praise_choir_app/core/widgets/display/role_badge.dart';
@@ -66,7 +67,7 @@ class _SongLibraryScreenState extends State<SongLibraryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Song Library'),
+        title: Text('songLibrary'.tr()),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
