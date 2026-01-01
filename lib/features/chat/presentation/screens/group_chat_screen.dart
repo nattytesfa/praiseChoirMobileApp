@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -109,7 +110,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     return Scaffold(
       appBar: _isSelectionMode
           ? AppBar(
-              title: Text('${_selectedMessageIds.length} selected'),
+              title: Text('${_selectedMessageIds.length} ${'selected'.tr()}'),
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               leading: IconButton(
@@ -146,7 +147,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                     ),
                   ),
                   Text(
-                    '${widget.chat.memberIds.length} members',
+                    '${widget.chat.memberIds.length} ${'members'.tr()}',
                     style: AppTextStyles.caption.copyWith(
                       color: Colors.white70,
                       fontSize: 12,

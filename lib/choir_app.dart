@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:praise_choir_app/config/locale_cubit.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/config/routes.dart';
 import 'package:praise_choir_app/core/services/connectivity_service.dart';
 import 'package:praise_choir_app/core/theme/app_theme.dart' show AppTheme;
@@ -20,7 +19,6 @@ import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.da
 import 'package:praise_choir_app/features/songs/data/song_repository.dart';
 import 'package:praise_choir_app/features/chat/data/chat_repository.dart';
 import 'package:praise_choir_app/features/chat/presentation/cubit/chat_cubit.dart';
-import 'package:praise_choir_app/l10n/arb/app_localizations.dart';
 
 class ChoirApp extends StatelessWidget {
   const ChoirApp({super.key});
@@ -49,7 +47,6 @@ class ChoirApp extends StatelessWidget {
             providers: [
               BlocProvider(create: (context) => PaymentCubit()),
               BlocProvider(create: (context) => ThemeCubit()),
-              BlocProvider(create: (context) => LocaleCubit()),
               BlocProvider(
                 create: (context) =>
                     AuthCubit(context.read<AuthRepository>())..appStarted(),
@@ -79,27 +76,17 @@ class ChoirApp extends StatelessWidget {
 
             child: BlocBuilder<ThemeCubit, ThemeMode>(
               builder: (context, themeMode) {
-                return BlocBuilder<LocaleCubit, LocaleState>(
-                  builder: (context, state) {
-                    return MaterialApp(
-                      locale: state
-                          .locale, // This ensures the app actually changes language
-                      title: 'PCS',
-                      theme: AppTheme.lightTheme,
-                      darkTheme: AppTheme.darkTheme,
-                      themeMode: themeMode,
-                      onGenerateRoute: Routes.onGenerateRoute,
-                      localizationsDelegates: const [
-                        AppLocalizations.delegate,
-                        GlobalMaterialLocalizations.delegate,
-                        GlobalWidgetsLocalizations.delegate,
-                        GlobalCupertinoLocalizations.delegate,
-                      ],
-                      supportedLocales: const [Locale('en'), Locale('am')],
-                      initialRoute: Routes.splash,
-                      debugShowCheckedModeBanner: false,
-                    );
-                  },
+                return MaterialApp(
+                  locale: context.locale,
+                  title: 'PCS',
+                  theme: AppTheme.lightTheme,
+                  darkTheme: AppTheme.darkTheme,
+                  themeMode: themeMode,
+                  onGenerateRoute: Routes.onGenerateRoute,
+                  localizationsDelegates: context.localizationDelegates,
+                  supportedLocales: context.supportedLocales,
+                  initialRoute: Routes.splash,
+                  debugShowCheckedModeBanner: false,
                 );
               },
             ),
