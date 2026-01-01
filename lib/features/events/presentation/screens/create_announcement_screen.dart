@@ -116,7 +116,6 @@ class _CreateAnnouncementScreenState extends State<CreateAnnouncementScreen> {
                   decoration: InputDecoration(
                     labelText: 'title'.tr(),
                     border: const OutlineInputBorder(),
-                    hintText: 'e.g., Rehearsal Cancelled',
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -131,7 +130,7 @@ class _CreateAnnouncementScreenState extends State<CreateAnnouncementScreen> {
                   decoration: InputDecoration(
                     labelText: 'content'.tr(),
                     border: const OutlineInputBorder(),
-                    hintText: 'Enter the details of your announcement...',
+                    hintText: 'enterTheDetailsOfYourAnnouncement...'.tr(),
                     alignLabelWithHint: true,
                   ),
                   maxLines: 5,
@@ -145,7 +144,6 @@ class _CreateAnnouncementScreenState extends State<CreateAnnouncementScreen> {
                 const SizedBox(height: 16),
                 SwitchListTile(
                   title: Text('markAsUrgent'.tr()),
-                  subtitle: Text('urgentDescription'.tr()),
                   value: _isUrgent,
                   onChanged: (value) {
                     setState(() {

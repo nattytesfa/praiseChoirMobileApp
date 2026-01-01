@@ -109,14 +109,14 @@ class _EditSongScreenState extends State<EditSongScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Audio Recording', style: AppTextStyles.inputLabel),
+        Text('audioRecording'.tr(), style: AppTextStyles.inputLabel),
         const SizedBox(height: 8),
 
         if (_audioPath == null)
           ElevatedButton.icon(
             onPressed: _attachAudio,
             icon: const Icon(Icons.attach_file),
-            label: const Text('Attach Audio Recording'),
+            label: Text('attachAudioRecording'.tr()),
             style: ElevatedButton.styleFrom(
               foregroundColor: AppColors.primary,
               backgroundColor: AppColors.withValues(AppColors.primary, 0.1),
@@ -135,7 +135,7 @@ class _EditSongScreenState extends State<EditSongScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Audio attached',
+                          'audioAttached'.tr(),
                           style: AppTextStyles.bodyMedium.copyWith(
                             fontWeight: FontWeight.w500,
                           ),
@@ -198,7 +198,7 @@ class _EditSongScreenState extends State<EditSongScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Song'),
+        title:  Text('editSong'.tr()),
         actions: [
           BlocBuilder<SongCubit, SongState>(
             builder: (context, state) {
@@ -208,7 +208,7 @@ class _EditSongScreenState extends State<EditSongScreen> {
               return IconButton(
                 icon: const Icon(Icons.save),
                 onPressed: _updateSong,
-                tooltip: 'Save Changes',
+                tooltip: 'saveChanges'.tr(),
               );
             },
           ),
@@ -234,12 +234,12 @@ class _EditSongScreenState extends State<EditSongScreen> {
                 // Title
                 CustomTextField(
                   controller: _titleController,
-                  labelText: 'Song Title',
-                  hintText: 'Enter song title',
+                  labelText: 'songTitle'.tr(),
+                  hintText: 'enterSongTitle'.tr(),
                   isRequired: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a song title';
+                      return 'pleaseEnterASongTitle'.tr();
                     }
                     return null;
                   },
@@ -255,13 +255,13 @@ class _EditSongScreenState extends State<EditSongScreen> {
                 const SizedBox(height: 20),
 
                 // Lyrics
-                Text('Lyrics', style: AppTextStyles.inputLabel),
+                Text('lyrics'.tr(), style: AppTextStyles.inputLabel),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _lyricsController,
                   maxLines: 10,
                   decoration: InputDecoration(
-                    hintText: 'Enter song lyrics...',
+                    hintText: 'enterSongLyrics...'.tr(),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -270,7 +270,7 @@ class _EditSongScreenState extends State<EditSongScreen> {
                   style: AppTextStyles.bodyLarge,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter song lyrics';
+                      return 'pleaseEnterSongLyrics'.tr();
                     }
                     return null;
                   },
@@ -286,7 +286,7 @@ class _EditSongScreenState extends State<EditSongScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                     child: Text(
-                      'Update Song',
+                      'updateSong'.tr(),
                       style: AppTextStyles.buttonLarge,
                     ),
                   ),

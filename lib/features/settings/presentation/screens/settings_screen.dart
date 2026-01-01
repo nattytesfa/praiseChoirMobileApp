@@ -18,7 +18,7 @@ class SettingsScreen extends StatelessWidget {
           _buildSectionHeader(context, "language".tr()),
           _buildLanguageSelector(context),
           const Divider(),
-          _buildSectionHeader(context, "about".tr()),
+          _buildSectionHeader(context, "aboutApp".tr()),
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: Text("aboutApp".tr()),
@@ -26,9 +26,9 @@ class SettingsScreen extends StatelessWidget {
             onTap: () {
               showAboutDialog(
                 context: context,
-                applicationName: "Praise Choir App",
+                applicationName: "praiseChoirApp".tr(),
                 applicationVersion: "1.0.0",
-                applicationLegalese: "© 2024 Praise Choir",
+                applicationLegalese: "© 2026 Praise Choir",
               );
             },
           ),
@@ -76,14 +76,14 @@ class SettingsScreen extends StatelessWidget {
     return Column(
       children: [
         ListTile(
-          title: const Text("English"),
+          title: Text("english").tr(),
           trailing: context.locale == const Locale('en')
               ? Icon(Icons.check, color: Theme.of(context).primaryColor)
               : null,
           onTap: () => context.setLocale(const Locale('en')),
         ),
         ListTile(
-          title: const Text("Amharic"),
+          title: Text("amharic").tr(),
           trailing: context.locale == const Locale('am')
               ? Icon(Icons.check, color: Theme.of(context).primaryColor)
               : null,

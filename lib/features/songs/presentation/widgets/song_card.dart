@@ -99,11 +99,11 @@ class SongCard extends StatelessWidget {
           itemBuilder: (context) => [
             PopupMenuItem(
               value: 'performed',
-              child: Text('markAsPerformed'.tr()),
+              child: Text('markedAsPerformed'.tr()),
             ),
             PopupMenuItem(
               value: 'practiced',
-              child: Text('markAspracticed'.tr()),
+              child: Text('markedAspracticed'.tr()),
             ),
           ],
         ),
