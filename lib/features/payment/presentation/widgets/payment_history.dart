@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gal/gal.dart';
@@ -19,7 +20,7 @@ class PaymentHistory extends StatefulWidget {
     super.key,
     this.payments,
     this.onMarkAsPaid,
-    this.title = 'Payment History',
+    this.title = 'paymentHistory',
   });
 
   @override
@@ -57,17 +58,17 @@ class _PaymentHistoryState extends State<PaymentHistory> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          title: Text(widget.title.tr()),
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          bottom: const TabBar(
+          bottom: TabBar(
             labelColor: Colors.white,
             unselectedLabelColor: Colors.white70,
             indicatorColor: Colors.white,
             tabs: [
-              Tab(text: 'Paid'),
-              Tab(text: 'Overdue'),
-              Tab(text: 'Pending'),
+              Tab(text: 'paid'.tr()),
+              Tab(text: 'overdue'.tr()),
+              Tab(text: 'pending'.tr()),
             ],
           ),
         ),
@@ -95,7 +96,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
                         ElevatedButton(
                           onPressed: () =>
                               context.read<PaymentCubit>().loadAllPayments(),
-                          child: const Text('Retry'),
+                          child: Text('retry'.tr()),
                         ),
                       ],
                     ),
@@ -128,9 +129,9 @@ class _PaymentHistoryState extends State<PaymentHistory> {
 
     return TabBarView(
       children: [
-        _buildList(paid, 'No paid payments found.'),
-        _buildList(overdue, 'No overdue payments found.'),
-        _buildList(pending, 'No pending payments found.'),
+        _buildList(paid, 'noPaidPaymentsFound'.tr()),
+        _buildList(overdue, 'noOverduePaymentsFound'.tr()),
+        _buildList(pending, 'noPendingPaymentsFound'.tr()),
       ],
     );
   }
@@ -139,7 +140,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
     if (list.isEmpty) {
       return EmptyState(
         icon: Icons.payment,
-        title: 'No Payments',
+        title: 'noPayments'.tr(),
         message: emptyMessage,
       );
     }
@@ -155,7 +156,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
   }
 
   Widget _buildPaymentItem(PaymentModel payment) {
-    final memberName = _memberNames[payment.memberId] ?? 'Loading...';
+    final memberName = _memberNames[payment.memberId] ?? 'loading'.tr();
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -173,18 +174,18 @@ class _PaymentHistoryState extends State<PaymentHistory> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Member: $memberName',
+                        'memberLabel'.tr(args: [memberName]),
                         style: AppTextStyles.bodyMedium,
                       ),
                       Text(
-                        'Due: ${_formatDate(payment.dueDate)}',
+                        'dueLabel'.tr(args: [_formatDate(payment.dueDate)]),
                         style: AppTextStyles.caption,
                       ),
                     ],
                   ),
                 ),
                 Text(
-                  'ETB ${payment.amount}',
+                  'etbAmount'.tr(args: [payment.amount.toString()]),
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -198,13 +199,13 @@ class _PaymentHistoryState extends State<PaymentHistory> {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () => widget.onMarkAsPaid!(payment.id),
-                  child: const Text('Mark as Paid'),
+                  child: Text('markAsPaid'.tr()),
                 ),
               ),
             if (payment.paidDate != null) ...[
               const SizedBox(height: 8),
               Text(
-                'Paid: ${_formatDate(payment.paidDate!)}',
+                'paidLabel'.tr(args: [_formatDate(payment.paidDate!)]),
                 style: AppTextStyles.caption,
               ),
             ],
@@ -219,7 +220,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
                       payment.id,
                     ),
                     icon: const Icon(Icons.receipt),
-                    label: const Text('View Payment Proof'),
+                    label: Text('viewPaymentProof'.tr()),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.primary,
                     ),
@@ -248,7 +249,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Payment Proof'),
+        title: Text('paymentProof'.tr()),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -257,10 +258,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
             else ...[
               const Icon(Icons.receipt_long, size: 64, color: Colors.grey),
               const SizedBox(height: 16),
-              const Text(
-                'This is a placeholder for the payment proof image.',
-                textAlign: TextAlign.center,
-              ),
+              Text('noPaymentProofImage'.tr(), textAlign: TextAlign.center),
             ],
           ],
         ),
@@ -273,41 +271,41 @@ class _PaymentHistoryState extends State<PaymentHistory> {
                   if (context.mounted) {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Saved to gallery in pccp album'),
-                      ),
+                      SnackBar(content: Text('savedToGallery'.tr())),
                     );
                   }
                 } catch (e) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error saving image: $e')),
+                      SnackBar(
+                        content: Text(
+                          'errorSavingImage'.tr(args: [e.toString()]),
+                        ),
+                      ),
                     );
                   }
                 }
               },
-              child: const Text('Save'),
+              child: Text('save'.tr()),
             ),
             TextButton(
               onPressed: () async {
                 final confirm = await showDialog<bool>(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: const Text('Delete Proof'),
-                    content: const Text(
-                      'Are you sure you want to delete this payment proof?',
-                    ),
+                    title: Text('deleteProof'.tr()),
+                    content: Text('deleteProofConfirm'.tr()),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context, false),
-                        child: const Text('Cancel'),
+                        child: Text('cancel'.tr()),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(context, true),
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.red,
                         ),
-                        child: const Text('Delete'),
+                        child: Text('delete'.tr()),
                       ),
                     ],
                   ),
@@ -320,18 +318,18 @@ class _PaymentHistoryState extends State<PaymentHistory> {
                   if (context.mounted) {
                     Navigator.pop(context); // Close the proof dialog
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Payment proof deleted')),
+                      SnackBar(content: Text('paymentProofDeleted'.tr())),
                     );
                   }
                 }
               },
               style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Delete'),
+              child: Text('delete'.tr()),
             ),
           ],
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text('close'.tr()),
           ),
         ],
       ),

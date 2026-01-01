@@ -244,7 +244,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               _buildCategoryCard(
                 context,
                 "paymentInformation".tr(),
-                "manageFinances".tr(),
+                "managePayments".tr(),
                 Icons.payments_rounded,
                 Colors.green,
                 () => Navigator.pushNamed(context, PaymentRoutes.dashboard),
@@ -254,7 +254,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
           const SizedBox(height: 24),
           Text(
-            "systemDiagnostic".tr(),
+            "systemDiagnostics".tr(),
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -353,8 +353,7 @@ void _confirmCleanup(BuildContext context) {
   showDialog(
     context: context,
     builder: (dialogContext) => AlertDialog(
-      title: Text('cleanupLocalCache'.tr()),
-      content: Text('cleanupCacheConfirm'.tr()),
+      title: Text('cleanUpLocalCache'.tr()),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(dialogContext),

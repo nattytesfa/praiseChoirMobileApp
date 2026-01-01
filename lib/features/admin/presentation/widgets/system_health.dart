@@ -23,13 +23,15 @@ class SystemHealth extends StatelessWidget {
               children: [
                 Text(
                   'systemHealth'.tr(),
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 // Inside SystemHealth Column
                 if (stats != null)
                   Text(
-                    'lastSynced: ${DateFormat('hh:mm a').format(stats.lastSynced)}'
-                        .tr(),
+                    '${'lastSynced'.tr()}: ${DateFormat('hh:mm a').format(stats.lastSynced)}',
                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
 
@@ -57,16 +59,19 @@ class SystemHealth extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 16),
-                  Text('totalUsers: ${state.healthStatus['total_users']}'.tr()),
-                  Text('totalSongs: ${state.healthStatus['total_songs']}'.tr()),
                   Text(
-                    'totalPayments: ${state.healthStatus['total_payments']}'
-                        .tr(),
+                    '${'totalUsers'.tr()}: ${state.healthStatus['total_users']}',
+                  ),
+                  Text(
+                    '${'totalSongs'.tr()}: ${state.healthStatus['total_songs']}',
+                  ),
+                  Text(
+                    '${'totalPayments'.tr()}: ${state.healthStatus['total_payments']}',
                   ),
                 ] else if (state is AdminLoading) ...[
                   const Center(child: CircularProgressIndicator()),
                 ] else ...[
-                  Text('click"checkHealth"ToSeeSystemStatus').tr(),
+                  Text('clickCheckHealth'.tr()),
                 ],
                 const SizedBox(height: 16),
                 Row(
@@ -83,7 +88,7 @@ class SystemHealth extends StatelessWidget {
                       child: ElevatedButton.icon(
                         onPressed: onCleanup,
                         icon: const Icon(Icons.cleaning_services),
-                        label: Text('cleanupData'.tr()),
+                        label: Text('cleanUpData'.tr()),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.redAccent,
                         ),

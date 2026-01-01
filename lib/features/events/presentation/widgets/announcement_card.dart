@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../data/models/announcement_model.dart';
@@ -62,7 +63,7 @@ class AnnouncementCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      'High Priority',
+                      'highPriority'.tr(),
                       style: AppTextStyles.caption.copyWith(
                         color: Colors.white,
                         fontSize: 10,
@@ -88,36 +89,40 @@ class AnnouncementCard extends StatelessWidget {
                     },
                     itemBuilder: (BuildContext context) {
                       return [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'edit',
                           child: Row(
                             children: [
-                              Icon(Icons.edit, size: 20),
-                              SizedBox(width: 8),
-                              Text('Edit'),
+                              const Icon(Icons.edit, size: 20),
+                              const SizedBox(width: 8),
+                              Text('edit'.tr()),
                             ],
                           ),
                         ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
                           child: Row(
                             children: [
-                              Icon(Icons.delete, color: Colors.red, size: 20),
-                              SizedBox(width: 8),
+                              const Icon(
+                                Icons.delete,
+                                color: Colors.red,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
                               Text(
-                                'Delete',
-                                style: TextStyle(color: Colors.red),
+                                'delete'.tr(),
+                                style: const TextStyle(color: Colors.red),
                               ),
                             ],
                           ),
                         ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'readers',
                           child: Row(
                             children: [
-                              Icon(Icons.visibility, size: 20),
-                              SizedBox(width: 8),
-                              Text('View Readers'),
+                              const Icon(Icons.visibility, size: 20),
+                              const SizedBox(width: 8),
+                              Text('viewReaders'.tr()),
                             ],
                           ),
                         ),

@@ -127,7 +127,7 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
                   _buildAnalyticsCard(
                     'activeMembers'.tr(),
                     '${state.stats.activeMembers}/${state.stats.totalMembers}',
-                    '${((state.stats.activeMembers / state.stats.totalMembers) * 100).toStringAsFixed(1)}% active',
+                    '${((state.stats.activeMembers / state.stats.totalMembers) * 100).toStringAsFixed(1)}% ${'active'.tr()}',
                     Icons.people,
                     Colors.green,
                   ),
@@ -135,7 +135,7 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
                   _buildAnalyticsCard(
                     'songCompletion'.tr(),
                     '${state.stats.songsWithAudio}/${state.stats.totalSongs}',
-                    '${((state.stats.songsWithAudio / state.stats.totalSongs) * 100).toStringAsFixed(1)}% with audio',
+                    '${((state.stats.songsWithAudio / state.stats.totalSongs) * 100).toStringAsFixed(1)}% ${'withAudio'.tr()}',
                     Icons.music_note,
                     Colors.purple,
                   ),
@@ -181,7 +181,7 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
                           ),
                           SizedBox(height: 12),
                           _buildActivityItem(
-                            'TotalMembers'.tr(),
+                            'totalMembers'.tr(),
                             state.stats.totalMembers.toString(),
                             Icons.people,
                           ),
@@ -228,7 +228,7 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
                             state.stats.songsWithAudio,
                           ),
                           _buildSongHealthItem(
-                            'songsWithoutAudio'.tr(),
+                            'songsWithOutAudio'.tr(),
                             state.stats.totalSongs - state.stats.songsWithAudio,
                           ),
                           const SizedBox(height: 8),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
 import 'package:praise_choir_app/features/payment/data/models/payment_report_model.dart';
@@ -12,20 +13,12 @@ class PaymentReportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Payment Report'),
+        title: Text('paymentReport'.tr()),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         actions: [
-          IconButton(
-            onPressed: () {
-            },
-            icon: const Icon(Icons.share),
-          ),
-          IconButton(
-            onPressed: () {
-            },
-            icon: const Icon(Icons.download),
-          ),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.share)),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.download)),
         ],
       ),
       body: SingleChildScrollView(
@@ -39,20 +32,22 @@ class PaymentReportScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      'Payment Report - ${report.month.month}/${report.month.year}',
+                      'paymentReportTitle'.tr(
+                        args: ['${report.month.month}/${report.month.year}'],
+                      ),
                       style: AppTextStyles.titleLarge,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Generated on ${_formatDate(report.generatedAt)}',
+                      'generatedOn'.tr(args: [_formatDate(report.generatedAt)]),
                       style: AppTextStyles.caption,
                     ),
                   ],
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
 
             // Summary Cards
@@ -65,25 +60,25 @@ class PaymentReportScreen extends StatelessWidget {
               mainAxisSpacing: 12,
               children: [
                 _buildSummaryCard(
-                  'Total Members',
+                  'totalMembers'.tr(),
                   report.totalMembers.toString(),
                   Icons.people,
                   AppColors.primary,
                 ),
                 _buildSummaryCard(
-                  'Paid',
+                  'paid'.tr(),
                   '${report.paidCount} (${report.collectionRate.toStringAsFixed(1)}%)',
                   Icons.check_circle,
                   Colors.green,
                 ),
                 _buildSummaryCard(
-                  'Pending',
+                  'pending'.tr(),
                   report.pendingCount.toString(),
                   Icons.pending,
                   Colors.orange,
                 ),
                 _buildSummaryCard(
-                  'Overdue',
+                  'overdue'.tr(),
                   report.overdueCount.toString(),
                   Icons.warning,
                   Colors.red,
@@ -99,23 +94,35 @@ class PaymentReportScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Financial Summary', style: AppTextStyles.titleMedium),
+                    Text(
+                      'financialSummary'.tr(),
+                      style: AppTextStyles.titleMedium,
+                    ),
                     const SizedBox(height: 12),
                     _buildFinancialItem(
-                      'Total Expected',
-                      'ETB ${(report.totalMembers * 10.0).toStringAsFixed(2)}',
+                      'totalExpected'.tr(),
+                      'etbAmount'.tr(
+                        args: [(report.totalMembers * 10.0).toStringAsFixed(2)],
+                      ),
                     ),
                     _buildFinancialItem(
-                      'Total Collected',
-                      'ETB ${report.totalAmount.toStringAsFixed(2)}',
+                      'totalCollected'.tr(),
+                      'etbAmount'.tr(
+                        args: [report.totalAmount.toStringAsFixed(2)],
+                      ),
                     ),
                     _buildFinancialItem(
-                      'Collection Rate',
+                      'collectionRate'.tr(),
                       '${report.collectionRate.toStringAsFixed(1)}%',
                     ),
                     _buildFinancialItem(
-                      'Outstanding',
-                      'ETB ${((report.totalMembers * 10.0) - report.totalAmount).toStringAsFixed(2)}',
+                      'outstanding'.tr(),
+                      'etbAmount'.tr(
+                        args: [
+                          ((report.totalMembers * 10.0) - report.totalAmount)
+                              .toStringAsFixed(2),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -131,7 +138,7 @@ class PaymentReportScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Collection Distribution',
+                      'collectionDistribution'.tr(),
                       style: AppTextStyles.titleMedium,
                     ),
                     const SizedBox(height: 12),
@@ -211,10 +218,10 @@ class PaymentReportScreen extends StatelessWidget {
                 flex: (paidPercentage * 100).round(),
                 child: Container(
                   color: Colors.green,
-                  child: const Center(
+                  child: Center(
                     child: Text(
-                      'Paid',
-                      style: TextStyle(color: Colors.white, fontSize: 10),
+                      'paid'.tr(),
+                      style: const TextStyle(color: Colors.white, fontSize: 10),
                     ),
                   ),
                 ),
@@ -223,10 +230,10 @@ class PaymentReportScreen extends StatelessWidget {
                 flex: (pendingPercentage * 100).round(),
                 child: Container(
                   color: Colors.orange,
-                  child: const Center(
+                  child: Center(
                     child: Text(
-                      'Pending',
-                      style: TextStyle(color: Colors.white, fontSize: 10),
+                      'pending'.tr(),
+                      style: const TextStyle(color: Colors.white, fontSize: 10),
                     ),
                   ),
                 ),
@@ -235,10 +242,10 @@ class PaymentReportScreen extends StatelessWidget {
                 flex: (overduePercentage * 100).round(),
                 child: Container(
                   color: Colors.red,
-                  child: const Center(
+                  child: Center(
                     child: Text(
-                      'Overdue',
-                      style: TextStyle(color: Colors.white, fontSize: 10),
+                      'overdue'.tr(),
+                      style: const TextStyle(color: Colors.white, fontSize: 10),
                     ),
                   ),
                 ),
@@ -250,9 +257,13 @@ class PaymentReportScreen extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildChartLegend('Paid', Colors.green, report.paidCount),
-            _buildChartLegend('Pending', Colors.orange, report.pendingCount),
-            _buildChartLegend('Overdue', Colors.red, report.overdueCount),
+            _buildChartLegend('paid'.tr(), Colors.green, report.paidCount),
+            _buildChartLegend(
+              'pending'.tr(),
+              Colors.orange,
+              report.pendingCount,
+            ),
+            _buildChartLegend('overdue'.tr(), Colors.red, report.overdueCount),
           ],
         ),
       ],

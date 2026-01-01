@@ -1,5 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:praise_choir_app/features/auth/data/models/user_model.dart';
 
 class ActivityAnalytics extends StatelessWidget {
@@ -26,21 +26,21 @@ class ActivityAnalytics extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Choir Engagement (Last 7 Days)",
+            Text(
+              "choirEngagementLast7Days".tr(),
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildStatItem("Active", activeCount, Colors.green),
-                _buildStatItem("Inactive", inactiveCount, Colors.orange),
+                _buildStatItem("active".tr(), activeCount, Colors.green),
+                _buildStatItem("inactive".tr(), inactiveCount, Colors.orange),
               ],
             ),
             const Divider(height: 30),
-            const Text(
-              "Recent Logins",
+            Text(
+              "recentLogins".tr(),
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
@@ -57,7 +57,7 @@ class ActivityAnalytics extends StatelessWidget {
                 return ListTile(
                   leading: CircleAvatar(child: Text(user.name[0])),
                   title: Text(user.name),
-                  subtitle: Text('Last seen: $lastSeen'),
+                  subtitle: Text('lastSeen: $lastSeen'.tr()),
                   trailing: Icon(
                     Icons.circle,
                     size: 12,

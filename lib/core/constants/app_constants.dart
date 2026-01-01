@@ -9,15 +9,14 @@ class AppConstants {
   // Role constants
   static const String roleLeader = 'admin';
   static const String roleUser = 'user';
-  static const String roleSongwriter = 'songwriter';
+  static const String roleSongWriter = 'songWriter';
   static const String roleMember = 'member';
-  static const String rolePrayerGroup = 'prayer_group';
   // Grouped role list for iterating in UI
   static const List<String> roles = [
     roleLeader,
-    roleSongwriter,
+    roleSongWriter,
     roleMember,
-    rolePrayerGroup,
+
   ];
 
   // Language constants

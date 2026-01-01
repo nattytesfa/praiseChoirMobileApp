@@ -23,13 +23,13 @@ class SongCard extends StatelessWidget {
     final difference = now.difference(date);
 
     if (difference.inDays > 0) {
-      return '${difference.inDays} daysAgo'.tr();
+      return 'daysAgo'.tr(args: [difference.inDays.toString()]);
     } else if (difference.inHours > 0) {
-      return '${difference.inHours} hoursAgo'.tr();
+      return 'hoursAgo'.tr(args: [difference.inHours.toString()]);
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} minutesAgo'.tr();
+      return 'minutesAgo'.tr(args: [difference.inMinutes.toString()]);
     } else {
-      return 'Just now';
+      return 'justNow'.tr();
     }
   }
 
@@ -62,7 +62,7 @@ class SongCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'language: ${song.language}'.tr(),
+              'languageLabel'.tr(args: [song.language]),
               style: const TextStyle(fontSize: 12),
             ),
             if (song.tags.isNotEmpty) ...[
@@ -83,7 +83,7 @@ class SongCard extends StatelessWidget {
             ],
             const SizedBox(height: 4),
             Text(
-              'lastPerformed: ${_getTimeAgo(song.lastPerformed)}'.tr(),
+              'lastPerformedLabel'.tr(args: [_getTimeAgo(song.lastPerformed)]),
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
@@ -99,11 +99,11 @@ class SongCard extends StatelessWidget {
           itemBuilder: (context) => [
             PopupMenuItem(
               value: 'performed',
-              child: Text('markedAsPerformed'.tr()),
+              child: Text('markAsPerformed'.tr()),
             ),
             PopupMenuItem(
               value: 'practiced',
-              child: Text('markedAspracticed'.tr()),
+              child: Text('markAsPracticed'.tr()),
             ),
           ],
         ),

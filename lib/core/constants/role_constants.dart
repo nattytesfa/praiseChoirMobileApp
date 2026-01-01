@@ -36,10 +36,8 @@ class RoleConstants {
     switch (role) {
       case AppConstants.roleLeader:
         return leaderPermissions;
-      case AppConstants.roleSongwriter:
+      case AppConstants.roleSongWriter:
         return atigniPermissions;
-      case AppConstants.rolePrayerGroup:
-        return prayerGroupPermissions;
       case AppConstants.roleMember:
         return memberPermissions;
       default:

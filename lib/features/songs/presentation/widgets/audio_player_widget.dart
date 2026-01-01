@@ -165,7 +165,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('${speed}xspeed'.tr()),
+                      Text('speedX'.tr(args: [speed.toString()])),
                       if (speed == state.playbackSpeed)
                         const Icon(Icons.check, size: 16),
                     ],
@@ -201,7 +201,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title:  Text('volume'.tr()),
+        title: Text('volume'.tr()),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -217,7 +217,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child:  Text('close'.tr()),
+            child: Text('close'.tr()),
           ),
         ],
       ),
@@ -245,7 +245,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
               widget.title,
             );
           },
-          child:  Text('retry'.tr()),
+          child: Text('retry'.tr()),
         ),
       ],
     );
@@ -288,7 +288,10 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          Text('audioPlayer'.tr(), style: AppTextStyles.caption),
+                          Text(
+                            'audioPlayer'.tr(),
+                            style: AppTextStyles.caption,
+                          ),
                         ],
                       ),
                     ),

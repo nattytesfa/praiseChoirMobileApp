@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -29,16 +30,16 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
   String _selectedLanguage = 'all';
 
   final List<Map<String, String>> _filters = [
-    {'value': 'all', 'label': 'All Songs'},
-    {'value': 'with_audio', 'label': 'With Audio'},
-    {'value': 'favorites', 'label': 'Favorites'},
-    {'value': 'new', 'label': 'New Songs'},
+    {'value': 'all', 'label': 'allSongs'},
+    {'value': 'with_audio', 'label': 'withAudio'},
+    {'value': 'favorites', 'label': 'favorites'},
+    {'value': 'new', 'label': 'newSongs'},
   ];
 
   final List<Map<String, String>> _languages = [
-    {'value': 'all', 'label': 'All Languages'},
-    {'value': 'amharic', 'label': 'Amharic'},
-    {'value': 'kembatigna', 'label': 'Kembatigna'},
+    {'value': 'all', 'label': 'allLanguages'},
+    {'value': 'amharic', 'label': 'amharic'},
+    {'value': 'kembatigna', 'label': 'kembatgna'},
   ];
 
   @override
@@ -185,7 +186,7 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
         children: [
           // Search Bar
           app_search.SearchBar(
-            hintText: 'Search songs by title or lyrics...',
+            hintText: 'searchSongsHint'.tr(),
             onSearch: _onSearch,
             onClear: _onClearSearch,
           ),
@@ -201,14 +202,14 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
                   items: _languages.map((lang) {
                     return DropdownMenuItem(
                       value: lang['value'],
-                      child: Text(lang['label']!),
+                      child: Text(lang['label']!.tr()),
                     );
                   }).toList(),
                   onChanged: _onLanguageChanged,
-                  decoration: const InputDecoration(
-                    labelText: 'Language',
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12),
+                  decoration: InputDecoration(
+                    labelText: 'language'.tr(),
+                    border: const OutlineInputBorder(),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   ),
                   isExpanded: true,
                 ),
@@ -222,14 +223,14 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
                   items: _filters.map((filter) {
                     return DropdownMenuItem(
                       value: filter['value'],
-                      child: Text(filter['label']!),
+                      child: Text(filter['label']!.tr()),
                     );
                   }).toList(),
                   onChanged: _onFilterChanged,
-                  decoration: const InputDecoration(
-                    labelText: 'Filter',
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12),
+                  decoration: InputDecoration(
+                    labelText: 'filter'.tr(),
+                    border: const OutlineInputBorder(),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   ),
                   isExpanded: true,
                 ),
@@ -283,16 +284,16 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
   Widget _buildEmptyState() {
     if (_currentQuery.isNotEmpty) {
       return EmptyState(
-        message: 'No songs found for "$_currentQuery"',
-        subtitle: 'Try different search terms or filters',
+        message: '${'noSongsFoundFor'.tr()} "$_currentQuery"',
+        subtitle: 'tryDifferentSearchTerms'.tr(),
         icon: Icons.search_off,
         title: '',
       );
     }
 
-    return const EmptyState(
-      message: 'No songs found',
-      subtitle: 'Try adjusting your filters',
+    return EmptyState(
+      message: 'noSongsFound'.tr(),
+      subtitle: 'tryAdjustingFilters'.tr(),
       icon: Icons.music_off,
       title: '',
     );
@@ -308,7 +309,7 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.all(16),
-          child: Text('Recent Searches', style: AppTextStyles.titleMedium),
+          child: Text('recentSearches'.tr(), style: AppTextStyles.titleMedium),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -332,13 +333,13 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Search Songs')),
+      appBar: AppBar(title: Text('searchSongs'.tr())),
       body: Column(
         children: [
           // Search Header with Filters
           _buildSearchHeader(),
           const SizedBox(height: 14),
-          Text('Recent Searches', style: AppTextStyles.titleMedium),
+          Text('recentSearches'.tr(), style: AppTextStyles.titleMedium),
           const SizedBox(height: 14),
 
           // Results
