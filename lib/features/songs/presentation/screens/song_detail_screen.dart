@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide DateUtils;
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
@@ -28,10 +29,10 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   int _currentPage = 0;
 
   final List<Map<String, dynamic>> _tabs = [
-    {'title': 'Info', 'icon': Icons.info_outline},
-    {'title': 'Lyrics', 'icon': Icons.music_note},
-    {'title': 'Audio', 'icon': Icons.audio_file},
-    {'title': 'Versions', 'icon': Icons.layers},
+    {'title': 'info', 'icon': Icons.info_outline},
+    {'title': 'lyrics', 'icon': Icons.music_note},
+    {'title': 'audio', 'icon': Icons.audio_file},
+    {'title': 'versions', 'icon': Icons.layers},
   ];
 
   SongModel get _currentSong {
@@ -48,14 +49,14 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     context.read<SongCubit>().markSongPerformed(widget.song.id);
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Marked as performed')));
+    ).showSnackBar(SnackBar(content: Text('markedAsPerformed'.tr())));
   }
 
   void _markAsPracticed() {
     context.read<SongCubit>().markSongPracticed(widget.song.id);
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Marked as practiced')));
+    ).showSnackBar(SnackBar(content: Text('markedAsPracticed'.tr())));
   }
 
   void _openFullscreenLyrics() {
@@ -107,7 +108,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         IconButton(
           icon: const Icon(Icons.fullscreen),
           onPressed: _openFullscreenLyrics,
-          tooltip: 'Fullscreen Lyrics',
+          tooltip: 'fullscreenLyrics'.tr(),
         ),
 
         // Edit song (only for leaders/atigni)
@@ -119,7 +120,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                 return IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: _editSong,
-                  tooltip: 'Edit Song',
+                  tooltip: 'editSong'.tr(),
                 );
               }
             }
@@ -142,26 +143,26 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
             }
           },
           itemBuilder: (context) => [
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'performed',
               child: ListTile(
-                leading: Icon(Icons.star),
-                title: Text('Mark as Performed'),
+                leading: const Icon(Icons.star),
+                title: Text('markAsPerformed'.tr()),
               ),
             ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'practiced',
               child: ListTile(
-                leading: Icon(Icons.self_improvement),
-                title: Text('Mark as Practiced'),
+                leading: const Icon(Icons.self_improvement),
+                title: Text('markAsPracticed'.tr()),
               ),
             ),
             const PopupMenuDivider(),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'share',
               child: ListTile(
-                leading: Icon(Icons.share),
-                title: Text('Share Song'),
+                leading: const Icon(Icons.share),
+                title: Text('shareSong'.tr()),
               ),
             ),
           ],
@@ -221,7 +222,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      tab['title'] as String,
+                      (tab['title'] as String).tr(),
                       style: AppTextStyles.labelSmall.copyWith(
                         color: isSelected
                             ? AppColors.primary
@@ -259,18 +260,18 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
           // Audio Tab
           song.audioPath != null
               ? AudioPlayerWidget(audioPath: song.audioPath!, title: song.title)
-              : const Center(
+              : Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.audio_file,
                         size: 64,
                         color: AppColors.textDisabled,
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Text(
-                        'No audio recording available',
+                        'noAudioAvailable'.tr(),
                         style: AppTextStyles.bodyMedium,
                       ),
                     ],
