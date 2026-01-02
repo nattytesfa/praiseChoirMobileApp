@@ -34,12 +34,12 @@ class ChatCubit extends Cubit<ChatState> {
     }
   }
 
-  Future<void> joinGeneralChat(String userId) async {
+  Future<void> joingroupChat(String userId) async {
     emit(ChatLoading());
     try {
-      await chatRepository.ensureGeneralChatExists();
-      const generalChatId = 'general';
-      loadMessages(generalChatId);
+      await chatRepository.ensuregroupChatExists();
+      const groupChatId = 'general';
+      loadMessages(groupChatId);
     } catch (e) {
       emit(ChatError('Failed to join general chat'));
     }
