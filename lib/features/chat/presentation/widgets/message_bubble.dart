@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -70,46 +71,46 @@ class MessageBubble extends StatelessWidget {
           ),
         ),
         const PopupMenuDivider(),
-        const PopupMenuItem<String>(
+         PopupMenuItem<String>(
           value: 'reply',
           child: Row(
             children: [
               Icon(Icons.reply, color: Colors.black54),
               SizedBox(width: 8),
-              Text('Reply'),
+              Text('reply'.tr()),
             ],
           ),
         ),
         if (isMe && message.type == MessageType.text)
-          const PopupMenuItem<String>(
+           PopupMenuItem<String>(
             value: 'edit',
             child: Row(
               children: [
                 Icon(Icons.edit, color: Colors.black54),
                 SizedBox(width: 8),
-                Text('Edit'),
+                Text('edit'.tr()),
               ],
             ),
           ),
         if (isMe || isAdmin)
-          const PopupMenuItem<String>(
+           PopupMenuItem<String>(
             value: 'delete',
             child: Row(
               children: [
                 Icon(Icons.delete, color: Colors.red),
                 SizedBox(width: 8),
-                Text('Delete', style: TextStyle(color: Colors.red)),
+                Text('delete'.tr(), style: TextStyle(color: Colors.red)),
               ],
             ),
           ),
         if (isMe && DateTime.now().difference(message.timestamp).inHours < 24)
-          const PopupMenuItem<String>(
+           PopupMenuItem<String>(
             value: 'info',
             child: Row(
               children: [
                 Icon(Icons.info_outline, color: Colors.black54),
                 SizedBox(width: 8),
-                Text('Info'),
+                Text('info'.tr()),
               ],
             ),
           ),

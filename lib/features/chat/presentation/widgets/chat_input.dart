@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -104,7 +105,6 @@ class _ChatInputState extends State<ChatInput> {
         }
       }
     } catch (e) {
-      debugPrint('Error recording audio: $e');
       setState(() {
         _isRecording = false;
       });
@@ -177,8 +177,8 @@ class _ChatInputState extends State<ChatInput> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Editing message',
+                         Text(
+                          'editingMessage'.tr(),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
@@ -223,7 +223,7 @@ class _ChatInputState extends State<ChatInput> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Replying to ${widget.replyingTo!.senderName}',
+                          'replyingTo ${widget.replyingTo!.senderName}'.tr(),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
@@ -272,7 +272,7 @@ class _ChatInputState extends State<ChatInput> {
                             color: AppColors.primary,
                           ),
                         ),
-                        const Text('Voice Message'),
+                         Text('voiceMessage').tr(),
                       ],
                     ),
                   ),
@@ -294,8 +294,8 @@ class _ChatInputState extends State<ChatInput> {
                 children: [
                   const Icon(Icons.mic, color: Colors.red),
                   const SizedBox(width: 8),
-                  const Text(
-                    'Recording...',
+                   Text(
+                    'recording...'.tr(),
                     style: TextStyle(
                       color: Colors.red,
                       fontWeight: FontWeight.bold,
@@ -337,7 +337,7 @@ class _ChatInputState extends State<ChatInput> {
                     controller: widget.controller,
                     focusNode: _focusNode,
                     decoration: InputDecoration(
-                      hintText: 'Type a message...',
+                      hintText: 'typeAMessage...'.tr(),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
                         borderSide: BorderSide.none,
