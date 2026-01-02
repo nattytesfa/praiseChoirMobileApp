@@ -31,7 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Stack(
         children: [
           Positioned(
@@ -149,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           obscureText: true,
                           errorMessage: 'enterPassword',
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 40),
                         if (state is AuthLoading)
                           CircularProgressIndicator(color: AppColors.accent)
                         else ...[
@@ -157,13 +156,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: _submitEmailAndPassword,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.accent,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(18),
-                                ),
-                                elevation: 0,
-                              ),
                               child: Text(
                                 'signIn'.tr(),
                                 style: const TextStyle(
@@ -173,18 +165,17 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 30),
 
                           // Sign up link
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text('noAccount'.tr()),
+                              const SizedBox(width: 15),
                               TextButton(
                                 style: TextButton.styleFrom(
-                                  foregroundColor: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurface,
+                                  foregroundColor: Colors.blue,
                                 ),
                                 onPressed: () =>
                                     Navigator.pushNamed(context, '/signup'),
@@ -276,28 +267,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }) {
     return TextFormField(
       controller: controller,
-      style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
       decoration: InputDecoration(
-        filled: true,
-        labelStyle: const TextStyle(color: Colors.white60),
-        prefixIcon: Icon(controllerIcon, color: Colors.white38, size: 22),
+        prefixIcon: Icon(controllerIcon),
         labelText: label.tr(),
-        enabledBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(18)),
-          borderSide: BorderSide(color: Color.fromARGB(206, 199, 198, 198)),
-        ),
-        focusedBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(18)),
-          borderSide: BorderSide(color: Color.fromARGB(255, 235, 236, 236)),
-        ),
-        errorBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(18)),
-          borderSide: BorderSide(color: Colors.redAccent),
-        ),
-        focusedErrorBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(18)),
-          borderSide: BorderSide(color: Colors.redAccent),
-        ),
       ),
       keyboardType: keyboardType,
       obscureText: obscureText,

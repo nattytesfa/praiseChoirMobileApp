@@ -5,26 +5,36 @@ class AppColors {
   static const Color secondary = Color(0xFF7C3AED); // Purple
   static const Color accent = Color(0xFFFACC15);
 
-  static const Color primaryLight = Color(0xFF3B82F6);
+  // Light Theme Colors
+  static const Color primaryDark = Color(0xFF1E40AF);
+  static const Color secondaryDark = Color.fromRGBO(109, 40, 217, 1);
+
+  // Dark Theme Colors
+  static const Color primaryLight = Color.fromARGB(255, 229, 231, 233);
   static const Color secondaryLight = Color(0xFF8B5CF6);
-
-
+  static const Color fillDark = Color.fromARGB(255, 19, 30, 54);
   static const Color darkBackground = Color(0xFF0F172A);
-  static const Color primaryDark = Color(0xFF1F2937);
-  static const Color secondaryDark = Color(0xFF374151);
-
+  static const Color darkSurface = Color(0xFF1E1E1E);
+  static const Color darkSecondary = Color(0xFF03DAC6);
+  static const Color darkError = Color(0xFFCF6679);
+  static const Color darkOnBackground = Color(0xFFFFFFFF);
+  static const Color darkOnSurface = Color(0xFFFFFFFF);
+  static const Color gray50 = Color(0xFFF9FAFB);
+  static const Color gray100 = Color(0xFFF3F4F6);
+  static const Color gray400 = Color(0xFF9CA3AF);
+  static const Color white60 = Colors.white60;
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color blue = Colors.blue;
 
   // Neutral Colors
   static const Color black = Color(0xFF000000);
-  static const Color white = Color(0xFFFFFFFF);
+  static const Color white38 = Colors.white38;
+
   static const Color transparent = Color(0x00000000);
 
   // Gray Scale
-  static const Color gray50 = Color(0xFFF9FAFB);
-  static const Color gray100 = Color(0xFFF3F4F6);
   static const Color gray200 = Color(0xFFE5E7EB);
   static const Color gray300 = Color(0xFFD1D5DB);
-  static const Color gray400 = Color(0xFF9CA3AF);
   static const Color gray500 = Color(0xFF6B7280);
   static const Color gray600 = Color(0xFF4B5563);
   static const Color gray700 = Color(0xFF374151);
@@ -77,35 +87,6 @@ class AppColors {
   static const Color shadowMedium = Color(0x33000000);
   static const Color shadowDark = Color(0x66000000);
 
-  // Gradient Colors
-  static const Gradient primaryGradient = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [primary, primaryLight],
-  );
-
-  static const Gradient secondaryGradient = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [secondary, secondaryLight],
-  );
-
-
-  // High Contrast Colors
-  static const Color hcPrimary = Color(0xFF0000FF);
-  static const Color hcSecondary = Color(0xFF008000);
-  static const Color hcBackground = Color(0xFFFFFFFF);
-  static const Color hcSurface = Color(0xFFFFFFFF);
-  static const Color hcText = Color(0xFF000000);
-  static const Color hcError = Color(0xFFFF0000);
-
-  // Dark Theme Colors
-  static const Color darkSurface = Color(0xFF1E1E1E);
-  static const Color darkSecondary = Color(0xFF03DAC6);
-  static const Color darkError = Color(0xFFCF6679);
-  static const Color darkOnBackground = Color(0xFFFFFFFF);
-  static const Color darkOnSurface = Color(0xFFFFFFFF);
-
   // Helper methods
   static Color getRoleColor(String role) {
     switch (role) {
@@ -148,25 +129,5 @@ class AppColors {
     // Use integer alpha to avoid precision-loss deprecation warnings
     final alpha = (opacity * 255).clamp(0, 255).round();
     return color.withAlpha(alpha);
-  }
-
-  static Color darken(Color color, [double amount = 0.1]) {
-    assert(amount >= 0 && amount <= 1);
-
-    final hsl = HSLColor.fromColor(color);
-    final hslDark = hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0));
-
-    return hslDark.toColor();
-  }
-
-  static Color lighten(Color color, [double amount = 0.1]) {
-    assert(amount >= 0 && amount <= 1);
-
-    final hsl = HSLColor.fromColor(color);
-    final hslLight = hsl.withLightness(
-      (hsl.lightness + amount).clamp(0.0, 1.0),
-    );
-
-    return hslLight.toColor();
   }
 }

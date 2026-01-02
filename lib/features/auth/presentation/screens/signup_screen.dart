@@ -7,6 +7,8 @@ import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dar
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/songs/song_routes.dart';
 
+import '../../../../core/theme/app_colors.dart';
+
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
@@ -26,8 +28,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String? _errorMessage;
 
   final List<Map<String, String>> _roles = [
-    {'value': 'member', 'label': 'roleMemberLabel'},
-    {'value': 'guest', 'label': 'roleGuestLabel'},
+    {'value': 'member', 'label': 'member'},
+    {'value': 'guest', 'label': 'guest'},
   ];
 
   @override
@@ -42,8 +44,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // Simply trigger the action.
-    // The BlocListener in your widget tree will catch the success.
     await context.read<AuthCubit>().signUpWithEmail(
       email: _emailController.text.trim(),
       password: _passwordController.text,
@@ -56,11 +56,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
     Navigator.pushReplacementNamed(context, '/login');
   }
 
+  Widget _textFieldDecoration({
+    required TextEditingController controller,
+    required String labelText,
+    required IconData prefixIcon,
+    required String? Function(String?)? validator,
+    String? hintText,
+    bool obscureText = false,
+  }) {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: labelText,
+        prefixIcon: Icon(prefixIcon),
+        hintText: hintText,
+      ),
+      controller: controller,
+      validator: validator,
+      obscureText: obscureText,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('createAccount'.tr()),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: _navigateToLogin,
@@ -71,11 +90,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           if (state is AuthAuthenticated) {
             final user = state.user;
             if (user.role == 'guest') {
-              // Guests go to the public screen
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 SongRoutes.songLibrary,
-
                 (route) => false,
               );
             } else if (user.approvalStatus == 'pending') {
@@ -93,12 +110,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 (route) => false,
               );
             }
-            // This will fire automatically when the sign-up is successful
-            // Navigator.pushNamedAndRemoveUntil(
-            //   context,
-            //   Routes.home, // Or Routes.songs
-            //   (route) => false,
-            // );
           } else if (state is AuthError) {
             // Handle the error state here too
             ScaffoldMessenger.of(
@@ -110,22 +121,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
           builder: (context, state) {
             final isLoading = state is AuthLoading;
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(horizontal: 30),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Header
-                    ElevatedButton(
-                      onPressed: isLoading ? null : _signUp,
-                      child: isLoading
-                          ? const CircularProgressIndicator()
-                          : Text('signUp'.tr()),
-                    ),
-                    const SizedBox(height: 20),
-                    const Icon(Icons.music_note, size: 80, color: Colors.blue),
-                    const SizedBox(height: 16),
                     Text(
                       'joinPraiseChoir'.tr(),
                       style: const TextStyle(
@@ -165,15 +166,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ],
                         ),
                       ),
-
-                    // Name field
-                    TextFormField(
+                    _textFieldDecoration(
                       controller: _nameController,
-                      decoration: InputDecoration(
-                        labelText: 'fullName'.tr(),
-                        prefixIcon: const Icon(Icons.person),
-                        border: const OutlineInputBorder(),
-                      ),
+                      labelText: 'fullName'.tr(),
+                      prefixIcon: Icons.person,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'enterNameError'.tr();
@@ -185,45 +181,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-
-                    // Email field
-                    TextFormField(
+                    _textFieldDecoration(
                       controller: _emailController,
-                      decoration: InputDecoration(
-                        labelText: 'emailAddress'.tr(),
-                        prefixIcon: const Icon(Icons.email),
-                        border: const OutlineInputBorder(),
-                        hintText: 'emailHint'.tr(),
-                      ),
-                      keyboardType: TextInputType.emailAddress,
+                      labelText: 'emailAddress'.tr(),
+                      prefixIcon: Icons.email,
                       validator: (value) {
                         return Validators.email(value);
                       },
                     ),
                     const SizedBox(height: 16),
-
-                    // Password field
-                    TextFormField(
+                    _textFieldDecoration(
                       controller: _passwordController,
-                      decoration: InputDecoration(
-                        labelText: 'password'.tr(),
-                        prefixIcon: const Icon(Icons.lock),
-                        border: const OutlineInputBorder(),
-                        hintText: 'passwordHint'.tr(),
-                      ),
+                      labelText: 'password'.tr(),
+                      prefixIcon: Icons.lock,
+                      hintText: 'passwordHint'.tr(),
                       obscureText: true,
                       validator: Validators.password,
                     ),
                     const SizedBox(height: 16),
-
-                    // Confirm password field
-                    TextFormField(
+                    _textFieldDecoration(
                       controller: _confirmPasswordController,
-                      decoration: InputDecoration(
-                        labelText: 'confirmPassword'.tr(),
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        border: const OutlineInputBorder(),
-                      ),
+                      labelText: 'confirmPassword'.tr(),
+                      prefixIcon: Icons.lock_outline,
                       obscureText: true,
                       validator: (value) {
                         if (value != _passwordController.text) {
@@ -232,8 +211,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 24),
-
+                    const SizedBox(height: 30),
                     // Role selection
                     Text(
                       'selectRole'.tr(),
@@ -241,41 +219,44 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'roleDisclaimer'.tr(),
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      'roleDisclaimer1'.tr(),
+                      style: const TextStyle(fontSize: 12, color: Colors.red),
                     ),
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<String>(
-                      initialValue: _selectedRole,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.group),
+                    const SizedBox(height: 8),
+                    Text(
+                      'roleDisclaimer2'.tr(),
+                      style: const TextStyle(fontSize: 12, color: Colors.red),
+                    ),
+                    const SizedBox(height: 20),
+                    DropdownMenu<String>(
+                      expandedInsets: EdgeInsets.zero,
+                      initialSelection: _selectedRole,
+                      leadingIcon: const Icon(Icons.group),
+                      alignmentOffset: Offset(0, 10),
+                      menuStyle: MenuStyle(
+                        backgroundColor: WidgetStatePropertyAll(
+                          AppColors.darkBackground,
+                        ),
+                        shape: WidgetStatePropertyAll(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                        ),
                       ),
-                      items: _roles.map((role) {
-                        return DropdownMenuItem<String>(
-                          value: role['value'],
-                          child: Text(role['label']!.tr()),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
+                      dropdownMenuEntries: [
+                        for (var role in _roles)
+                          DropdownMenuEntry<String>(
+                            value: role['value']!,
+                            label: role['label']!.tr(),
+                          ),
+                      ],
+                      onSelected: (value) {
                         setState(() {
                           _selectedRole = value!;
                         });
-                        if (value == 'member') {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('memberApprovalNote'.tr())),
-                          );
-                        }
-                      },
-
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'selectRoleError'.tr();
-                        }
-                        return null;
                       },
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 60),
 
                     // Sign up button
                     ElevatedButton(
@@ -295,35 +276,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               'createAccount'.tr(),
                               style: const TextStyle(fontSize: 16),
                             ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Divider
-                    Row(
-                      children: [
-                        Expanded(child: Divider(color: Colors.grey[300])),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            'alreadyHaveAccount'.tr(),
-                            style: TextStyle(color: Colors.grey[600]),
-                          ),
-                        ),
-                        Expanded(child: Divider(color: Colors.grey[300])),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Login link
-                    OutlinedButton(
-                      onPressed: _navigateToLogin,
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: Text('signInInstead'.tr()),
                     ),
                   ],
                 ),

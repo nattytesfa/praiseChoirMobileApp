@@ -248,27 +248,6 @@ class AppTextStyles {
     color: AppColors.textPrimary,
   );
 
-  // High Contrast Text Styles
-  static const TextStyle hcBodyLarge = TextStyle(
-    fontSize: 18,
-    fontWeight: FontWeight.w400,
-    color: AppColors.hcText,
-    height: 1.5,
-  );
-
-  static const TextStyle hcBodyMedium = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.w400,
-    color: AppColors.hcText,
-    height: 1.4,
-  );
-
-  static const TextStyle hcLabelLarge = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.w600,
-    color: AppColors.hcText,
-  );
-
   // Amharic Text Styles (larger for better readability)
   static const TextStyle amharicBodyLarge = TextStyle(
     fontSize: 18,
