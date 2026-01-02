@@ -340,6 +340,7 @@
   "generatePayments": "Generate Payments",
   "generateMonthlyPayments": "Generate Monthly Payments",
   "generatePaymentsConfirmation": "Generate Payments Confirmation",
+  "generatePaymentsConfirm": "Generate Payments Confirm",
   "generate": "Generate",
   "noPaidPaymentsfound": "No paid payments found",
   "noOverduePaymentsfound": "No overdue payments found",
@@ -361,5 +362,11 @@
   "collectionRate": "Collection Rate",
   "outstanding": "Outstanding",
   "collectionDistribution": "Collection Distribution",
-  "performanceOverview": "Performance Overview"
+  "performanceOverview": "Performance Overview",
+  "typeAMessage": "Type a Message",
+  "editingMessage": "Editing message",
+  "replyingTo": "Replying to {}",
+  "voiceMessage": "Voice Message",
+  "recording...": "Recording...",
+  "reply":"Reply"
 }

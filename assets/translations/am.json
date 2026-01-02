@@ -370,5 +370,15 @@
   "collectionRate": "የስብስብ መጠን",
   "outstanding": "ቀሪ",
   "collectionDistribution": "የስብስብ ክፍፍል",
-  "performanceOverview": "የአፈጻጸም እይታ"
+  "performanceOverview": "የአፈጻጸም እይታ",
+  "typeAMessage": "መልእክት ያስገቡ...",
+  "editingMessage": "መልእክት ያስተካክሉ...",
+  "replyingTo": "መልስ እየሰጠ ነው ለ {}",
+  "voiceMessage": "የድምፅ መልዕክት",
+  "recording...": "እየተቀዳ ነው...",
+  "reply":"መመለስ",
+  "songsWithoutAudio": "የድምጽ ቅጂ የሌላቸው መዝሙሮች",
+  "lastUpdated": "ለመጨረሻ የዘመነው",
+  "generatePaymentsConfirm": "እርግጠኛ ነህ ወርሃዊ ክፍያዎችን ለመመነጨት?",
+  "lastSeen": "መጨረሻ የታየው"
 }

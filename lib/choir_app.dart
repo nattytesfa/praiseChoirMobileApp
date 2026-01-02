@@ -76,11 +76,34 @@ class ChoirApp extends StatelessWidget {
 
             child: BlocBuilder<ThemeCubit, ThemeMode>(
               builder: (context, themeMode) {
+                final isAmharic = context.locale.languageCode == 'am';
+                final fontFamily = isAmharic ? 'Benaiah' : null;
+
+                ThemeData theme = AppTheme.lightTheme;
+                ThemeData darkTheme = AppTheme.darkTheme;
+
+                if (fontFamily != null) {
+                  theme = theme.copyWith(
+                    textTheme: theme.textTheme.apply(fontFamily: fontFamily),
+                    primaryTextTheme: theme.primaryTextTheme.apply(
+                      fontFamily: fontFamily,
+                    ),
+                  );
+                  darkTheme = darkTheme.copyWith(
+                    textTheme: darkTheme.textTheme.apply(
+                      fontFamily: fontFamily,
+                    ),
+                    primaryTextTheme: darkTheme.primaryTextTheme.apply(
+                      fontFamily: fontFamily,
+                    ),
+                  );
+                }
+
                 return MaterialApp(
                   locale: context.locale,
                   title: 'PCS',
-                  theme: AppTheme.lightTheme,
-                  darkTheme: AppTheme.darkTheme,
+                  theme: theme,
+                  darkTheme: darkTheme,
                   themeMode: themeMode,
                   onGenerateRoute: Routes.onGenerateRoute,
                   localizationsDelegates: context.localizationDelegates,
