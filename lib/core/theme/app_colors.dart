@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Primary Colors
   static const Color primary = Color(0xFF2563EB); // Blue
-  static const Color primaryDark = Color(0xFF1D4ED8);
-  static const Color primaryLight = Color(0xFF3B82F6);
-
-  // Secondary Colors
   static const Color secondary = Color(0xFF7C3AED); // Purple
-  static const Color secondaryDark = Color(0xFF6D28D9);
+  static const Color accent = Color(0xFFFACC15);
+
+  static const Color primaryLight = Color(0xFF3B82F6);
   static const Color secondaryLight = Color(0xFF8B5CF6);
 
-  // Accent Colors
-  static const Color accent = Color(0xFF059669); // Green
-  static const Color accentDark = Color(0xFF047857);
-  static const Color accentLight = Color(0xFF10B981);
+
+  static const Color darkBackground = Color(0xFF0F172A);
+  static const Color primaryDark = Color(0xFF1F2937);
+  static const Color secondaryDark = Color(0xFF374151);
+
 
   // Neutral Colors
   static const Color black = Color(0xFF000000);
@@ -62,7 +60,7 @@ class AppColors {
   static const Color onSurface = Color(0xFF111827);
 
   // Text Colors
-  static const Color textPrimary = Color(0xFF111827);
+  static const Color textPrimary = Colors.blueGrey;
   static const Color textSecondary = Color(0xFF6B7280);
   static const Color textDisabled = Color(0xFF9CA3AF);
   static const Color textInverse = Color(0xFFFFFFFF);
@@ -92,11 +90,6 @@ class AppColors {
     colors: [secondary, secondaryLight],
   );
 
-  static const Gradient successGradient = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [success, accentLight],
-  );
 
   // High Contrast Colors
   static const Color hcPrimary = Color(0xFF0000FF);
@@ -107,9 +100,7 @@ class AppColors {
   static const Color hcError = Color(0xFFFF0000);
 
   // Dark Theme Colors
-  static const Color darkBackground = Color(0xFF121212);
   static const Color darkSurface = Color(0xFF1E1E1E);
-  static const Color darkPrimary = Color(0xFFBB86FC);
   static const Color darkSecondary = Color(0xFF03DAC6);
   static const Color darkError = Color(0xFFCF6679);
   static const Color darkOnBackground = Color(0xFFFFFFFF);
@@ -122,8 +113,6 @@ class AppColors {
         return leader;
       case 'songwriter':
         return songwriter;
-      case 'prayer_group':
-        return prayerGroup;
       default:
         return member;
     }
@@ -148,7 +137,7 @@ class AppColors {
     switch (language) {
       case 'amharic':
         return amharic;
-      case 'kembatigna':
+      case 'kembatgna':
         return kembatgna;
       default:
         return english;

@@ -9,9 +9,14 @@ class ThemeCubit extends Cubit<ThemeMode> {
 
   // Toggle between light and dark
   void toggleTheme() {
-    final newMode = state == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+    final newMode = state == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
     emit(newMode);
     _saveTheme(newMode);
+  }
+
+  void setTheme(ThemeMode mode) {
+    emit(mode);
+    _saveTheme(mode);
   }
 
   // Persist choice to Hive

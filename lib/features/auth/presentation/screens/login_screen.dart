@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/config/routes.dart';
+import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/songs/song_routes.dart';
+import '../../../../core/theme/theme_cubit.dart';
 import '../cubit/auth_cubit.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -28,10 +30,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const primaryDark = Color(0xFF0F172A);
-    const accentGold = Color(0xFFFACC15);
     return Scaffold(
-      backgroundColor: primaryDark,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Stack(
         children: [
           Positioned(
@@ -48,7 +48,6 @@ class _LoginScreenState extends State<LoginScreen> {
               if (state is AuthAuthenticated) {
                 final user = state.user;
 
-                // USE THE SAME GATEKEEPER LOGIC EVERYWHERE
                 if (user.approvalStatus == 'pending' ||
                     user.approvalStatus == 'denied') {
                   Navigator.pushNamedAndRemoveUntil(
@@ -104,12 +103,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: 100,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: accentGold, width: 2),
+                            border: Border.all(
+                              color: AppColors.accent,
+                              width: 2,
+                            ),
                           ),
                           child: const Icon(
                             Icons.music_note_rounded,
                             size: 50,
-                            color: accentGold,
+                            color: AppColors.accent,
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -131,102 +133,32 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 30),
-                        TextFormField(
+                        _textFieldDecoration(
                           controller: _emailController,
-                          style: TextStyle(
-                            color: Theme.of(context).textTheme.bodyLarge?.color,
-                          ),
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor:
-                                Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white10
-                                : Colors.black87,
-                            labelStyle: const TextStyle(color: Colors.white60),
-                            prefixIcon: const Icon(
-                              Icons.alternate_email_rounded,
-                              color: Colors.white,
-                              size: 22,
-                            ),
-                            labelText: 'email'.tr(),
-                            enabledBorder: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(18),
-                              ),
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                            focusedBorder: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(18),
-                              ),
-                              borderSide: BorderSide(color: Colors.blue),
-                            ),
-                            errorBorder: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(18),
-                              ),
-                              borderSide: BorderSide(color: Colors.redAccent),
-                            ),
-                          ),
+                          controllerIcon: Icons.alternate_email_rounded,
+                          label: 'email',
                           keyboardType: TextInputType.emailAddress,
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'enterEmail'.tr();
-                            }
-                            return null;
-                          },
+                          errorMessage: 'enterEmail',
                         ),
                         const SizedBox(height: 20),
-                        TextFormField(
+                        _textFieldDecoration(
                           controller: _passwordController,
-                          decoration: InputDecoration(
-                            filled: true,
-                            labelStyle: const TextStyle(color: Colors.white60),
-                            prefixIcon: const Icon(
-                              Icons.lock_person_rounded,
-                              color: Colors.white38,
-                              size: 22,
-                            ),
-                            labelText: 'password'.tr(),
-                            enabledBorder: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(18),
-                              ),
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                            focusedBorder: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(18),
-                              ),
-                              borderSide: BorderSide(color: Colors.blue),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(18),
-                              ),
-                              borderSide: BorderSide(color: Colors.redAccent),
-                            ),
-                          ),
+                          controllerIcon: Icons.lock_person_rounded,
+                          label: 'password',
                           keyboardType: TextInputType.number,
                           obscureText: true,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'enterPassword'.tr();
-                            }
-                            return null;
-                          },
+                          errorMessage: 'enterPassword',
                         ),
                         const SizedBox(height: 20),
                         if (state is AuthLoading)
-                          const CircularProgressIndicator(color: accentGold)
+                          CircularProgressIndicator(color: AppColors.accent)
                         else ...[
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: _submitEmailAndPassword,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: accentGold,
-                                foregroundColor: primaryDark,
+                                backgroundColor: AppColors.accent,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(18),
                                 ),
@@ -241,8 +173,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          // In the build method, add this button:
                           const SizedBox(height: 24),
 
                           // Sign up link
@@ -251,6 +181,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               Text('noAccount'.tr()),
                               TextButton(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
+                                ),
                                 onPressed: () =>
                                     Navigator.pushNamed(context, '/signup'),
                                 child: Text('signUp'.tr()),
@@ -270,14 +205,12 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // --- UI Components ---
-
   Widget _buildLanguageToggle(BuildContext context) {
     final isAmharic = context.locale.languageCode == 'am';
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(),
+        color: Colors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -292,6 +225,20 @@ class _LoginScreenState extends State<LoginScreen> {
             'አማ',
             isAmharic,
             () => context.setLocale(const Locale('am')),
+          ),
+          const SizedBox(height: 5),
+          IconButton(
+            icon: Icon(
+              // Logic: If dark mode is active, show the "Sun" icon, else "Moon"
+              Theme.of(context).brightness == Brightness.dark
+                  ? Icons.light_mode_rounded
+                  : Icons.dark_mode_rounded,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              // This calls your Cubit to toggle the global state
+              context.read<ThemeCubit>().toggleTheme();
+            },
           ),
         ],
       ),
@@ -316,6 +263,50 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _textFieldDecoration({
+    required TextEditingController controller,
+    required controllerIcon,
+    required String label,
+    required TextInputType keyboardType,
+    required String errorMessage,
+    bool obscureText = false,
+  }) {
+    return TextFormField(
+      controller: controller,
+      style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
+      decoration: InputDecoration(
+        filled: true,
+        labelStyle: const TextStyle(color: Colors.white60),
+        prefixIcon: Icon(controllerIcon, color: Colors.white38, size: 22),
+        labelText: label.tr(),
+        enabledBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(18)),
+          borderSide: BorderSide(color: Color.fromARGB(206, 199, 198, 198)),
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(18)),
+          borderSide: BorderSide(color: Color.fromARGB(255, 235, 236, 236)),
+        ),
+        errorBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(18)),
+          borderSide: BorderSide(color: Colors.redAccent),
+        ),
+        focusedErrorBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(18)),
+          borderSide: BorderSide(color: Colors.redAccent),
+        ),
+      ),
+      keyboardType: keyboardType,
+      obscureText: obscureText,
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return errorMessage.tr();
+        }
+        return null;
+      },
     );
   }
 
