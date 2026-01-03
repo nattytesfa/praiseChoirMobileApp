@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:praise_choir_app/features/payment/data/models/payment_model.dart';
 
@@ -27,21 +28,21 @@ class PaymentStatusCard extends StatelessWidget {
   String _getStatusText(PaymentStatus status) {
     switch (status) {
       case PaymentStatus.paid:
-        return 'Paid';
+        return 'paid'.tr();
       case PaymentStatus.pending:
-        return 'Pending';
+        return 'pending'.tr();
       case PaymentStatus.overdue:
-        return 'Overdue';
+        return 'overdue'.tr();
     }
   }
 
   Widget _buildPaymentButton(double additionalFee, double totalDue) {
     if (payment.status == PaymentStatus.paid) {
-      return const Row(
+      return Row(
         children: [
           Icon(Icons.check_circle, color: Colors.green),
           SizedBox(width: 8),
-          Text('Payment Completed', style: TextStyle(color: Colors.green)),
+          Text('paymentCompleted'.tr(), style: TextStyle(color: Colors.green)),
         ],
       );
     } else {
@@ -52,9 +53,10 @@ class PaymentStatusCard extends StatelessWidget {
         ),
         child: Text(
           payment.isOverdue
-              ? 'Pay Now (ETB ${totalDue.toStringAsFixed(2)})'
-              : 'Pay Now',
+              ? 'payNowWithAmount'.tr(args: [totalDue.toStringAsFixed(2)])
+              : 'payNow'.tr(),
           style: const TextStyle(color: Colors.white),
+          textAlign: TextAlign.center,
         ),
       );
     }
@@ -65,7 +67,12 @@ class PaymentStatusCard extends StatelessWidget {
     final additionalFee = payment.status == PaymentStatus.overdue ? 5.0 : 0.0;
     final totalDue = payment.amount + additionalFee;
     final String? additionalFeeNote = additionalFee > 0
-        ? 'Includes ETB ${additionalFee.toStringAsFixed(2)} overdue fee. Total: ETB ${totalDue.toStringAsFixed(2)}'
+        ? 'includesOverdueNote'.tr(
+            args: [
+              additionalFee.toStringAsFixed(2),
+              totalDue.toStringAsFixed(2),
+            ],
+          )
         : null;
 
     return Card(
@@ -109,7 +116,7 @@ class PaymentStatusCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Amount: ${payment.amount} ETB',
+              'amountLabel'.tr(args: [payment.amount.toStringAsFixed(2)]),
               style: const TextStyle(fontSize: 16),
             ),
             if (additionalFeeNote != null) ...[
@@ -121,27 +128,27 @@ class PaymentStatusCard extends StatelessWidget {
             ],
             const SizedBox(height: 8),
             Text(
-              'Due Date: ${_formatDate(payment.dueDate)}',
+              'dueDateLabel'.tr(args: [_formatDate(payment.dueDate)]),
               style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
             if (payment.paidDate != null) ...[
               const SizedBox(height: 8),
               Text(
-                'Paid Date: ${_formatDate(payment.paidDate!)}',
+                'paidDateLabel'.tr(args: [_formatDate(payment.paidDate!)]),
                 style: const TextStyle(fontSize: 14, color: Colors.green),
               ),
             ],
             const SizedBox(height: 16),
             Row(
               children: [
-                _buildPaymentButton(additionalFee, totalDue),
+                Expanded(child: _buildPaymentButton(additionalFee, totalDue)),
                 if (payment.proofImagePath != null && onViewProof != null) ...[
                   const SizedBox(width: 12),
                   TextButton.icon(
                     onPressed: () =>
                         onViewProof!(payment.proofImagePath!, payment.id),
                     icon: const Icon(Icons.receipt),
-                    label: const Text('View Proof'),
+                    label: Text('viewProof'.tr()),
                   ),
                 ],
               ],

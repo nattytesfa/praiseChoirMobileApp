@@ -208,8 +208,6 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
                 title: '',
               );
             }
-
-            // Get current month payment
             final currentMonth = DateTime(
               DateTime.now().year,
               DateTime.now().month,
@@ -230,11 +228,14 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
                   onViewProof: _showPaymentProof,
                 ),
                 const SizedBox(height: 24),
-                Text(
-                  'paymentHistory'.tr(),
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6.0),
+                  child: Text(
+                    'paymentHistory'.tr(),
+                    style: AppTextStyles.titleMedium.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -294,7 +295,7 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        '${'due'.tr()}: ${_formatDate(payment.dueDate)}',
+                        '${'dueDate'.tr()}: ${_formatDate(payment.dueDate)}',
                         style: AppTextStyles.caption,
                       ),
                       if (payment.paidDate != null)
@@ -306,7 +307,7 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
                   ),
                 ),
                 Text(
-                  'ETB ${payment.amount}',
+                  'etb ${payment.amount}',
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -324,20 +325,24 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
                 style: const TextStyle(fontSize: 12, color: Colors.red),
               ),
               const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerRight,
-                child: ElevatedButton(
-                  onPressed: () => _markAsPaid(payment, additionalFee),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: payment.status == PaymentStatus.overdue
-                        ? Colors.red
-                        : AppColors.primary,
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => _markAsPaid(payment, additionalFee),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: payment.status == PaymentStatus.overdue
+                            ? Colors.red
+                            : AppColors.primary,
+                      ),
+                      child: Text(
+                        'payAmount'.tr(args: [totalDue.toStringAsFixed(2)]),
+                        style: const TextStyle(color: Colors.white),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ),
-                  child: Text(
-                    'payAmount'.tr(args: [totalDue.toStringAsFixed(2)]),
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
+                ],
               ),
             ],
             if (payment.proofImagePath != null) ...[

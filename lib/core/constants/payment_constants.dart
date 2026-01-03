@@ -1,8 +1,6 @@
 class PaymentConstants {
   // Payment amounts and frequencies
   static const double monthlyPaymentAmount = 10.0;
-  static const double weeklyPaymentAmount = 2.5;
-  static const double yearlyPaymentAmount = 120.0;
 
   // Payment due dates
   static const int monthlyDueDay = 1; // 1st of every month
@@ -14,18 +12,6 @@ class PaymentConstants {
   static const String cycleMonthly = 'monthly';
   static const String cycleWeekly = 'weekly';
   static const String cycleYearly = 'yearly';
-
-  // Payment methods
-  static const String methodCash = 'cash';
-  static const String methodTeleBirr = 'telebirr';
-  static const String methodMpesa = 'mpesa';
-  static const String methodBankTransfer = 'bank_transfer';
-
-  // Payment status texts
-  static const String statusPaid = 'paid';
-  static const String statusPending = 'pending';
-  static const String statusOverdue = 'overdue';
-  static const String statusCancelled = 'cancelled';
 
   // Grace period for payments (in days)
   static const int gracePeriodDays = 7;

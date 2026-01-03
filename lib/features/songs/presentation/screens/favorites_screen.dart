@@ -32,34 +32,37 @@ class FavoritesScreen extends StatelessWidget {
               );
             }
 
-            return ListView.builder(
-              itemCount: favoriteSongs.length,
-              itemBuilder: (context, index) {
-                final song = favoriteSongs[index];
-                return SongListItem(
-                  song: song,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SongDetailScreen(song: song),
-                      ),
-                    );
-                  },
-                  onPerformed: () {
-                    context.read<SongCubit>().markSongPerformed(song.id);
-                  },
-                  onPracticed: () {
-                    context.read<SongCubit>().markSongPracticed(song.id);
-                  },
-                  onFavorite: () {
-                    context.read<SongCubit>().toggleFavorite(song.id);
-                  },
-                  onDelete: () {
-                    context.read<SongCubit>().deleteSong(song.id);
-                  },
-                );
-              },
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ListView.builder(
+                itemCount: favoriteSongs.length,
+                itemBuilder: (context, index) {
+                  final song = favoriteSongs[index];
+                  return SongListItem(
+                    song: song,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SongDetailScreen(song: song),
+                        ),
+                      );
+                    },
+                    onPerformed: () {
+                      context.read<SongCubit>().markSongPerformed(song.id);
+                    },
+                    onPracticed: () {
+                      context.read<SongCubit>().markSongPracticed(song.id);
+                    },
+                    onFavorite: () {
+                      context.read<SongCubit>().toggleFavorite(song.id);
+                    },
+                    onDelete: () {
+                      context.read<SongCubit>().deleteSong(song.id);
+                    },
+                  );
+                },
+              ),
             );
           } else if (state is SongError) {
             return Center(child: Text(state.message));

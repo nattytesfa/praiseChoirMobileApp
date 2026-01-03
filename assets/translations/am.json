@@ -300,7 +300,8 @@
   "overdue": "ያለፈበት",
   "pending": "በመጠባበቅ ላይ",
   "noPayments": "ምንም ክፍያዎች የሉም",
-
+  "payAmount": "ETB {} ክፍያ አድርግ",
+  "totalAmount": "ጠቅላላ መጠን: ETB {}",
   "addNewSong": "አዲስ መዝሙር አክል",
   "tags": "መለያዎች",
   "lyrics": "ግጥሞች",
@@ -370,6 +371,11 @@
   "collectionRate": "የስብስብ መጠን",
   "outstanding": "ቀሪ",
   "collectionDistribution": "የስብስብ ክፍፍል",
+  "payNowWithAmount": "ክፍያ አድርግ (ETB {})",
+  "includesOverdueNote": "የቀረው ክፍያ ከ (ETB {}) ጋር ይጨምራል። ጠቅላላ: ETB {}",
+  "amountLabel": "መጠን: ETB {}",
+  "dueDateLabel": "የመከላከያ ቀን: {}",
+  "paidDateLabel": "የተከፈለ ቀን: {}",
   "performanceOverview": "የአፈጻጸም እይታ",
   "typeAMessage": "መልእክት ያስገቡ...",
   "editingMessage": "መልእክት ያስተካክሉ...",
@@ -380,5 +386,15 @@
   "songsWithoutAudio": "የድምጽ ቅጂ የሌላቸው መዝሙሮች",
   "lastUpdated": "ለመጨረሻ የዘመነው",
   "generatePaymentsConfirm": "እርግጠኛ ነህ ወርሃዊ ክፍያዎችን ለመመነጨት?",
-  "lastSeen": "መጨረሻ የታየው"
+  "lastSeen": "መጨረሻ የታየው",
+  "newRequestsCount": "{} አዲስ ጥያቄዎች",
+  "dueDate": "የሚከፈልበት ቀን: {}",
+  "dueDate:{}": "የሚከፈልበት ቀን: {}",
+  "payNow": "አሁን ክፍያ አድርግ",
+  "payNow(etb {})": "አሁን ክፍያ አድርግ (ETB {})",
+  "paymentCompleted": "ክፍያ ተጠናቋል",
+  "amount: {} Etb": "መጠን: {} ኢትብ",
+  "paidDate: {}": "የተከፈለ ቀን: {}",
+  "viewProof": "ማረጋገጫ ይመልከቱ",
+  "amount": "መጠን"
 }
