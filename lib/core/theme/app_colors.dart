@@ -15,10 +15,12 @@ class AppColors {
   static const Color fillDark = Color.fromARGB(255, 19, 30, 54);
   static const Color darkBackground = Color(0xFF0F172A);
   static const Color darkSurface = Color(0xFF1E1E1E);
+  static const Color darkOnAppBar = Color(0xFF1E293B);
   static const Color darkSecondary = Color(0xFF03DAC6);
+  static const Color darkOnSongsCard = Color(0xFF334155);
   static const Color darkError = Color(0xFFCF6679);
   static const Color darkOnBackground = Color(0xFFFFFFFF);
-  static const Color darkOnSurface = Color(0xFFFFFFFF);
+  static const Color darkOnSurface = Color.fromARGB(160, 255, 255, 255);
   static const Color gray50 = Color(0xFFF9FAFB);
   static const Color gray100 = Color(0xFFF3F4F6);
   static const Color gray400 = Color(0xFF9CA3AF);

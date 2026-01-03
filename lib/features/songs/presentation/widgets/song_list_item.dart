@@ -82,7 +82,6 @@ class SongListItem extends StatelessWidget {
 
     return Row(
       children: [
-        // Like Count
         if (song.likeCount > 0) ...[
           Row(
             children: [
@@ -94,7 +93,6 @@ class SongListItem extends StatelessWidget {
           const SizedBox(width: 12),
         ],
 
-        // Audio Indicator
         if (song.audioPath != null)
           const Icon(Icons.audio_file, size: 14, color: AppColors.primary),
       ],
@@ -136,6 +134,7 @@ class SongListItem extends StatelessWidget {
             authState is AuthAuthenticated && authState.user.role == 'admin';
 
         return Card(
+          color: Theme.of(context).listTileTheme.tileColor,
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           clipBehavior: Clip.antiAlias,
           child: Slidable(
@@ -191,9 +190,7 @@ class SongListItem extends StatelessWidget {
                 children: [
                   Text(
                     song.title,
-                    style: AppTextStyles.bodyLarge.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: AppTextStyles.songTitle,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

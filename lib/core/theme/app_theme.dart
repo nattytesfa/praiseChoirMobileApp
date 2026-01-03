@@ -50,7 +50,7 @@ class AppTheme {
       error: AppColors.darkError,
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.darkBackground,
+      backgroundColor: AppColors.darkOnAppBar,
       foregroundColor: AppColors.gray50,
       elevation: 0,
       centerTitle: true,
@@ -71,6 +71,11 @@ class AppTheme {
         padding: const EdgeInsets.symmetric(vertical: 16),
       ),
     ),
+    listTileTheme: const ListTileThemeData(
+      titleTextStyle: TextStyle(inherit: false, color: Colors.white),
+      tileColor: AppColors.darkOnSongsCard,
+    ),
+    drawerTheme: const DrawerThemeData(backgroundColor: AppColors.darkOnAppBar),
   );
 
   static InputDecorationTheme _inputDecorationTheme({

@@ -46,10 +46,23 @@ class PendingApprovalScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                   onPressed: () => context.read<AuthCubit>().logout(context),
                   child: Text("returnToLogin".tr()),
                 ),
+                const SizedBox(height: 16),
                 ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                   onPressed: () =>
                       context.read<AuthCubit>().refreshUserStatus(),
                   icon: const Icon(Icons.refresh),

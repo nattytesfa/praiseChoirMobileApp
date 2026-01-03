@@ -95,9 +95,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           extendBody: true,
           drawer: _buildFullVerticalMenu(context),
           appBar: AppBar(
-            backgroundColor: Theme.of(context).primaryColor,
+            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
             elevation: 0,
-            // RIGHT: Profile Menu
             actions: [
               Row(
                 children: [
@@ -165,7 +164,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             centerTitle: true,
             // TABS: For English and Amharic Song Filtering
             bottom: TabBar(
-              indicatorColor: Colors.white,
+              indicatorColor: AppColors.white,
+              dividerColor: AppColors.darkBackground,
               tabs: [
                 Tab(text: "kembatgna".tr()),
                 Tab(text: "amharic".tr()),
@@ -201,17 +201,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   Widget _buildFullVerticalMenu(BuildContext context) {
-    // Access user from your AuthCubit
     final authState = context.watch<AuthCubit>().state;
     final user = (authState is AuthAuthenticated) ? authState.user : null;
 
     return Drawer(
-      width:
-          MediaQuery.of(context).size.width *
-          0.6, // Takes 60% width, 100% height
+      width: MediaQuery.of(context).size.width * 0.6,
       child: Column(
         children: [
-          // 1. Full Height Header
           UserAccountsDrawerHeader(
             decoration: BoxDecoration(color: Colors.blue.shade900),
             currentAccountPicture: CircleAvatar(
@@ -267,6 +263,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   Widget _drawerItem(IconData icon, String title, VoidCallback onTap) {
     return ListTile(
+      tileColor: Theme.of(context).drawerTheme.backgroundColor,
       leading: Icon(icon, color: Colors.blueGrey),
       title: Text(title, style: const TextStyle(fontSize: 15)),
       trailing: const Icon(Icons.chevron_right, size: 18),

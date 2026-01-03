@@ -17,7 +17,6 @@ class _SongListViewState extends State<SongListView> {
   @override
   void initState() {
     super.initState();
-    // Ensure songs are loaded when this view is built
     context.read<SongCubit>().loadSongs();
   }
 
@@ -32,8 +31,6 @@ class _SongListViewState extends State<SongListView> {
             if (widget.language == null || widget.language == 'all') {
               return true;
             }
-            // Assuming 'am' for Amharic and 'en' for English/Kembatgna or others
-            // Adjust logic based on actual language codes in SongModel
             if (widget.language == 'am') {
               return song.language == 'amharic';
             } else {

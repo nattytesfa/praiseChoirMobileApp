@@ -37,7 +37,7 @@ class AppTextStyles {
   );
 
   static const TextStyle headlineSmall = TextStyle(
-    fontSize: 18,
+    fontSize: 5,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
   );
@@ -212,7 +212,7 @@ class AppTextStyles {
   static const TextStyle songTitle = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
+    color: AppColors.white,
   );
 
   static const TextStyle songLyrics = TextStyle(
