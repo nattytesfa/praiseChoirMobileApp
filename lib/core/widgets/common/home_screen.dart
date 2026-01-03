@@ -208,23 +208,47 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       width: MediaQuery.of(context).size.width * 0.6,
       child: Column(
         children: [
-          UserAccountsDrawerHeader(
-            decoration: BoxDecoration(color: Colors.blue.shade900),
-            currentAccountPicture: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Text(
-                user?.name[0].toUpperCase() ?? "U",
-                style: TextStyle(fontSize: 24, color: Colors.blue.shade900),
-              ),
+          Container(
+            width: double.infinity,
+            color: Colors.blue.shade900,
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 16,
+              bottom: 16,
+              left: 16,
+              right: 16,
             ),
-            accountName: Text(
-              user?.name ?? "User",
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 32,
+                  backgroundColor: Colors.white,
+                  child: Text(
+                    user?.name[0].toUpperCase() ?? "U",
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.blue.shade900,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  user?.name ?? "User",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  user?.email ?? "",
+                  style: const TextStyle(color: Colors.white70),
+                ),
+              ],
             ),
-            accountEmail: Text(user?.email ?? ""),
           ),
-
-          // 2. Scrollable Menu Items
+          _coolDivider(context),
           Expanded(
             child: ListView(
               padding: EdgeInsets.zero,
@@ -250,7 +274,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   Navigator.pop(context);
                   Navigator.pushNamed(context, Routes.userSettings);
                 }),
-                const Divider(),
+                _coolDivider(context),
                 _drawerItem(Icons.help_outline, "support".tr(), () {}),
                 _drawerItem(Icons.info_outline, "aboutApp".tr(), () {}),
               ],
@@ -270,4 +294,32 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       onTap: onTap,
     );
   }
+}
+
+Widget _coolDivider(BuildContext context) {
+  final color = Theme.of(context).colorScheme.onSurface;
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 10),
+    child: Row(
+      children: [
+        Expanded(
+          child: Container(
+            height: 2,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  AppColors.withValues(color, 0.0),
+                  AppColors.withValues(color, 0.12),
+                  AppColors.withValues(color, 0.0),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }
