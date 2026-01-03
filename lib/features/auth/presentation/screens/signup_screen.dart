@@ -127,6 +127,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    const SizedBox(height: 32),
                     Text(
                       'joinPraiseChoir'.tr(),
                       style: const TextStyle(

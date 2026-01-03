@@ -396,5 +396,8 @@
   "amount: {} Etb": "መጠን: {} ኢትብ",
   "paidDate: {}": "የተከፈለ ቀን: {}",
   "viewProof": "ማረጋገጫ ይመልከቱ",
-  "amount": "መጠን"
+  "amount": "መጠን",
+  "uploadProof": "ማረጋገጫ ይስቀሉ",
+  "deleteAllPaymentsConfirm": "ሁሉም ክፍያዎችን ማጥፋት ይፈልጋሉ?",
+  "deletePendingPaymentsConfirm": "በመጠባበቅ ላይ ያሉ ክፍያዎችን ማጥፋት ይፈልጋሉ?"
 }

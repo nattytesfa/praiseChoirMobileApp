@@ -7,7 +7,7 @@
   "enterEmail": "Enter email",
   "password": "Password",
   "enterPassword": "Enter password",
-  "signIn": "Sign in",
+  "signIn": "Sign In",
   "noAccount": "Don't have an account?",
   "signUp": "Sign Up",
   "login": "Login",
@@ -123,6 +123,7 @@
   "selected": "selected",
   "paymentDashboard": "Payment Dashboard",
   "deletePendingPayments": "Delete Pending Payments",
+  "deletePendingPaymentsConfirm": "Are you sure you want to delete all pending payments?",
   "deleteAllPayments": "Delete All Payments",
   "uploadProofMsg": "Please upload a screenshot or photo of your payment receipt.",
   "camera": "Camera",
@@ -386,5 +387,7 @@
   "includes (etb {}) overdue fee. Total: etb {}": "Includes ETB {} overdue fee. Total: ETB {}",
   "amount: {} Etb": "Amount: {} ETB",
   "paidDate: {}": "Paid Date: {}",
-  "amount": "Amount"
+  "amount": "Amount",
+  "uploadProof": "Upload Proof",
+  "deleteAllPaymentsConfirm": "Are you sure you want to delete all payments?"
 }
