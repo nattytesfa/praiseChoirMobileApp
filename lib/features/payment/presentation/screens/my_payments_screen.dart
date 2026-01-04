@@ -307,7 +307,7 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
                   ),
                 ),
                 Text(
-                  'etb ${payment.amount}',
+                  '${'etb'.tr()} ${payment.amount}',
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
