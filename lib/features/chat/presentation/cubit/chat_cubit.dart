@@ -39,19 +39,19 @@ class ChatCubit extends Cubit<ChatState> {
     try {
       await chatRepository.ensuregroupChatExists();
       const groupChatId = 'general';
-      loadMessages(groupChatId);
+      loadMessages(groupChatId, userId);
     } catch (e) {
       emit(ChatError('Failed to join general chat'));
     }
   }
 
-  void loadMessages(String chatId, {bool showLoading = true}) {
+  void loadMessages(String chatId, String userId, {bool showLoading = true}) {
     _messagesSubscription?.cancel();
     _typingSubscription?.cancel();
     if (showLoading) emit(ChatLoading());
 
     _messagesSubscription = chatRepository
-        .getMessagesStream(chatId)
+        .getMessagesStream(chatId, userId)
         .listen(
           (messages) {
             _currentMessages = messages;
@@ -157,19 +157,35 @@ class ChatCubit extends Cubit<ChatState> {
     }
   }
 
-  void deleteMessage(String messageId) async {
+  void deleteMessage(
+    String messageId,
+    String userId, {
+    bool isAdmin = false,
+  }) async {
     try {
-      await chatRepository.deleteMessage(messageId);
+      await chatRepository.deleteMessage(messageId, userId, isAdmin: isAdmin);
     } catch (e) {
       emit(ChatError('Failed to delete message'));
     }
   }
 
-  void deleteMessages(List<String> messageIds) async {
+  void deleteMessages(
+    List<String> messageIds,
+    String userId, {
+    bool isAdmin = false,
+  }) async {
     try {
-      await chatRepository.deleteMessages(messageIds);
+      await chatRepository.deleteMessages(messageIds, userId, isAdmin: isAdmin);
     } catch (e) {
       emit(ChatError('Failed to delete messages'));
+    }
+  }
+
+  void clearHistory(String chatId, String userId) async {
+    try {
+      await chatRepository.clearChatHistory(chatId, userId);
+    } catch (e) {
+      emit(ChatError('Failed to clear history'));
     }
   }
 

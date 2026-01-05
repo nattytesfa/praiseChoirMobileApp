@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           extendBody: true,
           drawer: _buildFullVerticalMenu(context),
           appBar: AppBar(
-            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+            backgroundColor: AppColors.primary,
             elevation: 0,
             actions: [
               Row(
@@ -276,6 +276,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 }
+
 Widget _coolDivider(BuildContext context) {
   final color = Theme.of(context).colorScheme.onSurface;
   return Padding(

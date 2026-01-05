@@ -71,7 +71,7 @@ class MessageBubble extends StatelessWidget {
           ),
         ),
         const PopupMenuDivider(),
-         PopupMenuItem<String>(
+        PopupMenuItem<String>(
           value: 'reply',
           child: Row(
             children: [
@@ -82,7 +82,7 @@ class MessageBubble extends StatelessWidget {
           ),
         ),
         if (isMe && message.type == MessageType.text)
-           PopupMenuItem<String>(
+          PopupMenuItem<String>(
             value: 'edit',
             child: Row(
               children: [
@@ -93,7 +93,7 @@ class MessageBubble extends StatelessWidget {
             ),
           ),
         if (isMe || isAdmin)
-           PopupMenuItem<String>(
+          PopupMenuItem<String>(
             value: 'delete',
             child: Row(
               children: [
@@ -104,7 +104,7 @@ class MessageBubble extends StatelessWidget {
             ),
           ),
         if (isMe && DateTime.now().difference(message.timestamp).inHours < 24)
-           PopupMenuItem<String>(
+          PopupMenuItem<String>(
             value: 'info',
             child: Row(
               children: [

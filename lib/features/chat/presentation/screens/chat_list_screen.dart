@@ -89,6 +89,37 @@ class _ChatListScreenState extends State<ChatListScreen> {
     );
   }
 
+  Future<void> _showDeleteConfirmation({
+    required VoidCallback onConfirm,
+    required String title,
+    required String content,
+  }) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              onPressed: () {
+                onConfirm();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,12 +140,40 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed: () {
-                    context.read<ChatCubit>().deleteMessages(
-                      _selectedMessageIds.toList(),
+                    final authState = context.read<AuthCubit>().state;
+                    final isAdmin =
+                        authState is AuthAuthenticated &&
+                        (authState.user.role == 'leader' ||
+                            authState.user.role == 'admin');
+                    final chatState = context.read<ChatCubit>().state;
+                    bool hasOthersMessages = false;
+                    if (chatState is MessagesLoaded) {
+                      hasOthersMessages = chatState.messages
+                          .where((m) => _selectedMessageIds.contains(m.id))
+                          .any((m) => m.senderId != _currentUserId);
+                    }
+
+                    String content =
+                        'Are you sure you want to delete these messages?';
+                    if (isAdmin && hasOthersMessages) {
+                      content =
+                          'Are you sure you want to delete these messages? Messages from other users will be deleted for everyone.';
+                    }
+
+                    _showDeleteConfirmation(
+                      title: 'Delete Messages',
+                      content: content,
+                      onConfirm: () {
+                        context.read<ChatCubit>().deleteMessages(
+                          _selectedMessageIds.toList(),
+                          _currentUserId,
+                          isAdmin: isAdmin,
+                        );
+                        setState(() {
+                          _selectedMessageIds.clear();
+                        });
+                      },
                     );
-                    setState(() {
-                      _selectedMessageIds.clear();
-                    });
                   },
                 ),
               ],
@@ -123,6 +182,34 @@ class _ChatListScreenState extends State<ChatListScreen> {
               title: Text('groupChat'.tr()),
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
+              actions: [
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert),
+                  onSelected: (value) {
+                    if (value == 'clear') {
+                      _showDeleteConfirmation(
+                        title: 'Clear History',
+                        content:
+                            'Are you sure you want to clear the chat history?',
+                        onConfirm: () {
+                          context.read<ChatCubit>().clearHistory(
+                            'general',
+                            _currentUserId,
+                          );
+                        },
+                      );
+                    }
+                  },
+                  itemBuilder: (BuildContext context) {
+                    return [
+                      const PopupMenuItem<String>(
+                        value: 'clear',
+                        child: Text('Clear History'),
+                      ),
+                    ];
+                  },
+                ),
+              ],
             ),
       body: Column(
         children: [
@@ -185,7 +272,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
                           final isMe = message.senderId == currentUserId;
                           final isAdmin =
                               authState is AuthAuthenticated &&
-                              authState.user.role == 'leader';
+                              (authState.user.role == 'leader' ||
+                                  authState.user.role == 'admin');
 
                           MessageModel? repliedMsg;
                           if (message.replyToId != null) {
@@ -252,7 +340,24 @@ class _ChatListScreenState extends State<ChatListScreen> {
                               });
                             },
                             onDelete: (id) {
-                              context.read<ChatCubit>().deleteMessage(id);
+                              String content =
+                                  'Are you sure you want to delete this message?';
+                              if (isAdmin && !isMe) {
+                                content =
+                                    'Are you sure you want to delete this message for everyone?';
+                              }
+
+                              _showDeleteConfirmation(
+                                title: 'Delete Message',
+                                content: content,
+                                onConfirm: () {
+                                  context.read<ChatCubit>().deleteMessage(
+                                    id,
+                                    _currentUserId,
+                                    isAdmin: isAdmin,
+                                  );
+                                },
+                              );
                             },
                             onAvatarTap: () {
                               // Avatar tap action disabled as private chat is not implemented

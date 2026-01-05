@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:praise_choir_app/core/theme/app_theme.dart';
 import 'package:record/record.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -147,15 +148,10 @@ class _ChatInputState extends State<ChatInput> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
+      width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            offset: const Offset(0, -2),
-            blurRadius: 4,
-            color: Colors.black.withValues(),
-          ),
-        ],
+        color: AppTheme.darkTheme.inputDecorationTheme.fillColor,
+        border: BoxBorder.all(color: AppColors.gray600),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -177,7 +173,7 @@ class _ChatInputState extends State<ChatInput> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         Text(
+                        Text(
                           'editingMessage'.tr(),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -272,7 +268,7 @@ class _ChatInputState extends State<ChatInput> {
                             color: AppColors.primary,
                           ),
                         ),
-                         Text('voiceMessage').tr(),
+                        Text('voiceMessage').tr(),
                       ],
                     ),
                   ),
@@ -294,7 +290,7 @@ class _ChatInputState extends State<ChatInput> {
                 children: [
                   const Icon(Icons.mic, color: Colors.red),
                   const SizedBox(width: 8),
-                   Text(
+                  Text(
                     'recording...'.tr(),
                     style: TextStyle(
                       color: Colors.red,
@@ -329,7 +325,7 @@ class _ChatInputState extends State<ChatInput> {
                         ? Icons.keyboard
                         : Icons.emoji_emotions_outlined,
                   ),
-                  color: AppColors.primary,
+                  color: AppColors.white,
                 ),
                 // Text Field
                 Expanded(
@@ -343,7 +339,6 @@ class _ChatInputState extends State<ChatInput> {
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: Colors.grey[100],
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
@@ -359,7 +354,7 @@ class _ChatInputState extends State<ChatInput> {
                   onPressed: _toggleRecording,
                   icon: Icon(
                     _isRecording ? Icons.stop : Icons.mic,
-                    color: _isRecording ? Colors.red : AppColors.primary,
+                    color: _isRecording ? Colors.red : AppColors.white,
                   ),
                 ),
                 // Send Button
@@ -367,7 +362,7 @@ class _ChatInputState extends State<ChatInput> {
                   IconButton(
                     onPressed: _sendMessage,
                     icon: const Icon(Icons.send),
-                    color: AppColors.primary,
+                    color: AppColors.white,
                   ),
               ],
             ),
@@ -381,19 +376,13 @@ class _ChatInputState extends State<ChatInput> {
                   emojiViewConfig: EmojiViewConfig(
                     columns: 7,
                     emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
-                    backgroundColor: Colors.white,
                   ),
                   categoryViewConfig: const CategoryViewConfig(
                     initCategory: Category.SMILEYS,
-                    backgroundColor: Colors.white,
                   ),
                   bottomActionBarConfig: const BottomActionBarConfig(
-                    backgroundColor: Colors.white,
-                    buttonColor: Colors.white,
-                    buttonIconColor: Colors.grey,
-                  ),
-                  searchViewConfig: const SearchViewConfig(
-                    backgroundColor: Colors.white,
+                    showSearchViewButton: false,
+                    enabled: false,
                   ),
                 ),
               ),

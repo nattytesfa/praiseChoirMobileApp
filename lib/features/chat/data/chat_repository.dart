@@ -26,24 +26,38 @@ class ChatRepository {
     return allChats.where((chat) => chat.memberIds.contains(userId)).toList();
   }
 
-  Future<List<MessageModel>> getMessagesForChat(String chatId) async {
+  Future<List<MessageModel>> getMessagesForChat(
+    String chatId,
+    String userId,
+  ) async {
     final allMessages = _messageBox.values.toList();
     return allMessages
-        .where((message) => message.chatId == chatId)
+        .where((message) {
+          final deletedBy =
+              (message.metadata?['deletedBy'] as List?)?.cast<String>() ?? [];
+          return message.chatId == chatId && !deletedBy.contains(userId);
+        })
         .toList()
         .reversed
         .toList(); // Reverse to show latest first
   }
 
-  Stream<List<MessageModel>> getMessagesStream(String chatId) async* {
+  Stream<List<MessageModel>> getMessagesStream(
+    String chatId,
+    String userId,
+  ) async* {
     // Yield initial messages
-    yield await getMessagesForChat(chatId);
+    yield await getMessagesForChat(chatId, userId);
 
     // Yield updates
     yield* _messageBox.watch().map((event) {
       final allMessages = _messageBox.values.toList();
       return allMessages
-          .where((message) => message.chatId == chatId)
+          .where((message) {
+            final deletedBy =
+                (message.metadata?['deletedBy'] as List?)?.cast<String>() ?? [];
+            return message.chatId == chatId && !deletedBy.contains(userId);
+          })
           .toList()
           .reversed
           .toList();
@@ -124,27 +138,50 @@ class ChatRepository {
     }
   }
 
-  Future<void> deleteMessage(String messageId) async {
+  Future<void> deleteMessage(
+    String messageId,
+    String currentUserId, {
+    bool isAdmin = false,
+  }) async {
     final message = _messageBox.values.firstWhere((m) => m.id == messageId);
-    final updatedMessage = message.copyWith(
-      isDeleted: true,
-      content: 'This message was deleted',
-      type: MessageType.text, // Reset type to text
-      attachmentPath: null, // Remove attachment
-    );
-
     final index = _messageBox.values.toList().indexWhere(
       (m) => m.id == messageId,
     );
+
     if (index != -1) {
-      await _messageBox.putAt(index, updatedMessage);
+      if (message.senderId == currentUserId || isAdmin) {
+        // Delete for everyone if it's my message or if I'm admin
+        await _messageBox.deleteAt(index);
+      } else {
+        // Delete only for me if it's someone else's message
+        final metadata = Map<String, dynamic>.from(message.metadata ?? {});
+        final deletedBy = List<String>.from(metadata['deletedBy'] ?? []);
+
+        if (!deletedBy.contains(currentUserId)) {
+          deletedBy.add(currentUserId);
+          metadata['deletedBy'] = deletedBy;
+
+          final updatedMessage = message.copyWith(metadata: metadata);
+          await _messageBox.putAt(index, updatedMessage);
+        }
+      }
     }
   }
 
-  Future<void> deleteMessages(List<String> messageIds) async {
+  Future<void> deleteMessages(
+    List<String> messageIds,
+    String currentUserId, {
+    bool isAdmin = false,
+  }) async {
     for (final id in messageIds) {
-      await deleteMessage(id);
+      await deleteMessage(id, currentUserId, isAdmin: isAdmin);
     }
+  }
+
+  Future<void> clearChatHistory(String chatId, String userId) async {
+    final messages = await getMessagesForChat(chatId, userId);
+    final messageIds = messages.map((m) => m.id).toList();
+    await deleteMessages(messageIds, userId);
   }
 
   Future<void> markMessageAsRead(String messageId, String userId) async {
