@@ -399,5 +399,5 @@
   "amount": "መጠን",
   "uploadProof": "ማረጋገጫ ይስቀሉ",
   "deleteAllPaymentsConfirm": "ሁሉም ክፍያዎችን ማጥፋት ይፈልጋሉ?",
-  "deletePendingPaymentsConfirm": "በመጠባበቅ ላይ ያሉ ክፍያዎችን ማጥፋት ይፈልጋሉ?"
-}
+  "deletePendingPaymentsConfirm": "በመጠባበቅ ላይ ያሉ ክፍያዎችን ማጥፋት ይፈልጋሉ?",
+  "logoutConfirmation": "እርግጠኛ ነህ ከመተግበሪያው ውጣ?"}

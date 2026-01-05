@@ -59,7 +59,7 @@ class _SearchBarState extends State<SearchBar> {
             : null,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: Theme.of(context).inputDecorationTheme.fillColor,
       ),
     );
   }

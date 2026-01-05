@@ -350,6 +350,8 @@
   "member": "Member",
   "due": "Due",
   "etb": "ETB",
+  "logOut": "Log Out",
+  "logOutConfirmation": "Are you sure you want to log out?",
   "paymentProofUpdated": "Payment proof updated",
   "uploadPaymentProof": "Upload Payment Proof",
   "selectImageSource": "Select Image Source",

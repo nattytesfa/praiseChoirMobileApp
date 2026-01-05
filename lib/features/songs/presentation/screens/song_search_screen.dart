@@ -23,6 +23,7 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   final Box _settingsBox = Hive.box('settings');
+  late final SongCubit _songCubit;
 
   List<String> _recentSearches = [];
   String _currentQuery = '';
@@ -45,6 +46,7 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
   @override
   void initState() {
     super.initState();
+    _songCubit = context.read<SongCubit>();
     _loadRecentSearches();
     _searchFocusNode.requestFocus();
   }
@@ -78,8 +80,14 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
     });
   }
 
+  void _clearRecentSearches() {
+    _settingsBox.delete('recent_searches');
+    setState(() {
+      _recentSearches = [];
+    });
+  }
+
   void _onSearch(String query) {
-    _saveRecentSearch(query);
     setState(() {
       _currentQuery = query;
     });
@@ -181,10 +189,8 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
   Widget _buildSearchHeader() {
     return Container(
       padding: const EdgeInsets.all(16),
-      color: Colors.white,
       child: Column(
         children: [
-          // Search Bar
           app_search.SearchBar(
             hintText: 'searchSongsHint'.tr(),
             onSearch: _onSearch,
@@ -192,10 +198,8 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
           ),
           const SizedBox(height: 16),
 
-          // Filters
           Row(
             children: [
-              // Language Filter
               Expanded(
                 child: DropdownButtonFormField<String>(
                   initialValue: _selectedLanguage,
@@ -256,6 +260,7 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
         return SongListItem(
           song: song,
           onTap: () {
+            _saveRecentSearch(song.title);
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -299,8 +304,15 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
     );
   }
 
-  Widget _buildRecentSearches() {
-    if (_recentSearches.isEmpty) {
+  Widget _buildRecentSearches(List<SongModel> songs) {
+    final validSearches = _recentSearches.where((search) {
+      return songs.any(
+        (song) =>
+            song.title.trim().toLowerCase() == search.trim().toLowerCase(),
+      );
+    }).toList();
+
+    if (validSearches.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -308,15 +320,24 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text('recentSearches'.tr(), style: AppTextStyles.titleMedium),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('recentSearches'.tr(), style: AppTextStyles.titleMedium),
+              TextButton(
+                onPressed: _clearRecentSearches,
+                child: Text('clear'.tr()),
+              ),
+            ],
+          ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Wrap(
             spacing: 8,
-            children: _recentSearches.map((search) {
-              return ActionChip(
+            children: validSearches.map((search) {
+              return InputChip(
                 label: Text(search),
                 onPressed: () {
                   _searchController.text = search;
@@ -336,13 +357,8 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
       appBar: AppBar(title: Text('searchSongs'.tr())),
       body: Column(
         children: [
-          // Search Header with Filters
           _buildSearchHeader(),
           const SizedBox(height: 14),
-          Text('recentSearches'.tr(), style: AppTextStyles.titleMedium),
-          const SizedBox(height: 14),
-
-          // Results
           Expanded(
             child: BlocBuilder<SongCubit, SongState>(
               builder: (context, state) {
@@ -360,7 +376,9 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
 
                 if (state is SongLoaded && _currentQuery.isEmpty) {
                   // Show recent searches and quick filters when no search is active
-                  return ListView(children: [_buildRecentSearches()]);
+                  return ListView(
+                    children: [_buildRecentSearches(state.songs)],
+                  );
                 }
 
                 if (state is SongLoaded) {
@@ -378,6 +396,7 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
 
   @override
   void dispose() {
+    _songCubit.loadSongs();
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
-import 'package:praise_choir_app/core/theme/theme_cubit.dart';
 import 'package:praise_choir_app/core/widgets/common/network/network_status_indicator.dart';
 import 'package:praise_choir_app/core/widgets/common/network/sync_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
@@ -79,12 +78,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         if (state == SyncStatus.error) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Sync failed. Please check your connection.'),
+              content: Text('Please check your connection.'),
               backgroundColor: Colors.red,
             ),
           );
         } else if (state == SyncStatus.synced) {
-          // Reload songs when sync is complete
           context.read<SongCubit>().loadSongs();
         }
       },
@@ -131,23 +129,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       );
                     },
                   ),
-                  IconButton(
-                    icon: Icon(
-                      // Logic: If dark mode is active, show the "Sun" icon, else "Moon"
-                      Theme.of(context).brightness == Brightness.dark
-                          ? Icons.light_mode_rounded
-                          : Icons.dark_mode_rounded,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      // This calls your Cubit to toggle the global state
-                      context.read<ThemeCubit>().toggleTheme();
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.logout_rounded, color: Colors.white),
-                    onPressed: () => context.read<AuthCubit>().logout(context),
-                  ),
                 ],
               ),
             ],
@@ -158,11 +139,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 onPressed: () => Scaffold.of(context).openDrawer(),
               ),
             ),
-
-            // MIDDLE: Network Status Animation
             title: const NetworkStatusIndicator(),
             centerTitle: true,
-            // TABS: For English and Amharic Song Filtering
             bottom: TabBar(
               indicatorColor: AppColors.white,
               dividerColor: AppColors.darkBackground,
@@ -248,7 +226,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ],
             ),
           ),
-          _coolDivider(context),
           Expanded(
             child: ListView(
               padding: EdgeInsets.zero,
@@ -274,9 +251,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   Navigator.pop(context);
                   Navigator.pushNamed(context, Routes.userSettings);
                 }),
-                _coolDivider(context),
                 _drawerItem(Icons.help_outline, "support".tr(), () {}),
-                _drawerItem(Icons.info_outline, "aboutApp".tr(), () {}),
+                _coolDivider(context),
+                _drawerItem(
+                  Icons.logout_rounded,
+                  "logOut".tr(),
+                  () => context.read<AuthCubit>().logout(context),
+                ),
               ],
             ),
           ),
@@ -295,7 +276,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 }
-
 Widget _coolDivider(BuildContext context) {
   final color = Theme.of(context).colorScheme.onSurface;
   return Padding(

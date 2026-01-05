@@ -119,7 +119,7 @@ Widget _buildThemeSwitch(BuildContext context) {
               MediaQuery.of(context).platformBrightness == Brightness.dark);
 
       return SwitchListTile(
-        secondary: Icon(isDark ? Icons.dark_mode : Icons.light_mode),
+        secondary: Icon(isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded),
         title: Text(isDark ? "darkMode".tr() : "lightMode".tr()),
         value: isDark,
         tileColor: Colors.transparent,
