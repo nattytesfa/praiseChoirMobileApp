@@ -48,7 +48,8 @@ class ChoirApp extends StatelessWidget {
               BlocProvider(create: (context) => PaymentCubit()),
               BlocProvider(create: (context) => ThemeCubit()),
               BlocProvider(
-                create: (context) => AuthCubit(context.read<AuthRepository>()),
+                create: (context) =>
+                    AuthCubit(context.read<AuthRepository>())..appStarted(),
               ),
               BlocProvider(
                 create: (context) => AdminCubit(
@@ -107,7 +108,7 @@ class ChoirApp extends StatelessWidget {
                   onGenerateRoute: Routes.onGenerateRoute,
                   localizationsDelegates: context.localizationDelegates,
                   supportedLocales: context.supportedLocales,
-                  initialRoute: Routes.splash,
+                  initialRoute: Routes.login,
                   debugShowCheckedModeBanner: false,
                 );
               },

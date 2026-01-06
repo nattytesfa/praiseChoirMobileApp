@@ -18,29 +18,19 @@ class AuthCubit extends Cubit<AuthState> {
 
   /// If [disableFirebase] is true, the cubit will not call Firebase APIs and
   /// will operate in a disabled mode suitable for testing other features.
-  AuthCubit(
-    AuthRepository authRepository, {
-    AuthRepository? repository,
-    bool disableFirebase = false,
-  }) : _auth = disableFirebase ? null : FirebaseAuth.instance,
-       authRepository = repository ?? AuthRepository(),
-       super(AuthInitial()) {
-    // Only check auth status when Firebase is available.
-    if (_auth != null) checkAuthStatus();
-  }
+  AuthCubit(this.authRepository, {bool disableFirebase = false})
+    : _auth = disableFirebase ? null : FirebaseAuth.instance,
+      super(AuthInitial());
 
   Future<void> appStarted() async {
+    emit(AuthLoading());
     try {
-      // 1. Ask the repository to check Firebase and Hive
-      final user = await authRepository.getCurrentUser();
-
-      if (user != null) {
-        // 2. If a user is found, skip login
-        emit(AuthAuthenticated(user));
+      if (Hive.isBoxOpen(HiveBoxes.users)) {
+        _usersBox = Hive.box<UserModel>(HiveBoxes.users);
       } else {
-        // 3. If no user, show login screen
-        emit(AuthUnauthenticated());
+        _usersBox = await Hive.openBox<UserModel>(HiveBoxes.users);
       }
+      await checkAuthStatus();
     } catch (e) {
       emit(AuthError("Failed to initialize: $e"));
     }
@@ -85,7 +75,7 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  void checkAuthStatus() async {
+  Future<void> checkAuthStatus() async {
     if (_auth == null) {
       // Firebase disabled — try to restore a persisted local user.
       final current = await authRepository.getCurrentUser();

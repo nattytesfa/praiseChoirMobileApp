@@ -74,19 +74,38 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SyncCubit, SyncStatus>(
-      listener: (context, state) {
-        if (state == SyncStatus.error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Please check your connection.'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        } else if (state == SyncStatus.synced) {
-          context.read<SongCubit>().loadSongs();
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<SyncCubit, SyncStatus>(
+          listener: (context, state) {
+            if (state == SyncStatus.error) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Please check your connection.'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            } else if (state == SyncStatus.synced) {
+              context.read<SongCubit>().loadSongs();
+            }
+          },
+        ),
+        BlocListener<AuthCubit, AuthState>(
+          listener: (context, state) {
+            if (state is AuthUnauthenticated || state is AuthError) {
+              Navigator.pushReplacementNamed(context, Routes.login);
+            } else if (state is AuthAuthenticated) {
+              // Optional: Check if pending/guest
+              if (state.user.role == 'guest') {
+                // handle guest
+              }
+              if (state.user.approvalStatus == 'pending') {
+                Navigator.pushReplacementNamed(context, Routes.pendingUser);
+              }
+            }
+          },
+        ),
+      ],
       child: DefaultTabController(
         length: 2,
         child: Scaffold(

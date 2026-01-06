@@ -16,7 +16,9 @@ import 'package:easy_localization/easy_localization.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   await Hive.initFlutter();
 
   Hive.registerAdapter(UserModelAdapter());

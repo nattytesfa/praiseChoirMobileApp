@@ -296,6 +296,7 @@ class AuthRepository {
 
   /// Save user both locally and update Firestore if needed
   Future<void> saveUser(UserModel user) async {
+    await _ensureInitialized();
     await _settingsBox.put('current_user_id', user.id);
 
     // Update local storage
@@ -315,6 +316,7 @@ class AuthRepository {
 
   /// Update user in both local storage and Firestore
   Future<void> updateUser(UserModel user) async {
+    await _ensureInitialized();
     // Update locally
     final idx = _usersBox.values.cast<UserModel>().toList().indexWhere(
       (u) => u.id == user.id,
@@ -355,6 +357,7 @@ class AuthRepository {
 
   /// Save user to local Hive storage
   Future<void> _saveUserLocally(UserModel user) async {
+    await _ensureInitialized();
     await _settingsBox.put('current_user_id', user.id);
 
     final exists = _usersBox.values.cast<UserModel>().any(

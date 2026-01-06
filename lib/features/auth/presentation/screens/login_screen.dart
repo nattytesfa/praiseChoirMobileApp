@@ -80,9 +80,6 @@ class _LoginScreenState extends State<LoginScreen> {
               }
             },
             builder: (context, state) {
-              if (state is AuthLoading) {
-                const Center(child: CircularProgressIndicator());
-              }
               return SafeArea(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 30.0),
