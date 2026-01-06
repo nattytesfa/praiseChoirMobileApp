@@ -459,5 +459,9 @@
   "yesterday": "Yesterday",
   "minutesAgoShort": "{}m ago",
   "hoursAgoShort": "{}h ago",
-  "daysAgoShort": "{}d ago"
+  "daysAgoShort": "{}d ago",
+  "recordingDuration": "Recording... {}",
+  "holdToRecord": "Hold to record",
+  "enterTitle": "Please enter a title",
+  "enterContent": "Please enter content"
 }

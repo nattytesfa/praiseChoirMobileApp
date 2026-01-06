@@ -20,6 +20,35 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    final state = context.read<AuthCubit>().state;
+    if (state is AuthAuthenticated) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _handleAuthNavigation(context, state.user);
+      });
+    }
+  }
+
+  void _handleAuthNavigation(BuildContext context, dynamic user) {
+    if (user.approvalStatus == 'pending' || user.approvalStatus == 'denied') {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        Routes.pendingUser,
+        (route) => false,
+      );
+    } else if (user.role == 'guest') {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        SongRoutes.songLibrary,
+        (route) => false,
+      );
+    } else {
+      Navigator.pushReplacementNamed(context, Routes.mainNavigationShell);
+    }
+  }
+
   void _submitEmailAndPassword() {
     if (_formKey.currentState!.validate()) {
       final email = _emailController.text.trim();
@@ -48,28 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
           BlocConsumer<AuthCubit, AuthState>(
             listener: (context, state) {
               if (state is AuthAuthenticated) {
-                final user = state.user;
-
-                if (user.approvalStatus == 'pending' ||
-                    user.approvalStatus == 'denied') {
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    Routes.pendingUser,
-                    (route) => false,
-                  );
-                } else if (user.role == 'guest') {
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    SongRoutes.songLibrary,
-
-                    (route) => false,
-                  );
-                } else {
-                  Navigator.pushReplacementNamed(
-                    context,
-                    Routes.mainNavigationShell,
-                  );
-                }
+                _handleAuthNavigation(context, state.user);
               } else if (state is AuthError) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -80,6 +88,9 @@ class _LoginScreenState extends State<LoginScreen> {
               }
             },
             builder: (context, state) {
+              if (state is AuthLoading || state is AuthAuthenticated) {
+                return const Center(child: CircularProgressIndicator());
+              }
               return SafeArea(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 30.0),

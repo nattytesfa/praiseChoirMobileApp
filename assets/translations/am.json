@@ -384,7 +384,6 @@
   "voiceMessage": "የድምፅ መልዕክት",
   "recording...": "እየተቀዳ ነው...",
   "reply":"መመለስ",
-  "startConversation": "ውይይት ይጀምሩ",
   "songsWithoutAudio": "የድምጽ ቅጂ የሌላቸው መዝሙሮች",
   "generatePaymentsConfirm": "እርግጠኛ ነህ ወርሃዊ ክፍያዎችን ለመመነጨት?",
   "lastSeen": "መጨረሻ የታየው",
@@ -462,6 +461,7 @@
   "settingsSavedSuccess": "ቅንብሮች በተሳካ ሁኔታ ተቀምጠዋል",
   "areYouSureYouWantToDeleteThisSong": "እርግጠኛ ነህ ይህን መዝሙር ማጥፋት?",
   "deleteAnnouncement": "ማስታወቂያ ሰርዝ",
+  "startConversation":"ውይይት ይጀምሩ",
   "areYouSureYouWantToDeleteThisAnnouncement": "እርግጠኛ ነህ ይህን ማስታወቂያ ማጥፋት?",
   "markAsRead": "እንደተነበበ ምልክት አድርግ",
   "postedBy": "በ {}",
@@ -469,5 +469,9 @@
   "yesterday": "ትናንት",
   "minutesAgoShort": "ከ {} መ በፊት",
   "hoursAgoShort": "ከ {} ሰ በፊት",
-  "daysAgoShort": "ከ {} ቀ በፊት"
+  "daysAgoShort": "ከ {} ቀ በፊት",
+  "recordingDuration": "እየተቀዳ ነው... {}",
+  "holdToRecord": "ለመቅዳት ተጭነው ይቆዩ",
+  "enterTitle": "እባክዎ ርዕስ ያስገቡ",
+  "enterContent": "እባክዎ ይዘት ያስገቡ"
 }

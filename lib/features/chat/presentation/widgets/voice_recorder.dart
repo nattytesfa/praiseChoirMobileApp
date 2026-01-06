@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/core/services/audio_service.dart';
@@ -89,8 +90,10 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
             const SizedBox(width: 8),
             Text(
               _isRecording
-                  ? 'Recording... ${_formatDuration(_recordingDuration)}'
-                  : 'Hold to record',
+                  ? 'recordingDuration'.tr(
+                      args: [_formatDuration(_recordingDuration)],
+                    )
+                  : 'holdToRecord'.tr(),
               style: TextStyle(color: _isRecording ? Colors.red : Colors.grey),
             ),
           ],

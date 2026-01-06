@@ -20,16 +20,43 @@ class AuthCubit extends Cubit<AuthState> {
   /// will operate in a disabled mode suitable for testing other features.
   AuthCubit(this.authRepository, {bool disableFirebase = false})
     : _auth = disableFirebase ? null : FirebaseAuth.instance,
-      super(AuthInitial());
+      super(
+        _getInitialState(
+          disableFirebase ? null : FirebaseAuth.instance,
+          authRepository,
+        ),
+      );
+
+  static AuthState _getInitialState(dynamic auth, AuthRepository repo) {
+    if (auth == null) return AuthInitial();
+
+    final user = auth.currentUser;
+    if (user != null && Hive.isBoxOpen(HiveBoxes.users)) {
+      final email = user.email ?? '';
+      final userBox = Hive.box<UserModel>(HiveBoxes.users);
+      try {
+        final matching = userBox.values.firstWhere((u) => u.email == email);
+        return AuthAuthenticated(matching);
+      } catch (_) {
+        return AuthInitial();
+      }
+    }
+    return AuthInitial();
+  }
 
   Future<void> appStarted() async {
-    emit(AuthLoading());
     try {
       if (Hive.isBoxOpen(HiveBoxes.users)) {
         _usersBox = Hive.box<UserModel>(HiveBoxes.users);
       } else {
         _usersBox = await Hive.openBox<UserModel>(HiveBoxes.users);
       }
+
+      if (state is AuthAuthenticated) {
+        return;
+      }
+
+      emit(AuthLoading());
       await checkAuthStatus();
     } catch (e) {
       emit(AuthError("Failed to initialize: $e"));

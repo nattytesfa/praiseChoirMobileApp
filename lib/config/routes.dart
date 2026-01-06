@@ -4,7 +4,7 @@ import 'package:praise_choir_app/core/widgets/common/main_navigation_shell.dart'
 import 'package:praise_choir_app/core/widgets/common/pending_approval_screen.dart';
 import 'package:praise_choir_app/core/widgets/common/role_selection_screen.dart';
 import 'package:praise_choir_app/core/widgets/common/song_list_screen.dart';
-import 'package:praise_choir_app/core/widgets/common/splash_screen.dart';
+// import 'package:praise_choir_app/core/widgets/common/splash_screen.dart';
 import 'package:praise_choir_app/core/widgets/common/user_list_screen.dart';
 import 'package:praise_choir_app/features/admin/admin_routes.dart';
 import 'package:praise_choir_app/features/auth/presentation/screens/login_screen.dart';
@@ -17,7 +17,7 @@ import 'package:praise_choir_app/features/settings/presentation/screens/settings
 import '../features/events/event_routes.dart';
 
 class Routes {
-  static const String splash = '/';
+  // static const String splash = '/';
   static const String mainNavigationShell = '/mainNavigationShell';
   static const String roleSelection = '/role-selection';
 
@@ -54,11 +54,11 @@ class Routes {
       return ChatRoutes.generateRoute(settings);
     }
     switch (settings.name) {
-      case splash:
-        return MaterialPageRoute(
-          builder: (_) => SplashScreen(),
-          settings: settings,
-        );
+      // case splash:
+      //   return MaterialPageRoute(
+      //     builder: (_) => SplashScreen(),
+      //     settings: settings,
+      //   );
       case pendingUser:
         return MaterialPageRoute(builder: (_) => PendingApprovalScreen());
       case guestUser:

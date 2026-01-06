@@ -130,7 +130,7 @@ class _CreateAnnouncementScreenState extends State<CreateAnnouncementScreen> {
                   decoration: InputDecoration(
                     labelText: 'content'.tr(),
                     border: const OutlineInputBorder(),
-                    hintText: 'enterTheDetailsOfYourAnnouncement...'.tr(),
+                    hintText: 'enterTheDetailsOfYourAnnouncement'.tr(),
                     alignLabelWithHint: true,
                   ),
                   maxLines: 5,

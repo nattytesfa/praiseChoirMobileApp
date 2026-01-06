@@ -172,15 +172,13 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                           .any((m) => m.senderId != _currentUserId);
                     }
 
-                    String content =
-                        'Are you sure you want to delete these messages?';
+                    String content = 'deleteMessagesConfirm'.tr();
                     if (isAdmin && hasOthersMessages) {
-                      content =
-                          'Are you sure you want to delete these messages? Messages from other users will be deleted for everyone.';
+                      content = 'deleteMessagesConfirmForEveryone'.tr();
                     }
 
                     _showDeleteConfirmation(
-                      title: 'Delete Messages',
+                      title: 'deleteMessagesTitle'.tr(),
                       content: content,
                       onConfirm: () {
                         context.read<ChatCubit>().deleteMessages(
@@ -225,9 +223,8 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                   onSelected: (value) {
                     if (value == 'clear') {
                       _showDeleteConfirmation(
-                        title: 'Clear History',
-                        content:
-                            'Are you sure you want to clear the chat history?',
+                        title: 'clearHistory'.tr(),
+                        content: 'clearHistoryConfirm'.tr(),
                         onConfirm: () {
                           context.read<ChatCubit>().clearHistory(
                             widget.chat.id,
