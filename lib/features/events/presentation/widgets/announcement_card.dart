@@ -148,7 +148,7 @@ class AnnouncementCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'By ${announcement.authorName ?? announcement.createdBy} • ${_formatDate(announcement.createdAt)}',
+                    '${'postedBy'.tr(args: [announcement.authorName ?? announcement.createdBy])} • ${_formatDate(announcement.createdAt)}',
                     style: AppTextStyles.caption.copyWith(color: footerColor),
                   ),
                 ),
@@ -157,7 +157,7 @@ class AnnouncementCard extends StatelessWidget {
                   TextButton(
                     onPressed: () => onMarkAsRead(announcement.id),
                     child: Text(
-                      'Mark as Read',
+                      'markAsRead'.tr(),
                       style: AppTextStyles.caption.copyWith(
                         color: textColor,
                         fontWeight: FontWeight.bold,
@@ -169,7 +169,7 @@ class AnnouncementCard extends StatelessWidget {
             if (announcement.expiresAt != null) ...[
               const SizedBox(height: 4),
               Text(
-                'Expires: ${_formatDate(announcement.expiresAt!)}',
+                'expiresAt'.tr(args: [_formatDate(announcement.expiresAt!)]),
                 style: AppTextStyles.caption.copyWith(
                   color: footerColor,
                   fontStyle: FontStyle.italic,
@@ -205,15 +205,15 @@ class AnnouncementCard extends StatelessWidget {
     if (difference.inDays == 0) {
       if (difference.inHours == 0) {
         if (difference.inMinutes < 1) {
-          return 'Just now';
+          return 'justNow'.tr();
         }
-        return '${difference.inMinutes}m ago';
+        return 'minutesAgoShort'.tr(args: [difference.inMinutes.toString()]);
       }
-      return '${difference.inHours}h ago';
+      return 'hoursAgoShort'.tr(args: [difference.inHours.toString()]);
     } else if (difference.inDays == 1) {
-      return 'Yesterday';
+      return 'yesterday'.tr();
     } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
+      return 'daysAgoShort'.tr(args: [difference.inDays.toString()]);
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }

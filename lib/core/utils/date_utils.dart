@@ -1,5 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class DateUtils {
   // Ethiopian calendar constants
@@ -28,7 +28,7 @@ class DateUtils {
     final difference = now.difference(date);
 
     if (difference.inSeconds < 60) {
-      return 'Just now';
+      return 'justNow'.tr();
     } else if (difference.inMinutes < 60) {
       return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'} ago';
     } else if (difference.inHours < 24) {
