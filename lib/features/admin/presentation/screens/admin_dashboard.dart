@@ -7,6 +7,7 @@ import 'package:praise_choir_app/features/auth/data/models/user_model.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/payment/payment_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
@@ -50,6 +51,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.white,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
         title: Text('leaderDashboard'.tr()),
         actions: [
           IconButton(icon: const Icon(Icons.refresh), onPressed: _loadStats),
@@ -243,6 +246,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             onHealthCheck: () => context.read<AdminCubit>().checkSystemHealth(),
             onCleanup: () => _confirmCleanup(context),
           ),
+          const SizedBox(height: 24),
           ActivityAnalytics(members: state.members),
         ],
       ),
@@ -258,19 +262,31 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white10,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [BoxShadow(blurRadius: 10, offset: const Offset(0, 4))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 20),
+          Icon(icon, color: color, size: 28),
           const SizedBox(height: 8),
           Text(
             value,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          Text(title, style: TextStyle(fontSize: 11, color: Colors.white)),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 11,
+              color: Theme.of(context).textTheme.bodySmall?.color,
+            ),
+          ),
         ],
       ),
     );

@@ -41,7 +41,7 @@ class Routes {
     if (settings.name != null && settings.name!.startsWith('/admin')) {
       return AdminRoutes.onGenerateRoute(settings);
     }
-    if (settings.name != null && settings.name!.startsWith('/song')) {
+    if (settings.name != null && settings.name!.startsWith('/songs')) {
       return SongRoutes.onGenerateRoute(settings);
     }
     if (settings.name != null && settings.name!.startsWith('/payment')) {

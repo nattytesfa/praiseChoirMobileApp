@@ -17,7 +17,7 @@ class SongInfo extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoSection('generalInforamation'.tr(), [
+          _buildInfoSection(context, 'generalInforamation'.tr(), [
             _buildInfoRow('songNumber'.tr(), song.songNumber ?? '-'),
             _buildInfoRow('title'.tr(), song.title),
             _buildInfoRow('songWriter'.tr(), song.writer ?? 'unknown'.tr()),
@@ -29,7 +29,7 @@ class SongInfo extends StatelessWidget {
             ),
           ]),
           const SizedBox(height: 24),
-          _buildInfoSection('statistics'.tr(), [
+          _buildInfoSection(context, 'statistics'.tr(), [
             _buildInfoRow('likes'.tr(), song.likeCount.toString()),
             _buildInfoRow(
               'performanceCount'.tr(),
@@ -75,7 +75,11 @@ class SongInfo extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoSection(String title, List<Widget> children) {
+  Widget _buildInfoSection(
+    BuildContext context,
+    String title,
+    List<Widget> children,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -87,9 +91,11 @@ class SongInfo extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.grey.shade50,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
+            border: Border.all(
+              color: Theme.of(context).dividerTheme.color ?? AppColors.gray200,
+            ),
           ),
           child: Column(children: children),
         ),

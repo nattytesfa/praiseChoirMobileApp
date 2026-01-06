@@ -36,10 +36,6 @@ class ApiConstants {
   static const String announcements = '$baseUrl/announcements';
   static const String polls = '$baseUrl/polls';
 
-  // Gallery endpoints
-  static const String gallery = '$baseUrl/gallery';
-  static const String uploadMedia = '$baseUrl/gallery/upload';
-
   // Admin endpoints
   static const String adminStats = '$baseUrl/admin/stats';
   static const String adminMembers = '$baseUrl/admin/members';

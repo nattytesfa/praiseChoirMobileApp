@@ -28,6 +28,11 @@ class AnnouncementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = _getTextColor();
+    final footerColor = textColor != null
+        ? AppColors.withValues(textColor, 0.7)
+        : AppColors.textSecondary;
+
     return Card(
       elevation: 2,
       color: _getCardColor(),
@@ -47,7 +52,7 @@ class AnnouncementCard extends StatelessWidget {
                   child: Text(
                     announcement.title,
                     style: AppTextStyles.titleMedium.copyWith(
-                      color: _getTextColor(),
+                      color: textColor,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -73,7 +78,7 @@ class AnnouncementCard extends StatelessWidget {
                 ],
                 if (isAdmin)
                   PopupMenuButton<String>(
-                    icon: Icon(Icons.more_vert, color: _getTextColor()),
+                    icon: Icon(Icons.more_vert, color: textColor),
                     onSelected: (value) {
                       switch (value) {
                         case 'edit':
@@ -135,7 +140,7 @@ class AnnouncementCard extends StatelessWidget {
             // Content
             Text(
               announcement.content,
-              style: AppTextStyles.bodyMedium.copyWith(color: _getTextColor()),
+              style: AppTextStyles.bodyMedium.copyWith(color: textColor),
             ),
             const SizedBox(height: 12),
             // Footer
@@ -144,9 +149,7 @@ class AnnouncementCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     'By ${announcement.authorName ?? announcement.createdBy} • ${_formatDate(announcement.createdAt)}',
-                    style: AppTextStyles.caption.copyWith(
-                      color: AppColors.withValues(_getTextColor(), 0.7),
-                    ),
+                    style: AppTextStyles.caption.copyWith(color: footerColor),
                   ),
                 ),
                 if (showMarkAsRead &&
@@ -156,7 +159,7 @@ class AnnouncementCard extends StatelessWidget {
                     child: Text(
                       'Mark as Read',
                       style: AppTextStyles.caption.copyWith(
-                        color: _getTextColor(),
+                        color: textColor,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -168,7 +171,7 @@ class AnnouncementCard extends StatelessWidget {
               Text(
                 'Expires: ${_formatDate(announcement.expiresAt!)}',
                 style: AppTextStyles.caption.copyWith(
-                  color: AppColors.withValues(_getTextColor(), 0.7),
+                  color: footerColor,
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -179,20 +182,20 @@ class AnnouncementCard extends StatelessWidget {
     );
   }
 
-  Color _getCardColor() {
+  Color? _getCardColor() {
     if (announcement.isUrgent) {
       return AppColors.withValues(Colors.red, 0.1);
     } else if (announcement.isHighPriority) {
       return AppColors.withValues(Colors.orange, 0.1);
     }
-    return Colors.white70;
+    return null;
   }
 
-  Color _getTextColor() {
+  Color? _getTextColor() {
     if (announcement.isUrgent || announcement.isHighPriority) {
       return Colors.black;
     }
-    return AppColors.textPrimary;
+    return null;
   }
 
   String _formatDate(DateTime date) {

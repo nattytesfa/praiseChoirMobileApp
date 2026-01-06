@@ -31,6 +31,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).brightness == Brightness.light
+          ? AppColors.gray50
+          : null,
       body: Stack(
         children: [
           Positioned(
@@ -116,10 +119,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 20),
                         Text(
                           'welcomeMessage'.tr(),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.w800,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onSurface,
                             letterSpacing: -0.5,
                           ),
                         ),
@@ -201,7 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.1),
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -224,7 +227,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Theme.of(context).brightness == Brightness.dark
                   ? Icons.light_mode_rounded
                   : Icons.dark_mode_rounded,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             onPressed: () {
               context.read<ThemeCubit>().toggleTheme();
@@ -247,7 +250,11 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Text(
           label,
           style: TextStyle(
-            color: active ? Colors.white : Colors.white38,
+            color: active
+                ? Colors.white
+                : Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.5),
             fontWeight: FontWeight.bold,
             fontSize: 12,
           ),

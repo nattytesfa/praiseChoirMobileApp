@@ -97,16 +97,7 @@ class _UserListScreenState extends State<UserListScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Text(
-          'Choir Members',
-          style: TextStyle(color: Colors.black87),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black87),
-      ),
+      appBar: AppBar(title: const Text('Choir Members')),
       body: Column(
         children: [
           // Search Bar

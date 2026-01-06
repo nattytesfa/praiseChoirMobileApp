@@ -16,13 +16,12 @@ class AppConstants {
     roleLeader,
     roleSongWriter,
     roleMember,
-
+    roleUser
   ];
 
   // Language constants
   static const String languageAmharic = 'am';
   static const String languageEnglish = 'en';
-  static const String languageKembatigna = 'kembatigna';
 
   // Song tags
   static const String tagNew = 'new';

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/widgets/common/network/network_status_indicator.dart';
@@ -93,6 +94,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           extendBody: true,
           drawer: _buildFullVerticalMenu(context),
           appBar: AppBar(
+            systemOverlayStyle: SystemUiOverlayStyle.light,
             backgroundColor: AppColors.primary,
             elevation: 0,
             actions: [
@@ -147,7 +149,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             centerTitle: true,
             bottom: TabBar(
               indicatorColor: AppColors.white,
-              dividerColor: AppColors.darkBackground,
+              dividerColor: Colors.transparent,
+              labelColor: AppColors.white,
+              unselectedLabelColor: AppColors.white70,
               tabs: [
                 Tab(text: "kembatgna".tr()),
                 Tab(text: "amharic".tr()),
@@ -155,23 +159,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ),
           ),
           body: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: Theme.of(context).brightness == Brightness.dark
-                    ? [
-                        AppColors.darkBackground,
-                        AppColors.gray900,
-                      ] // Dark mode gradient
-                    : [
-                        AppColors.primary,
-                        AppColors.primaryLight,
-                      ], // Light mode gradient
-              ),
-            ),
-            child: TabBarView(
-              children: const [
+            color: Theme.of(context).brightness == Brightness.light
+                ? AppColors.gray300
+                : null,
+            child: const TabBarView(
+              children: [
                 SongListView(language: 'en'),
                 SongListView(language: 'am'),
               ],

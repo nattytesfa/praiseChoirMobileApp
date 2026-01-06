@@ -63,8 +63,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     required String? Function(String?)? validator,
     String? hintText,
     bool obscureText = false,
+    TextInputType? keyboardType,
   }) {
     return TextFormField(
+      keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: labelText,
         prefixIcon: Icon(prefixIcon),
@@ -79,6 +81,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).brightness == Brightness.light
+          ? AppColors.gray50
+          : null,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -183,6 +188,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     const SizedBox(height: 16),
                     _textFieldDecoration(
+                      keyboardType: TextInputType.emailAddress,
                       controller: _emailController,
                       labelText: 'emailAddress'.tr(),
                       prefixIcon: Icons.email,
@@ -236,7 +242,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       alignmentOffset: Offset(0, 10),
                       menuStyle: MenuStyle(
                         backgroundColor: WidgetStatePropertyAll(
-                          AppColors.darkBackground,
+                          Theme.of(context).cardColor,
                         ),
                         shape: WidgetStatePropertyAll(
                           RoundedRectangleBorder(

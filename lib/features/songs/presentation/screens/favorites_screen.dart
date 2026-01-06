@@ -8,13 +8,19 @@ import 'package:praise_choir_app/features/songs/presentation/cubit/song_state.da
 import 'package:praise_choir_app/features/songs/presentation/screens/song_detail_screen.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/song_list_item.dart';
 
+import '../../../../core/theme/app_colors.dart';
+
 class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('favorites'.tr())),
+      appBar: AppBar(
+        title: Text('favorites'.tr()),
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.white,
+      ),
       body: BlocBuilder<SongCubit, SongState>(
         builder: (context, state) {
           if (state is SongLoading) {

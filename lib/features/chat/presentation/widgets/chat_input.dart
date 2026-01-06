@@ -4,7 +4,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:praise_choir_app/core/theme/app_theme.dart';
 import 'package:record/record.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -150,8 +149,10 @@ class _ChatInputState extends State<ChatInput> {
       padding: const EdgeInsets.all(16),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppTheme.darkTheme.inputDecorationTheme.fillColor,
-        border: BoxBorder.all(color: AppColors.gray600),
+        color: Theme.of(context).inputDecorationTheme.fillColor,
+        border: Border.all(
+          color: Theme.of(context).dividerTheme.color ?? AppColors.gray600,
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

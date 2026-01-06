@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gal/gal.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
@@ -61,6 +62,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
           title: Text(widget.title.tr()),
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
+          systemOverlayStyle: SystemUiOverlayStyle.light,
           bottom: TabBar(
             labelColor: Colors.white,
             unselectedLabelColor: Colors.white70,

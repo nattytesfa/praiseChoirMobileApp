@@ -184,7 +184,11 @@ class _MyPaymentsScreenState extends State<MyPaymentsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('myPayments'.tr())),
+      appBar: AppBar(
+        title: Text('myPayments'.tr()),
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.white,
+      ),
       body: BlocConsumer<PaymentCubit, PaymentState>(
         listener: (context, state) {
           if (state is PaymentError) {

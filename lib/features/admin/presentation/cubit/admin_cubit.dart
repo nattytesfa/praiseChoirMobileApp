@@ -16,8 +16,8 @@ class AdminCubit extends Cubit<AdminState> {
     : super(AdminInitial());
 
   /// Loads real-time stats from Firestore
-  Future<void> loadAdminStats() async {
-    emit(AdminLoading());
+  Future<void> loadAdminStats({bool showLoading = true}) async {
+    if (showLoading) emit(AdminLoading());
     try {
       // 1. Fetch all members from Firestore via the repository
       final allMembers = await _authRepository.getAllUsers();
@@ -71,7 +71,7 @@ class AdminCubit extends Cubit<AdminState> {
       await _authRepository.updateUserRole(memberId, newRole);
 
       // Refresh the local UI state
-      await loadAdminStats();
+      await loadAdminStats(showLoading: false);
     } catch (e) {
       emit(AdminError('Failed to update role: $e'));
     }
@@ -84,7 +84,7 @@ class AdminCubit extends Cubit<AdminState> {
       await _authRepository.updateUserStatus(userId, true);
 
       // Refresh the list so the UI updates immediately
-      await loadAdminStats();
+      await loadAdminStats(showLoading: false);
     } catch (e) {
       if (!isClosed) {
         emit(AdminError('Failed to activate member: ${e.toString()}'));
@@ -99,7 +99,7 @@ class AdminCubit extends Cubit<AdminState> {
 
       // await _authRepository.updateUserRole(memberId, 'deactivated');
       // Or create a specific method in repo: updateStatus(memberId, false)
-      await loadAdminStats();
+      await loadAdminStats(showLoading: false);
     } catch (e) {
       emit(AdminError('Failed to deactivate member'));
     }
@@ -171,7 +171,7 @@ class AdminCubit extends Cubit<AdminState> {
       });
 
       // 2. Refresh the local data
-      await loadAdminStats();
+      await loadAdminStats(showLoading: false);
     } catch (e) {
       emit(AdminError("Failed to update user: $e"));
     }
