@@ -35,26 +35,35 @@ class SongModel extends HiveObject {
   @HiveField(9)
   final DateTime? lastPracticed;
 
-  @HiveField(10)
+  @HiveField(10, defaultValue: 0)
   final int performanceCount;
 
-  @HiveField(11)
+  @HiveField(11, defaultValue: [])
   final List<SongVersion> versions;
 
-  @HiveField(12)
+  @HiveField(12, defaultValue: [])
   final List<RecordingNote> recordingNotes;
 
   @HiveField(13)
   final String? songNumber;
 
-  @HiveField(14)
+  @HiveField(14, defaultValue: 0)
   final int likeCount;
 
-  @HiveField(15)
+  @HiveField(15, defaultValue: 0)
   final int practiceCount;
 
   @HiveField(16)
   final String? writer;
+
+  @HiveField(17, defaultValue: false)
+  final bool isDeleted;
+
+  @HiveField(18)
+  final DateTime? updatedAt;
+
+  @HiveField(19)
+  final Map<String, dynamic>? metadata;
 
   SongModel({
     required this.id,
@@ -74,6 +83,9 @@ class SongModel extends HiveObject {
     this.likeCount = 0,
     this.practiceCount = 0,
     this.writer,
+    this.isDeleted = false,
+    this.updatedAt,
+    this.metadata,
   });
 
   Map<String, dynamic> toJson() {
@@ -95,6 +107,9 @@ class SongModel extends HiveObject {
       'likeCount': likeCount,
       'practiceCount': practiceCount,
       'writer': writer,
+      'isDeleted': isDeleted,
+      'updatedAt': updatedAt?.toIso8601String(),
+      'metadata': metadata,
     };
   }
 
@@ -140,6 +155,11 @@ class SongModel extends HiveObject {
       likeCount: json['likeCount'] ?? 0,
       practiceCount: json['practiceCount'] ?? 0,
       writer: json['writer']?.toString(),
+      isDeleted: json['isDeleted'] ?? false,
+      updatedAt: _parseNullableDate(json['updatedAt']),
+      metadata: json['metadata'] != null
+          ? Map<String, dynamic>.from(json['metadata'])
+          : null,
       versions: json['versions'] != null
           ? (json['versions'] as List)
                 .whereType<Map>()
@@ -172,6 +192,9 @@ class SongModel extends HiveObject {
     int? likeCount,
     String? writer,
     int? practiceCount,
+    bool? isDeleted,
+    DateTime? updatedAt,
+    Map<String, dynamic>? metadata,
   }) {
     return SongModel(
       id: id,
@@ -191,6 +214,9 @@ class SongModel extends HiveObject {
       likeCount: likeCount ?? this.likeCount,
       writer: writer ?? this.writer,
       practiceCount: practiceCount ?? this.practiceCount,
+      isDeleted: isDeleted ?? this.isDeleted,
+      updatedAt: updatedAt ?? this.updatedAt,
+      metadata: metadata ?? this.metadata,
     );
   }
 }

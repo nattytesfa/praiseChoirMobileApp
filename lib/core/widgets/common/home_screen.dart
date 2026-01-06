@@ -99,6 +99,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               Row(
                 children: [
                   IconButton(
+                    icon: const Icon(Icons.add, color: Colors.white),
+                    onPressed: () => SongRoutes.navigateToAdd(context),
+                  ),
+                  IconButton(
                     icon: const Icon(Icons.search, color: Colors.white),
                     onPressed: () =>
                         Navigator.pushNamed(context, SongRoutes.search),

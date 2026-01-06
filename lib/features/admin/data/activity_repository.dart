@@ -1,7 +1,7 @@
 import 'package:praise_choir_app/features/admin/data/models/activity_event.dart';
 import 'package:praise_choir_app/features/auth/data/auth_repository.dart';
 import 'package:praise_choir_app/features/payment/data/payment_repository.dart';
-import 'package:praise_choir_app/features/songs/data/song_repository.dart';
+import 'package:praise_choir_app/features/songs/data/models/song_model.dart';
 import 'package:praise_choir_app/features/payment/data/models/payment_model.dart';
 import 'package:hive/hive.dart';
 import 'package:praise_choir_app/features/chat/data/models/message_model.dart';
@@ -9,14 +9,9 @@ import 'package:praise_choir_app/features/events/data/models/announcement_model.
 
 class ActivityRepository {
   final AuthRepository _authRepository;
-  final SongRepository _songRepository;
   final PaymentRepository _paymentRepository;
 
-  ActivityRepository(
-    this._authRepository,
-    this._songRepository,
-    this._paymentRepository,
-  );
+  ActivityRepository(this._authRepository, this._paymentRepository);
 
   Future<List<ActivityEvent>> getRecentActivities() async {
     final List<ActivityEvent> activities = [];
@@ -57,10 +52,13 @@ class ActivityRepository {
       // Ignore errors for individual sources
     }
 
-    // 2. Songs Added
+    // 2. Songs Activity (Added, Edited, Deleted)
     try {
-      final songs = await _songRepository.getAllSongs();
+      final songBox = Hive.box<SongModel>('songs');
+      final songs = songBox.values.toList();
+
       for (var song in songs) {
+        // A. Song Added
         activities.add(
           ActivityEvent(
             title: 'New Song Added',
@@ -70,6 +68,50 @@ class ActivityRepository {
             user: song.addedBy,
           ),
         );
+
+        // B. Song Deleted
+        if (song.isDeleted &&
+            song.metadata != null &&
+            song.metadata!['deletedAt'] != null) {
+          final deletedAt = DateTime.parse(song.metadata!['deletedAt']);
+          activities.add(
+            ActivityEvent(
+              title: 'Song Deleted',
+              description: '"${song.title}" was removed.',
+              timestamp: deletedAt,
+              type: ActivityType.songDeleted,
+              user: 'Admin', // We don't track who deleted it yet, assume Admin
+            ),
+          );
+        }
+
+        // C. Song Edited (Only shows the LATEST edit)
+        if (song.updatedAt != null) {
+          // If deleted, check if update time matches delete time
+          bool isDeleteAction = false;
+          if (song.isDeleted &&
+              song.metadata != null &&
+              song.metadata!['deletedAt'] != null) {
+            final deletedAt = DateTime.parse(song.metadata!['deletedAt']);
+            if (song.updatedAt!.difference(deletedAt).inSeconds.abs() < 5) {
+              isDeleteAction = true;
+            }
+          }
+
+          // Also filter out if update time is very close to creation time (initial save quirks)
+          if (!isDeleteAction &&
+              song.updatedAt!.difference(song.dateAdded).inSeconds.abs() > 1) {
+            activities.add(
+              ActivityEvent(
+                title: 'Song Edited',
+                description: '"${song.title}" details were updated.',
+                timestamp: song.updatedAt!,
+                type: ActivityType.songEdited,
+                user: 'Admin',
+              ),
+            );
+          }
+        }
       }
     } catch (e) {
       // Ignore

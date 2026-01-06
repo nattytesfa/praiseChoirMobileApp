@@ -100,11 +100,11 @@ class SongListItem extends StatelessWidget {
   }
 
   Future<void> _confirmDelete(BuildContext context) async {
-    await showDialog<bool>(
+    final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('deleteSong'.tr()),
-        content: Text('areYouSureYouWantToDeleteThisSong?'.tr()),
+        content: Text('areYouSureYouWantToDeleteThisSong'.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -118,6 +118,10 @@ class SongListItem extends StatelessWidget {
         ],
       ),
     );
+
+    if (confirmed == true) {
+      onDelete?.call();
+    }
   }
 
   void _openSongDetail(BuildContext context) {

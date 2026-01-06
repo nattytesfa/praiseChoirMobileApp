@@ -19,7 +19,7 @@ class SongRepository {
   }
 
   Future<List<SongModel>> getAllSongs({String? userId}) async {
-    final songs = _songBox.values.toList();
+    final songs = _songBox.values.where((s) => !s.isDeleted).toList();
 
     return songs.map((song) {
       // If no user is logged in, don't show any favorites (or use a 'guest' key if desired)
@@ -121,7 +121,12 @@ class SongRepository {
   Future<void> updateSong(SongModel song) async {
     // Ensure we don't save 'favorite' tag to the shared model
     final tagsToSave = List<String>.from(song.tags)..remove('favorite');
-    final songToSave = song.copyWith(tags: tagsToSave);
+
+    // Set updatedAt
+    final songToSave = song.copyWith(
+      tags: tagsToSave,
+      updatedAt: DateTime.now(),
+    );
 
     // 1. Update Remote (Firebase)
     try {
@@ -147,44 +152,44 @@ class SongRepository {
     if (kDebugMode) {
       print('SongRepository: Deleting song $songId');
     }
-    // 1. Delete from Remote (Firebase)
-    // We do this first or in parallel to ensure it doesn't come back on sync
-    try {
-      if (kDebugMode) {
-        print('SongRepository: Calling SongService.deleteSong');
-      }
-      await _songService.deleteSong(songId);
-      if (kDebugMode) {
-        print('SongRepository: Remote delete successful');
-      }
-    } catch (e) {
-      debugPrint('Failed to delete from remote: $e');
-      // Rethrow so the UI knows it failed and we don't delete locally
-      // This prevents the "zombie song" issue where it disappears but comes back
-      throw Exception('Failed to delete from server: $e');
-    }
 
-    // 2. Delete from local Hive
-    if (kDebugMode) {
-      print('SongRepository: Finding local song to delete');
-    }
+    // 1. Find local song to prepare soft delete object
     final songToDelete = _songBox.values.cast<SongModel?>().firstWhere(
       (s) => s?.id == songId,
       orElse: () => null,
     );
 
-    if (songToDelete != null) {
+    if (songToDelete == null) {
       if (kDebugMode) {
-        print(
-          'SongRepository: Deleting local song with key ${songToDelete.key}',
-        );
+        print('SongRepository: Local song not found, cannot soft delete');
       }
-      await _songBox.delete(songToDelete.key);
-    } else {
-      if (kDebugMode) {
-        print('SongRepository: Local song not found');
-      }
+      return;
     }
+
+    final deletedSong = songToDelete.copyWith(
+      isDeleted: true,
+      updatedAt: DateTime.now(),
+      metadata: {'deletedAt': DateTime.now().toIso8601String()},
+    );
+
+    // 2. Update Remote (Firebase) - Soft Delete
+    try {
+      if (kDebugMode) {
+        print('SongRepository: Calling SongService.updateSong (Soft Delete)');
+      }
+      // Use updateSong instead of deleteSong to preserve history
+      await _songService.updateSong(deletedSong);
+
+      if (kDebugMode) {
+        print('SongRepository: Remote soft delete successful');
+      }
+    } catch (e) {
+      debugPrint('Failed to update remote: $e');
+      throw Exception('Failed to delete from server: $e');
+    }
+
+    // 3. Update local Hive
+    await _songBox.put(songToDelete.key, deletedSong);
   }
 
   Future<void> markSongPerformed(String songId) async {

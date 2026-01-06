@@ -7,6 +7,8 @@ enum ActivityType {
   chatActivity,
   announcement,
   userStatusChange,
+  songDeleted,
+  songEdited,
 }
 
 class ActivityEvent {

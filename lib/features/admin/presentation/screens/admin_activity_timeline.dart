@@ -8,7 +8,6 @@ import 'package:praise_choir_app/features/admin/data/models/activity_event.dart'
 import 'package:praise_choir_app/features/admin/presentation/cubit/activity_cubit.dart';
 import 'package:praise_choir_app/features/auth/data/auth_repository.dart';
 import 'package:praise_choir_app/features/payment/data/payment_repository.dart';
-import 'package:praise_choir_app/features/songs/data/song_repository.dart';
 
 class AdminActivityTimeline extends StatelessWidget {
   const AdminActivityTimeline({super.key});
@@ -19,7 +18,6 @@ class AdminActivityTimeline extends StatelessWidget {
       create: (context) => ActivityCubit(
         ActivityRepository(
           context.read<AuthRepository>(),
-          context.read<SongRepository>(),
           context.read<PaymentRepository>(),
         ),
       )..loadActivities(),
@@ -204,6 +202,10 @@ class AdminActivityTimeline extends StatelessWidget {
         return Colors.deepOrange;
       case ActivityType.userStatusChange:
         return Colors.amber;
+      case ActivityType.songDeleted:
+        return Colors.red;
+      case ActivityType.songEdited:
+        return Colors.blueGrey;
     }
   }
 
@@ -225,6 +227,10 @@ class AdminActivityTimeline extends StatelessWidget {
         return Icons.campaign;
       case ActivityType.userStatusChange:
         return Icons.manage_accounts;
+      case ActivityType.songDeleted:
+        return Icons.delete_forever;
+      case ActivityType.songEdited:
+        return Icons.edit_note;
     }
   }
 }

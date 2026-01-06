@@ -128,7 +128,7 @@ class SongCubit extends Cubit<SongState> {
     }
   }
 
-  void addSong(SongModel song) async {
+  Future<void> addSong(SongModel song) async {
     try {
       await addSongUseCase(song);
       loadSongs(); // Reload the list

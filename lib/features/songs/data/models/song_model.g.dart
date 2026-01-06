@@ -27,20 +27,25 @@ class SongModelAdapter extends TypeAdapter<SongModel> {
       dateAdded: fields[7] as DateTime,
       lastPerformed: fields[8] as DateTime?,
       lastPracticed: fields[9] as DateTime?,
-      performanceCount: fields[10] as int,
-      versions: (fields[11] as List).cast<SongVersion>(),
-      recordingNotes: (fields[12] as List).cast<RecordingNote>(),
+      performanceCount: fields[10] == null ? 0 : fields[10] as int,
+      versions:
+          fields[11] == null ? [] : (fields[11] as List).cast<SongVersion>(),
+      recordingNotes:
+          fields[12] == null ? [] : (fields[12] as List).cast<RecordingNote>(),
       songNumber: fields[13] as String?,
-      likeCount: fields[14] as int,
-      practiceCount: fields[15] as int,
+      likeCount: fields[14] == null ? 0 : fields[14] as int,
+      practiceCount: fields[15] == null ? 0 : fields[15] as int,
       writer: fields[16] as String?,
+      isDeleted: fields[17] == null ? false : fields[17] as bool,
+      updatedAt: fields[18] as DateTime?,
+      metadata: (fields[19] as Map?)?.cast<String, dynamic>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, SongModel obj) {
     writer
-      ..writeByte(17)
+      ..writeByte(20)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -74,7 +79,13 @@ class SongModelAdapter extends TypeAdapter<SongModel> {
       ..writeByte(15)
       ..write(obj.practiceCount)
       ..writeByte(16)
-      ..write(obj.writer);
+      ..write(obj.writer)
+      ..writeByte(17)
+      ..write(obj.isDeleted)
+      ..writeByte(18)
+      ..write(obj.updatedAt)
+      ..writeByte(19)
+      ..write(obj.metadata);
   }
 
   @override

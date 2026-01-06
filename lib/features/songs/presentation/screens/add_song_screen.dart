@@ -21,19 +21,42 @@ class AddSongScreen extends StatefulWidget {
 class _AddSongScreenState extends State<AddSongScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
+  final _songNumberController = TextEditingController();
   final _lyricsController = TextEditingController();
 
   String _selectedLanguage = 'amharic';
   final List<String> _selectedTags = [];
   String? _audioPath;
 
-  final List<String> _availableTags = ['new', 'favorite', 'this_round'];
+  @override
+  void initState() {
+    super.initState();
+    _populateNextSongNumber();
+  }
+
+  void _populateNextSongNumber() {
+    final state = context.read<SongCubit>().state;
+    if (state is SongLoaded) {
+      int maxNum = 0;
+      for (final song in state.songs) {
+        if (song.songNumber != null) {
+          final num = int.tryParse(song.songNumber!);
+          if (num != null && num > maxNum) {
+            maxNum = num;
+          }
+        }
+      }
+      _songNumberController.text = (maxNum + 1).toString();
+    }
+  }
+
+  final List<String> _availableTags = ['new', 'this_round'];
   final List<Map<String, String>> _languages = [
     {'value': 'amharic', 'label': 'amharic'},
     {'value': 'kembatigna', 'label': 'kembatgna'},
   ];
 
-  void _addSong() {
+  Future<void> _addSong() async {
     if (_formKey.currentState!.validate()) {
       final authState = context.read<AuthCubit>().state;
       if (authState is! AuthAuthenticated) return;
@@ -45,14 +68,18 @@ class _AddSongScreenState extends State<AddSongScreen> {
         language: _selectedLanguage,
         tags: _selectedTags,
         audioPath: _audioPath,
-        addedBy: authState.user.id,
+        addedBy: authState.user.name,
         dateAdded: DateTime.now(),
         performanceCount: 0,
         versions: [],
         recordingNotes: [],
+        songNumber: _songNumberController.text.trim(),
       );
 
-      context.read<SongCubit>().addSong(song);
+      await context.read<SongCubit>().addSong(song);
+      if (mounted) {
+        Navigator.pop(context);
+      }
     }
   }
 
@@ -234,8 +261,6 @@ class _AddSongScreenState extends State<AddSongScreen> {
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(SnackBar(content: Text(state.message)));
-          } else if (state is SongLoaded) {
-            Navigator.pop(context);
           }
         },
         child: SingleChildScrollView(
@@ -245,6 +270,26 @@ class _AddSongScreenState extends State<AddSongScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Song Number
+                CustomTextField(
+                  controller: _songNumberController,
+                  labelText: 'songNumber'.tr(),
+                  hintText: 'enterSongNumber'.tr(),
+                  isRequired: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'pleaseEnterSongNumber'.tr();
+                    }
+                    if (int.tryParse(value) == null) {
+                      return 'pleaseEnterValidNumber'.tr();
+                    }
+                    return null;
+                  },
+                  label: '',
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 20),
+
                 // Title
                 CustomTextField(
                   controller: _titleController,
@@ -321,6 +366,7 @@ class _AddSongScreenState extends State<AddSongScreen> {
   @override
   void dispose() {
     _titleController.dispose();
+    _songNumberController.dispose();
     _lyricsController.dispose();
     super.dispose();
   }

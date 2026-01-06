@@ -176,12 +176,11 @@
   "title": "Title",
   "songwriter": "Song Writer",
   "dateAdded": "Date Added",
-  "lastUpdated": "Last Updated",
   "noAudioAttached": "No Audio Attached",
   "addedBy": "Added By",
   "editSong": "Edit Song",
   "deleteSong": "Delete Song",
-  "areYouSureDeleteSong": "Are you sure you want to delete this song?",
+  "areYouSureYouWantToDeleteThisSong": "Are you sure you want to delete this song?",
   "songDeleted": "Song deleted successfully",
   "updateSong": "Update Song",
   "addSong": "Add Song",
@@ -449,5 +448,7 @@
   "databaseSize": "Database Size",
   "calculateSize": "Calculate size",
   "saveSettings": "Save Settings",
-  "settingsSavedSuccess": "Settings saved successfully"
+  "settingsSavedSuccess": "Settings saved successfully",
+  "deleteAnnouncement": "Delete Announcement",
+  "areYouSureYouWantToDeleteThisAnnouncement": "Are you sure you want to delete this announcement?"
 }
