@@ -227,7 +227,6 @@ class _LoginScreenState extends State<LoginScreen> {
               color: Colors.white,
             ),
             onPressed: () {
-              // This calls your Cubit to toggle the global state
               context.read<ThemeCubit>().toggleTheme();
             },
           ),

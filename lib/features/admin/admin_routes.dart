@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:praise_choir_app/features/admin/presentation/screens/approve_access.dart';
 import 'package:praise_choir_app/features/admin/presentation/widgets/system_health.dart';
 import 'presentation/screens/admin_dashboard.dart';
 import 'presentation/screens/member_management.dart';
 import 'presentation/screens/usage_analytics.dart';
 import 'presentation/screens/system_settings.dart';
+import 'presentation/screens/admin_activity_timeline.dart';
 
 class AdminRoutes {
   static const String adminDashboard = '/admin/dashboard';
@@ -13,6 +13,7 @@ class AdminRoutes {
   static const String usageAnalytics = '/admin/analytics';
   static const String systemSettings = '/admin/settings';
   static const String systemHealth = '/admin/systemHealth';
+  static const String activityTimeline = '/admin/activity_timeline';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -26,10 +27,10 @@ class AdminRoutes {
         return MaterialPageRoute(builder: (_) => const UsageAnalyticsScreen());
       case systemSettings:
         return MaterialPageRoute(builder: (_) => const SystemSettingsScreen());
-      case adminApprovals:
-        return MaterialPageRoute(builder: (_) => const ApproveAccessScreen());
       case systemHealth:
         return MaterialPageRoute(builder: (_) => const SystemHealth());
+      case activityTimeline:
+        return MaterialPageRoute(builder: (_) => const AdminActivityTimeline());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

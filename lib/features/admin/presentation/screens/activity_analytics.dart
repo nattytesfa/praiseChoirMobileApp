@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/features/auth/data/models/user_model.dart';
 
 class ActivityAnalytics extends StatelessWidget {
@@ -38,37 +39,41 @@ class ActivityAnalytics extends StatelessWidget {
                 _buildStatItem("inactive".tr(), inactiveCount, Colors.orange),
               ],
             ),
+
             const Divider(height: 30),
             Text(
               "recentLogins".tr(),
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: members.take(5).length, // Show top 5
-              itemBuilder: (context, index) {
-                final user = members[index];
-                final lastSeen = user.lastLogin != null
-                    ? DateFormat('MMM d, HH:mm').format(user.lastLogin!)
-                    : 'Never';
+            Container(
+              color: AppColors.darkBackground,
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: members.take(5).length, // Show top 5
+                itemBuilder: (context, index) {
+                  final user = members[index];
+                  final lastSeen = user.lastLogin != null
+                      ? DateFormat('MMM d, HH:mm').format(user.lastLogin!)
+                      : 'Never';
 
-                return ListTile(
-                  leading: CircleAvatar(child: Text(user.name[0])),
-                  title: Text(user.name),
-                  subtitle: Text('lastSeen: $lastSeen'.tr()),
-                  trailing: Icon(
-                    Icons.circle,
-                    size: 12,
-                    color:
-                        user.lastLogin != null &&
-                            user.lastLogin!.isAfter(sevenDaysAgo)
-                        ? Colors.green
-                        : Colors.grey,
-                  ),
-                );
-              },
+                  return ListTile(
+                    leading: CircleAvatar(child: Text(user.name[0])),
+                    title: Text(user.name),
+                    subtitle: Text('lastSeen: $lastSeen'.tr()),
+                    trailing: Icon(
+                      Icons.circle,
+                      size: 12,
+                      color:
+                          user.lastLogin != null &&
+                              user.lastLogin!.isAfter(sevenDaysAgo)
+                          ? Colors.green
+                          : Colors.grey,
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),

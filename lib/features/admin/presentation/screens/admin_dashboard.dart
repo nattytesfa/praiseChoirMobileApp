@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 
+import '../../../../core/theme/app_colors.dart';
 import '../cubit/admin_cubit.dart';
 
 class AdminDashboard extends StatefulWidget {
@@ -48,14 +49,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.primary,
         title: Text('leaderDashboard'.tr()),
         actions: [
           IconButton(icon: const Icon(Icons.refresh), onPressed: _loadStats),
-          IconButton(
-            icon: const Icon(Icons.how_to_reg),
-            tooltip: 'approvals'.tr(),
-            onPressed: () => Navigator.pushNamed(context, '/admin/approvals'),
-          ),
         ],
       ),
       body: BlocBuilder<AdminCubit, AdminState>(
@@ -101,12 +98,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
           const SizedBox(height: 24),
 
           Text(
-            "performanceOverview".tr(),
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.blueGrey,
-            ),
+            "membersOverview".tr(),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 32),
 
@@ -131,24 +124,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(
-                child: _buildStatCard(
-                  "active".tr(),
-                  state.stats.activeMembers.toString(),
-                  Icons.bolt,
-                  Colors.green,
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 12),
           Text(
             "songsOverview".tr(),
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.blueGrey,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
 
@@ -200,11 +181,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
           Text(
             "managementCategories".tr(),
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.blueGrey,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 24),
 
@@ -220,7 +197,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
               _buildCategoryCard(
                 context,
                 "memberManagement".tr(),
-                "manageRolesStatus".tr(),
                 Icons.group_work_rounded,
                 Colors.orange,
                 () => Navigator.pushNamed(context, '/admin/members'),
@@ -228,7 +204,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
               _buildCategoryCard(
                 context,
                 "usageAnalytics".tr(),
-                "viewSongActivity".tr(),
                 Icons.bar_chart_rounded,
                 Colors.indigo,
                 () => Navigator.pushNamed(context, '/admin/analytics'),
@@ -236,7 +211,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
               _buildCategoryCard(
                 context,
                 "systemSettings".tr(),
-                "globalAppConfig".tr(),
                 Icons.settings_applications_rounded,
                 Colors.blueGrey,
                 () => Navigator.pushNamed(context, '/admin/settings'),
@@ -244,10 +218,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
               _buildCategoryCard(
                 context,
                 "paymentInformation".tr(),
-                "managePayments".tr(),
                 Icons.payments_rounded,
                 Colors.green,
                 () => Navigator.pushNamed(context, PaymentRoutes.dashboard),
+              ),
+              _buildCategoryCard(
+                context,
+                "Activity Timeline",
+                Icons.timeline,
+                Colors.teal,
+                () =>
+                    Navigator.pushNamed(context, AdminRoutes.activityTimeline),
               ),
             ],
           ),
@@ -255,11 +236,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           const SizedBox(height: 24),
           Text(
             "systemDiagnostics".tr(),
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.blueGrey,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 24),
           SystemHealth(
@@ -281,15 +258,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white10,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: [BoxShadow(blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: Column(
         children: [
@@ -299,7 +270,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             value,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          Text(title, style: TextStyle(fontSize: 11, color: Colors.grey[600])),
+          Text(title, style: TextStyle(fontSize: 11, color: Colors.white)),
         ],
       ),
     );
@@ -308,7 +279,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
   Widget _buildCategoryCard(
     BuildContext context,
     String title,
-    String subtitle,
     IconData icon,
     Color color,
     VoidCallback onTap,
@@ -338,10 +308,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: TextStyle(fontSize: 10, color: Colors.grey[700]),
-            ),
           ],
         ),
       ),
@@ -527,15 +493,6 @@ void _showRequestsModal(BuildContext context) {
             final approved = state.members
                 .where((u) => u.approvalStatus == 'approved')
                 .toList();
-            // final allMembers = state.members.toList()
-            //   ..sort((a, b) {
-            //     // Logic to put pending/denied users at the top of the list
-            //     if (a.approvalStatus == 'pending' &&
-            //         b.approvalStatus != 'pending') {
-            //       return -1;
-            //     }
-            //     return 1;
-            //   });
             return SizedBox(
               height: MediaQuery.of(context).size.height * 0.6,
               child: ListView(

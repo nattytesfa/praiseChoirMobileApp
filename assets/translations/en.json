@@ -374,6 +374,7 @@
   "paidDateLabel": "Paid Date: {}",
   "viewProof": "View Proof",
   "performanceOverview": "Performance Overview",
+  "membersOverview": "Members Overview",
   "typeAMessage": "Type a Message",
   "editingMessage": "Editing message",
   "replyingTo": "Replying to {}",
