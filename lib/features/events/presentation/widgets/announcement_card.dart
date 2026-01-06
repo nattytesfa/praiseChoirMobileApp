@@ -28,14 +28,27 @@ class AnnouncementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = _getTextColor();
+    final textColor = _getTextColor(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     final footerColor = textColor != null
         ? AppColors.withValues(textColor, 0.7)
-        : AppColors.textSecondary;
+        : (isDark ? Colors.white60 : AppColors.textSecondary);
 
     return Card(
-      elevation: 2,
-      color: _getCardColor(),
+      elevation: 0,
+      color: _getCardColor(context),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: announcement.isUrgent
+              ? Colors.red.withValues(alpha: 0.3)
+              : (announcement.isHighPriority
+                    ? Colors.orange.withValues(alpha: 0.3)
+                    : (isDark ? AppColors.gray800 : AppColors.gray200)),
+          width: 1,
+        ),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -182,18 +195,21 @@ class AnnouncementCard extends StatelessWidget {
     );
   }
 
-  Color? _getCardColor() {
+  Color? _getCardColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     if (announcement.isUrgent) {
-      return AppColors.withValues(Colors.red, 0.1);
+      // Increased opacity for light mode to make it more distinct
+      return AppColors.withValues(Colors.red, isDark ? 0.15 : 0.1);
     } else if (announcement.isHighPriority) {
-      return AppColors.withValues(Colors.orange, 0.1);
+      return AppColors.withValues(Colors.orange, isDark ? 0.15 : 0.1);
     }
-    return null;
+    return Theme.of(context).cardTheme.color ?? Theme.of(context).cardColor;
   }
 
-  Color? _getTextColor() {
+  Color? _getTextColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     if (announcement.isUrgent || announcement.isHighPriority) {
-      return Colors.black;
+      return isDark ? Colors.white : Colors.black;
     }
     return null;
   }

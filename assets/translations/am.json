@@ -110,6 +110,7 @@
   "neglectedSongsSubtitle": "ለ3+ ወራት ያልተዘመሩ",
   "noAnnouncements": "ምንም ማስታወቂያዎች የሉም",
   "noAnnouncementsMsg": "በአሁኑ ጊዜ ምንም ማስታወቂያዎች የሉም።",
+  "noOneHasReadThisYet.": "ይህን ማስታወቂያ እስካሁን ማንም አላነበበውም።",
   "loginToPost": "ለመለጠፍ መግባት አለብዎት።",
   "editAnnouncement": "ማስታወቂያ አርትዕ",
   "newAnnouncement": "አዲስ ማስታወቂያ",
@@ -383,6 +384,7 @@
   "voiceMessage": "የድምፅ መልዕክት",
   "recording...": "እየተቀዳ ነው...",
   "reply":"መመለስ",
+  "startConversation": "ውይይት ይጀምሩ",
   "songsWithoutAudio": "የድምጽ ቅጂ የሌላቸው መዝሙሮች",
   "generatePaymentsConfirm": "እርግጠኛ ነህ ወርሃዊ ክፍያዎችን ለመመነጨት?",
   "lastSeen": "መጨረሻ የታየው",
@@ -460,5 +462,12 @@
   "settingsSavedSuccess": "ቅንብሮች በተሳካ ሁኔታ ተቀምጠዋል",
   "areYouSureYouWantToDeleteThisSong": "እርግጠኛ ነህ ይህን መዝሙር ማጥፋት?",
   "deleteAnnouncement": "ማስታወቂያ ሰርዝ",
-  "areYouSureYouWantToDeleteThisAnnouncement": "እርግጠኛ ነህ ይህን ማስታወቂያ ማጥፋት?"
+  "areYouSureYouWantToDeleteThisAnnouncement": "እርግጠኛ ነህ ይህን ማስታወቂያ ማጥፋት?",
+  "markAsRead": "እንደተነበበ ምልክት አድርግ",
+  "postedBy": "በ {}",
+  "expiresAt": "የሚያበቃው: {}",
+  "yesterday": "ትናንት",
+  "minutesAgoShort": "ከ {} መ በፊት",
+  "hoursAgoShort": "ከ {} ሰ በፊት",
+  "daysAgoShort": "ከ {} ቀ በፊት"
 }

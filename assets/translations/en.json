@@ -278,6 +278,7 @@
   "justNow": "Just now",
   "markAsPerformed": "Mark as Performed",
   "markAsPracticed": "Mark as Practiced",
+  "noOneHasReadThisYet.": "No one has read this yet.",
   "changeRoleFor": "Change Role for {}",
   "memberLabel": "Member: {}",
   "dueLabel": "Due: {}",
@@ -450,5 +451,13 @@
   "saveSettings": "Save Settings",
   "settingsSavedSuccess": "Settings saved successfully",
   "deleteAnnouncement": "Delete Announcement",
-  "areYouSureYouWantToDeleteThisAnnouncement": "Are you sure you want to delete this announcement?"
+  "areYouSureYouWantToDeleteThisAnnouncement": "Are you sure you want to delete this announcement?",
+  "startConversation": "Start Conversation",
+  "markAsRead": "Mark as Read",
+  "postedBy": "By {}",
+  "expiresAt": "Expires: {}",
+  "yesterday": "Yesterday",
+  "minutesAgoShort": "{}m ago",
+  "hoursAgoShort": "{}h ago",
+  "daysAgoShort": "{}d ago"
 }
