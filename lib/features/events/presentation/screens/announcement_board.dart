@@ -102,14 +102,14 @@ class AnnouncementBoard extends StatelessWidget {
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
-                            title:  Text('deleteAnnouncement'.tr()),
-                            content:  Text(
+                            title: Text('deleteAnnouncement'.tr()),
+                            content: Text(
                               'areYouSureYouWantToDeleteThisAnnouncement?'.tr(),
                             ),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
-                                child:  Text('cancel'.tr()),
+                                child: Text('cancel'.tr()),
                               ),
                               TextButton(
                                 onPressed: () {
@@ -118,7 +118,7 @@ class AnnouncementBoard extends StatelessWidget {
                                     announcementId,
                                   );
                                 },
-                                child:  Text(
+                                child: Text(
                                   'delete'.tr(),
                                   style: TextStyle(color: Colors.red),
                                 ),
@@ -131,11 +131,11 @@ class AnnouncementBoard extends StatelessWidget {
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
-                            title:  Text('readBy'.tr()),
+                            title: Text('readBy'.tr()),
                             content: SizedBox(
                               width: double.maxFinite,
                               child: announcement.readBy.isEmpty
-                                  ?  Text('noOneHasReadThisYet.'.tr())
+                                  ? Text('noOneHasReadThisYet.'.tr())
                                   : ListView.builder(
                                       shrinkWrap: true,
                                       itemCount: announcement.readBy.length,
@@ -149,7 +149,7 @@ class AnnouncementBoard extends StatelessWidget {
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
-                                child:  Text('close'.tr()),
+                                child: Text('close'.tr()),
                               ),
                             ],
                           ),

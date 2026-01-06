@@ -12,6 +12,7 @@ import 'package:praise_choir_app/features/auth/presentation/screens/signup_scree
 import 'package:praise_choir_app/features/payment/payment_routes.dart';
 import 'package:praise_choir_app/features/songs/song_routes.dart';
 import 'package:praise_choir_app/features/chat/chat_routes.dart';
+import 'package:praise_choir_app/features/settings/presentation/screens/settings_screen.dart';
 
 import '../features/events/event_routes.dart';
 
@@ -24,6 +25,7 @@ class Routes {
   static const String signUp = '/signup';
 
   static const String home = '/home';
+  static const String userSettings = '/settings';
   static const String manageUsers = '/manage-users';
 
   static const String pendingUser = '/pendingUser';
@@ -67,6 +69,8 @@ class Routes {
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       case home:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
+      case userSettings:
+        return MaterialPageRoute(builder: (_) => const SettingsScreen());
       case manageUsers:
         return MaterialPageRoute(builder: (_) => const UserListScreen());
       case signUp:
@@ -78,9 +82,8 @@ class Routes {
 
       default:
         return MaterialPageRoute(
-          builder: (_) => Scaffold(
-            body: Center(child: Text('No route defined for ${settings.name}')),
-          ),
+          builder: (_) =>
+              Scaffold(body: Center(child: Text('No route is defined'))),
         );
     }
   }

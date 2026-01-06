@@ -38,6 +38,13 @@ class UserModel {
   final String approvalStatus; // 'pending', 'approved', 'denied'
   @HiveField(10)
   final String? adminMessage; // Message from leader if denied
+
+  @HiveField(11)
+  final DateTime? statusUpdatedAt;
+
+  @HiveField(12)
+  final Map<String, dynamic>? metadata;
+
   UserModel({
     required this.id,
     required this.email,
@@ -50,6 +57,8 @@ class UserModel {
     this.emailVerified = false,
     this.approvalStatus = 'approved', // Default 'approved' for guests
     this.adminMessage,
+    this.statusUpdatedAt,
+    this.metadata,
   });
 
   // Convert Firebase User to your UserModel
@@ -96,6 +105,8 @@ class UserModel {
       emailVerified: data['emailVerified'] ?? false,
       approvalStatus: data['approvalStatus'] ?? 'pending',
       adminMessage: data['adminMessage'],
+      statusUpdatedAt: parseDateTime(data['statusUpdatedAt']),
+      metadata: data['metadata'] as Map<String, dynamic>?,
     );
   }
   Map<String, dynamic> toJson() {
@@ -111,24 +122,35 @@ class UserModel {
       'emailVerified': emailVerified,
       'approvalStatus': approvalStatus,
       'adminMessage': adminMessage,
+      'statusUpdatedAt': statusUpdatedAt?.toIso8601String(),
+      'metadata': metadata,
     };
   }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    DateTime? parseDateTime(dynamic value) {
+      if (value == null) return null;
+      if (value is String) return DateTime.tryParse(value);
+      if (value is Timestamp) return value.toDate();
+      return null;
+    }
+
     return UserModel(
       id: json['id'],
       email: json['email'],
       name: json['name'],
       role: json['role'],
-      joinDate: DateTime.parse(json['joinDate']),
+      joinDate: parseDateTime(json['joinDate']) ?? DateTime.now(),
       isActive: json['isActive'] ?? true,
       profileImagePath: json['profileImagePath'],
-      lastLogin: json['lastLogin'] != null
-          ? DateTime.parse(json['lastLogin'])
-          : null,
+      lastLogin: parseDateTime(json['lastLogin']),
       emailVerified: json['emailVerified'] ?? false,
       approvalStatus: json['approvalStatus'] ?? 'approved',
       adminMessage: json['adminMessage'],
+      statusUpdatedAt: parseDateTime(json['statusUpdatedAt']),
+      metadata: json['metadata'] != null
+          ? Map<String, dynamic>.from(json['metadata'])
+          : null,
     );
   }
 
@@ -145,6 +167,8 @@ class UserModel {
     bool? emailVerified,
     String? approvalStatus,
     String? adminMessage,
+    DateTime? statusUpdatedAt,
+    Map<String, dynamic>? metadata,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -158,6 +182,8 @@ class UserModel {
       emailVerified: emailVerified ?? this.emailVerified,
       approvalStatus: approvalStatus ?? this.approvalStatus,
       adminMessage: adminMessage ?? this.adminMessage,
+      statusUpdatedAt: statusUpdatedAt ?? this.statusUpdatedAt,
+      metadata: metadata ?? this.metadata,
     );
   }
 }

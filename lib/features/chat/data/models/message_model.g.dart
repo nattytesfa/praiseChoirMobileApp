@@ -180,8 +180,7 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
         writer.writeByte(5);
         break;
       case MessageType.song:
-        writer.writeByte(6);
-        break;
+        throw UnimplementedError();
     }
   }
 

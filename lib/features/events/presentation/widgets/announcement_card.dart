@@ -185,7 +185,7 @@ class AnnouncementCard extends StatelessWidget {
     } else if (announcement.isHighPriority) {
       return AppColors.withValues(Colors.orange, 0.1);
     }
-    return Colors.white;
+    return Colors.white70;
   }
 
   Color _getTextColor() {

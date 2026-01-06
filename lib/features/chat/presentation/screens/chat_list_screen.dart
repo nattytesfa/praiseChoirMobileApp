@@ -102,13 +102,16 @@ class _ChatListScreenState extends State<ChatListScreen> {
           content: Text(content),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text('cancel'.tr()),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              child: Text(
+                'delete'.tr(),
+                style: const TextStyle(color: Colors.red),
+              ),
               onPressed: () {
                 onConfirm();
                 Navigator.of(context).pop();

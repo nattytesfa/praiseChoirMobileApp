@@ -5,6 +5,8 @@ enum ActivityType {
   systemUpdate,
   alert,
   chatActivity,
+  announcement,
+  userStatusChange,
 }
 
 class ActivityEvent {

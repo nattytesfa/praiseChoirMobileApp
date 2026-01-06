@@ -28,13 +28,15 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       emailVerified: fields[8] == null ? false : fields[8] as bool,
       approvalStatus: fields[9] == null ? 'approved' : fields[9] as String,
       adminMessage: fields[10] as String?,
+      statusUpdatedAt: fields[11] as DateTime?,
+      metadata: (fields[12] as Map?)?.cast<String, dynamic>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserModel obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -56,7 +58,11 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       ..writeByte(9)
       ..write(obj.approvalStatus)
       ..writeByte(10)
-      ..write(obj.adminMessage);
+      ..write(obj.adminMessage)
+      ..writeByte(11)
+      ..write(obj.statusUpdatedAt)
+      ..writeByte(12)
+      ..write(obj.metadata);
   }
 
   @override

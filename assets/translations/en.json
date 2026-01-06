@@ -392,5 +392,17 @@
   "paidDate: {}": "Paid Date: {}",
   "amount": "Amount",
   "uploadProof": "Upload Proof",
-  "deleteAllPaymentsConfirm": "Are you sure you want to delete all payments?"
+  "deleteAllPaymentsConfirm": "Are you sure you want to delete all payments?",
+  "deleteMessagesTitle": "Delete Messages",
+  "deleteMessagesConfirm": "Are you sure you want to delete these messages?",
+  "deleteMessagesConfirmForEveryone": "Are you sure you want to delete these messages? Messages from other users will be deleted for everyone.",
+  "deleteMessageTitle": "Delete Message",
+  "deleteMessageConfirm": "Are you sure you want to delete this message?",
+  "deleteMessageConfirmForEveryone": "Are you sure you want to delete this message for everyone?",
+  "clearHistory": "Clear History",
+  "clearHistoryConfirm": "Are you sure you want to clear the chat history?",
+  "activityLog": "Activity Log",
+  "noRecentActivities": "No recent activities found.",
+  "clearActivityHistoryConfirm": "Are you sure you want to clear the activity history? This will hide all past activities.",
+  "updateAnnouncement": "Update Announcement"
 }

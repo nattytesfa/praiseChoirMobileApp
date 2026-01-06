@@ -25,7 +25,7 @@ class AdminActivityTimeline extends StatelessWidget {
       )..loadActivities(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Activity Log'),
+          title: Text('activityLog'.tr()),
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           actions: [
@@ -33,7 +33,7 @@ class AdminActivityTimeline extends StatelessWidget {
               builder: (context) {
                 return IconButton(
                   icon: const Icon(Icons.delete_sweep),
-                  tooltip: 'Clear History',
+                  tooltip: 'clearHistory'.tr(),
                   onPressed: () {
                     // Capture the cubit from the context that has the provider
                     final cubit = context.read<ActivityCubit>();
@@ -41,21 +41,19 @@ class AdminActivityTimeline extends StatelessWidget {
                     showDialog(
                       context: context,
                       builder: (dialogContext) => AlertDialog(
-                        title: const Text('Clear History'),
-                        content: const Text(
-                          'Are you sure you want to clear the activity history? This will hide all past activities.',
-                        ),
+                        title: Text('clearHistory'.tr()),
+                        content: Text('clearActivityHistoryConfirm'.tr()),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(dialogContext),
-                            child: const Text('Cancel'),
+                            child: Text('cancel'.tr()),
                           ),
                           TextButton(
                             onPressed: () {
                               cubit.clearHistory();
                               Navigator.pop(dialogContext);
                             },
-                            child: const Text('Clear'),
+                            child: Text('clear'.tr()),
                           ),
                         ],
                       ),
@@ -202,6 +200,10 @@ class AdminActivityTimeline extends StatelessWidget {
         return Colors.red;
       case ActivityType.chatActivity:
         return Colors.teal;
+      case ActivityType.announcement:
+        return Colors.deepOrange;
+      case ActivityType.userStatusChange:
+        return Colors.amber;
     }
   }
 
@@ -219,6 +221,10 @@ class AdminActivityTimeline extends StatelessWidget {
         return Icons.warning;
       case ActivityType.chatActivity:
         return Icons.chat;
+      case ActivityType.announcement:
+        return Icons.campaign;
+      case ActivityType.userStatusChange:
+        return Icons.manage_accounts;
     }
   }
 }

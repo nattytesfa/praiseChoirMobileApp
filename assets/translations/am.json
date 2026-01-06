@@ -401,5 +401,17 @@
   "deleteAllPaymentsConfirm": "ሁሉም ክፍያዎችን ማጥፋት ይፈልጋሉ?",
   "deletePendingPaymentsConfirm": "በመጠባበቅ ላይ ያሉ ክፍያዎችን ማጥፋት ይፈልጋሉ?",
   "logoutConfirmation": "እርግጠኛ ነህ ከመተግበሪያው ውጣ?",
-  "membersOverview": "የአባላት እይታ"
+  "membersOverview": "የአባላት እይታ",
+  "deleteMessagesTitle": "መልዕክቶችን አጥፋ",
+  "deleteMessagesConfirm": "እርግጠኛ ነህ እነዚህን መልዕክቶች ማጥፋት?",
+  "deleteMessagesConfirmForEveryone": "እርግጠኛ ነህ እነዚህን መልዕክቶች ማጥፋት? ከሌሎች ተጠቃሚዎች የሚመጡ መልዕክቶች ለሁሉም ይሰርያሉ።",
+  "deleteMessageTitle": "መልዕክት አጥፋ",
+  "deleteMessageConfirm": "እርግጠኛ ነህ ይህን መልዕክት ማጥፋት?",
+  "deleteMessageConfirmForEveryone": "እርግጠኛ ነህ ይህን መልዕክት ለሁሉም ማጥፋት?",
+  "clearHistory": "ታሪኩን አጥፋ",
+  "clearHistoryConfirm": "እርግጠኛ ነህ የሻት ታሪኩን ማጽዳት?",
+  "activityLog": "የእንቅስቃሴ መዝገብ",
+  "noRecentActivities": "ምንም የቅርብ እንቅስቃሴ አልተገኘም።",
+  "clearActivityHistoryConfirm": "እርግጠኛ ነህ የእንቅስቃሴ ታሪክን ማጽዳት? ይህ የያዙ ሁሉን እንቅስቃሴዎች ይደብራል።",
+  "updateAnnouncement": "ማስታወቂያ ያዘምኑ"
 }

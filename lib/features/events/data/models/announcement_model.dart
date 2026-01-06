@@ -37,6 +37,15 @@ class AnnouncementModel {
   @HiveField(10)
   final List<String> readBy;
 
+  @HiveField(11, defaultValue: false)
+  final bool isEdited;
+
+  @HiveField(12, defaultValue: false)
+  final bool isDeleted;
+
+  @HiveField(13)
+  final Map<String, dynamic>? metadata;
+
   AnnouncementModel({
     required this.id,
     required this.title,
@@ -49,6 +58,9 @@ class AnnouncementModel {
     this.targetRoles = const ['member'],
     this.priority = 1,
     this.readBy = const [],
+    this.isEdited = false,
+    this.isDeleted = false,
+    this.metadata,
   });
 
   Map<String, dynamic> toJson() {
@@ -64,6 +76,9 @@ class AnnouncementModel {
       'targetRoles': targetRoles,
       'priority': priority,
       'readBy': readBy,
+      'isEdited': isEdited,
+      'isDeleted': isDeleted,
+      'metadata': metadata,
     };
   }
 
@@ -82,6 +97,43 @@ class AnnouncementModel {
       targetRoles: List<String>.from(json['targetRoles'] ?? ['member']),
       priority: json['priority'] ?? 1,
       readBy: List<String>.from(json['readBy'] ?? []),
+      isEdited: json['isEdited'] ?? false,
+      isDeleted: json['isDeleted'] ?? false,
+      metadata: json['metadata'],
+    );
+  }
+
+  AnnouncementModel copyWith({
+    String? id,
+    String? title,
+    String? content,
+    String? createdBy,
+    DateTime? createdAt,
+    bool? isUrgent,
+    String? authorName,
+    DateTime? expiresAt,
+    List<String>? targetRoles,
+    int? priority,
+    List<String>? readBy,
+    bool? isEdited,
+    bool? isDeleted,
+    Map<String, dynamic>? metadata,
+  }) {
+    return AnnouncementModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      content: content ?? this.content,
+      createdBy: createdBy ?? this.createdBy,
+      createdAt: createdAt ?? this.createdAt,
+      isUrgent: isUrgent ?? this.isUrgent,
+      authorName: authorName ?? this.authorName,
+      expiresAt: expiresAt ?? this.expiresAt,
+      targetRoles: targetRoles ?? this.targetRoles,
+      priority: priority ?? this.priority,
+      readBy: readBy ?? this.readBy,
+      isEdited: isEdited ?? this.isEdited,
+      isDeleted: isDeleted ?? this.isDeleted,
+      metadata: metadata ?? this.metadata,
     );
   }
 

@@ -165,6 +165,7 @@ class AdminCubit extends Cubit<AdminState> {
       await _firestore.collection('users').doc(userId).update({
         'approvalStatus': status,
         'adminMessage': message,
+        'statusUpdatedAt': FieldValue.serverTimestamp(),
         // If denied, we might want to keep them as guest, if approved, they become member
         'role': approved ? 'member' : 'guest',
       });

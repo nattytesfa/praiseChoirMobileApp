@@ -35,7 +35,9 @@ class ChatRepository {
         .where((message) {
           final deletedBy =
               (message.metadata?['deletedBy'] as List?)?.cast<String>() ?? [];
-          return message.chatId == chatId && !deletedBy.contains(userId);
+          return message.chatId == chatId &&
+              !deletedBy.contains(userId) &&
+              !message.isDeleted;
         })
         .toList()
         .reversed
@@ -56,7 +58,9 @@ class ChatRepository {
           .where((message) {
             final deletedBy =
                 (message.metadata?['deletedBy'] as List?)?.cast<String>() ?? [];
-            return message.chatId == chatId && !deletedBy.contains(userId);
+            return message.chatId == chatId &&
+                !deletedBy.contains(userId) &&
+                !message.isDeleted;
           })
           .toList()
           .reversed
@@ -125,9 +129,15 @@ class ChatRepository {
 
   Future<void> editMessage(String messageId, String newContent) async {
     final message = _messageBox.values.firstWhere((m) => m.id == messageId);
+
+    final metadata = Map<String, dynamic>.from(message.metadata ?? {});
+    metadata['previousContent'] = message.content;
+    metadata['editedAt'] = DateTime.now().toIso8601String();
+
     final updatedMessage = message.copyWith(
       content: newContent,
       isEdited: true,
+      metadata: metadata,
     );
 
     final index = _messageBox.values.toList().indexWhere(
@@ -150,8 +160,15 @@ class ChatRepository {
 
     if (index != -1) {
       if (message.senderId == currentUserId || isAdmin) {
-        // Delete for everyone if it's my message or if I'm admin
-        await _messageBox.deleteAt(index);
+        // Soft delete for everyone
+        final metadata = Map<String, dynamic>.from(message.metadata ?? {});
+        metadata['deletedAt'] = DateTime.now().toIso8601String();
+
+        final updatedMessage = message.copyWith(
+          isDeleted: true,
+          metadata: metadata,
+        );
+        await _messageBox.putAt(index, updatedMessage);
       } else {
         // Delete only for me if it's someone else's message
         final metadata = Map<String, dynamic>.from(message.metadata ?? {});

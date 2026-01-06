@@ -118,13 +118,16 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
           content: Text(content),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text('cancel'.tr()),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              child: Text(
+                'delete'.tr(),
+                style: const TextStyle(color: Colors.red),
+              ),
               onPressed: () {
                 onConfirm();
                 Navigator.of(context).pop();
@@ -236,9 +239,9 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                   },
                   itemBuilder: (BuildContext context) {
                     return [
-                      const PopupMenuItem<String>(
+                      PopupMenuItem<String>(
                         value: 'clear',
-                        child: Text('Clear History'),
+                        child: Text('clearHistory'.tr()),
                       ),
                     ];
                   },

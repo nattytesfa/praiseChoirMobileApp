@@ -28,13 +28,16 @@ class AnnouncementModelAdapter extends TypeAdapter<AnnouncementModel> {
       targetRoles: (fields[8] as List).cast<String>(),
       priority: fields[9] as int,
       readBy: (fields[10] as List).cast<String>(),
+      isEdited: fields[11] == null ? false : fields[11] as bool,
+      isDeleted: fields[12] == null ? false : fields[12] as bool,
+      metadata: (fields[13] as Map?)?.cast<String, dynamic>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, AnnouncementModel obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -56,7 +59,13 @@ class AnnouncementModelAdapter extends TypeAdapter<AnnouncementModel> {
       ..writeByte(9)
       ..write(obj.priority)
       ..writeByte(10)
-      ..write(obj.readBy);
+      ..write(obj.readBy)
+      ..writeByte(11)
+      ..write(obj.isEdited)
+      ..writeByte(12)
+      ..write(obj.isDeleted)
+      ..writeByte(13)
+      ..write(obj.metadata);
   }
 
   @override
