@@ -156,15 +156,13 @@ class _ChatListScreenState extends State<ChatListScreen> {
                           .any((m) => m.senderId != _currentUserId);
                     }
 
-                    String content =
-                        'Are you sure you want to delete these messages?';
+                    String content = 'deleteMessagesConfirm'.tr();
                     if (isAdmin && hasOthersMessages) {
-                      content =
-                          'Are you sure you want to delete these messages? Messages from other users will be deleted for everyone.';
+                      content = 'deleteMessagesConfirmForEveryone'.tr();
                     }
 
                     _showDeleteConfirmation(
-                      title: 'Delete Messages',
+                      title: 'deleteMessagesTitle'.tr(),
                       content: content,
                       onConfirm: () {
                         context.read<ChatCubit>().deleteMessages(
@@ -191,9 +189,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   onSelected: (value) {
                     if (value == 'clear') {
                       _showDeleteConfirmation(
-                        title: 'Clear History',
-                        content:
-                            'Are you sure you want to clear the chat history?',
+                        title: 'clearHistory'.tr(),
+                        content: 'clearHistoryConfirm'.tr(),
                         onConfirm: () {
                           context.read<ChatCubit>().clearHistory(
                             'general',
@@ -205,9 +202,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   },
                   itemBuilder: (BuildContext context) {
                     return [
-                      const PopupMenuItem<String>(
+                      PopupMenuItem<String>(
                         value: 'clear',
-                        child: Text('Clear History'),
+                        child: Text('clearHistory'.tr()),
                       ),
                     ];
                   },

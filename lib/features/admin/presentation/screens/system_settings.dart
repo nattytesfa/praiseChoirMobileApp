@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/core/constants/app_constants.dart';
 import 'package:praise_choir_app/features/admin/presentation/cubit/admin_cubit.dart';
 
@@ -18,32 +19,33 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
   double _audioQuality = 0.8;
 
   final Map<String, bool> _featureToggles = {
-    'Song Rotation System': true,
-    'Payment Reminders': true,
-    'Voice Messages': true,
-    'Social Sharing': true,
-    'Offline Mode': true,
+    'songRotationSystem': true,
+    'paymentReminders': true,
+    'voiceMessages': true,
+    'socialSharing': true,
+    'offlineMode': true,
   };
 
   void _showResetConfirmation() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Reset All Data?'),
-        content: const Text(
-          'This will delete all songs, payments, and chat history. This action cannot be undone.',
-        ),
+        title: Text('resetAllData'.tr()),
+        content: Text('resetAllDataConfirm'.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr()),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               _resetAllData();
             },
-            child: const Text('Reset', style: TextStyle(color: Colors.red)),
+            child: Text(
+              'reset'.tr(),
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -55,21 +57,21 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
     // For now, just show a confirmation
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('All data has been reset')));
+    ).showSnackBar(SnackBar(content: Text('resetSuccess'.tr())));
   }
 
   void _exportData() {
     // This would export all data to a file
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Data exported successfully')));
+    ).showSnackBar(SnackBar(content: Text('exportSuccess'.tr())));
   }
 
   void _runSystemDiagnostics() {
     context.read<AdminCubit>().checkSystemHealth();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('System diagnostics completed')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('diagnosticsCompleted'.tr())));
   }
 
   Widget _buildSettingSection(String title, List<Widget> children) {
@@ -80,7 +82,7 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              title,
+              title.tr(),
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
@@ -98,8 +100,8 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
     Function(bool) onChanged,
   ) {
     return SwitchListTile(
-      title: Text(title),
-      subtitle: subtitle.isNotEmpty ? Text(subtitle) : null,
+      title: Text(title.tr()),
+      subtitle: subtitle.isNotEmpty ? Text(subtitle.tr()) : null,
       value: value,
       onChanged: onChanged,
     );
@@ -116,7 +118,7 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [Text(title), Text(value)],
+          children: [Text(title.tr()), Text(value)],
         ),
         Slider(
           value: currentValue,
@@ -133,22 +135,22 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('System Settings')),
+      appBar: AppBar(title: Text('systemSettings'.tr())),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             // Notification Settings
-            _buildSettingSection('Notifications', [
+            _buildSettingSection('notifications', [
               _buildToggleSetting(
-                'SMS Notifications',
-                'Send critical updates via SMS',
+                'smsNotifications',
+                'smsNotificationsDesc',
                 _enableSmsNotifications,
                 (value) => setState(() => _enableSmsNotifications = value),
               ),
               _buildToggleSetting(
-                'Push Notifications',
-                'App notifications for updates',
+                'pushNotifications',
+                'pushNotificationsDesc',
                 _enablePushNotifications,
                 (value) => setState(() => _enablePushNotifications = value),
               ),
@@ -157,7 +159,7 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
             const SizedBox(height: 16),
 
             // Feature Toggles
-            _buildSettingSection('Feature Management', [
+            _buildSettingSection('featureManagement', [
               ..._featureToggles.entries.map(
                 (entry) => _buildToggleSetting(
                   entry.key,
@@ -171,16 +173,16 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
             const SizedBox(height: 16),
 
             // Audio Settings
-            _buildSettingSection('Audio Settings', [
+            _buildSettingSection('audioSettings', [
               _buildSliderSetting(
-                'Audio Quality',
+                'audioQuality',
                 '${(_audioQuality * 100).toStringAsFixed(0)}%',
                 _audioQuality,
                 (value) => setState(() => _audioQuality = value),
               ),
               const SizedBox(height: 8),
               Text(
-                'Higher quality uses more storage',
+                'highQualityUsageWarning'.tr(),
                 style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
             ]),
@@ -188,16 +190,16 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
             const SizedBox(height: 16),
 
             // Accessibility
-            _buildSettingSection('Accessibility', [
+            _buildSettingSection('accessibility', [
               _buildToggleSetting(
-                'High Contrast Mode',
-                'Improved visibility',
+                'highContrastMode',
+                'highContrastModeDesc',
                 _highContrastMode,
                 (value) => setState(() => _highContrastMode = value),
               ),
               _buildToggleSetting(
-                'Large Text',
-                'Increase text size',
+                'largeText',
+                'largeTextDesc',
                 false,
                 (value) {}, // Would implement
               ),
@@ -206,24 +208,24 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
             const SizedBox(height: 16),
 
             // Data Management
-            _buildSettingSection('Data Management', [
+            _buildSettingSection('dataManagement', [
               _buildToggleSetting(
-                'Auto Backup',
-                'Automatically backup data weekly',
+                'autoBackup',
+                'autoBackupDesc',
                 _autoBackupEnabled,
                 (value) => setState(() => _autoBackupEnabled = value),
               ),
               const SizedBox(height: 8),
               ListTile(
                 leading: const Icon(Icons.download),
-                title: const Text('Export Data'),
-                subtitle: const Text('Download all choir data as backup'),
+                title: Text('exportData'.tr()),
+                subtitle: Text('exportDataDesc'.tr()),
                 onTap: _exportData,
               ),
               ListTile(
                 leading: const Icon(Icons.health_and_safety),
-                title: const Text('Run System Diagnostics'),
-                subtitle: const Text('Check system health and performance'),
+                title: Text('runSystemDiagnostics'.tr()),
+                subtitle: Text('runSystemDiagnosticsDesc'.tr()),
                 onTap: _runSystemDiagnostics,
               ),
             ]),
@@ -231,28 +233,28 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
             const SizedBox(height: 16),
 
             // Dangerous Settings
-            _buildSettingSection('Advanced Settings', [
+            _buildSettingSection('advancedSettings', [
               ListTile(
                 leading: const Icon(Icons.refresh, color: Colors.orange),
-                title: const Text(
-                  'Clear Cache',
-                  style: TextStyle(color: Colors.orange),
+                title: Text(
+                  'clearCache'.tr(),
+                  style: const TextStyle(color: Colors.orange),
                 ),
-                subtitle: const Text('Clear temporary files and cache'),
+                subtitle: Text('clearCacheDesc'.tr()),
                 onTap: () {
                   // Clear cache implementation
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Cache cleared')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('cacheCleared'.tr())));
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.warning, color: Colors.red),
-                title: const Text(
-                  'Reset All Data',
-                  style: TextStyle(color: Colors.red),
+                title: Text(
+                  'resetAllApp'.tr(),
+                  style: const TextStyle(color: Colors.red),
                 ),
-                subtitle: const Text('Delete all app data and start fresh'),
+                subtitle: Text('resetAllAppDesc'.tr()),
                 onTap: _showResetConfirmation,
               ),
             ]),
@@ -260,13 +262,13 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
             const SizedBox(height: 16),
 
             // App Information
-            _buildSettingSection('App Information', [
-              _buildInfoItem('App Version', AppConstants.appVersion),
-              _buildInfoItem('Build Number', '1.0.0+1'),
-              _buildInfoItem('Last Updated', '2024-01-01'),
+            _buildSettingSection('appInformation', [
+              _buildInfoItem('appVersion', AppConstants.appVersion),
+              _buildInfoItem('buildNumber', '1.0.0+1'),
+              _buildInfoItem('lastUpdated', '2024-01-01'),
               _buildInfoItem(
-                'Database Size',
-                'Calculate size',
+                'databaseSize',
+                'calculateSize'.tr(),
               ), // Would calculate actual size
             ]),
 
@@ -279,12 +281,10 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
                 onPressed: () {
                   // Save all settings
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Settings saved successfully'),
-                    ),
+                    SnackBar(content: Text('settingsSavedSuccess'.tr())),
                   );
                 },
-                child: const Text('Save Settings'),
+                child: Text('saveSettings'.tr()),
               ),
             ),
           ],
@@ -299,7 +299,7 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: const TextStyle(color: Colors.grey)),
+          Text(title.tr(), style: const TextStyle(color: Colors.grey)),
           Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
