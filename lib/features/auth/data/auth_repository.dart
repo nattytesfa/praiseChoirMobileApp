@@ -282,7 +282,12 @@ class AuthRepository {
     }
 
     // If found locally, verify with Firebase (optional)
-    if (match != null && _auth.currentUser?.uid == match.id) {
+    if (match != null) {
+      // If we have a Firebase user, make sure it matches the local one
+      if (_auth.currentUser != null && _auth.currentUser!.uid != match.id) {
+        return null;
+      }
+      // Otherwise (Firebase agrees OR is not initialized/offline), return local user
       return match;
     }
 
