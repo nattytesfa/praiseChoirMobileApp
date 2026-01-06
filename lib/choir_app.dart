@@ -100,6 +100,7 @@ class ChoirApp extends StatelessWidget {
                 }
 
                 return MaterialApp(
+                  key: ValueKey(context.locale),
                   locale: context.locale,
                   title: 'PCS',
                   theme: theme,
