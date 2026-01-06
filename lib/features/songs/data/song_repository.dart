@@ -12,6 +12,7 @@ class SongRepository {
   final SyncCubit? syncCubit;
   DateTime? _lastSyncTime;
   final SongService _songService = SongService();
+  bool _isSyncing = false;
 
   SongRepository(this.syncCubit) {
     _songBox = Hive.box<SongModel>(HiveBoxes.songs);
@@ -314,10 +315,12 @@ class SongRepository {
   }
 
   Future<void> syncEverything() async {
+    if (_isSyncing) return;
     if (_lastSyncTime != null &&
         DateTime.now().difference(_lastSyncTime!).inMinutes < 10) {
       return;
     }
+    _isSyncing = true;
 
     syncCubit?.updateStatus(SyncStatus.updating);
 
@@ -346,6 +349,8 @@ class SongRepository {
       debugPrint('Sync Error: $e');
       debugPrint('Stack Trace: $stackTrace');
       syncCubit?.updateStatus(SyncStatus.error);
+    } finally {
+      _isSyncing = false;
     }
   }
 }

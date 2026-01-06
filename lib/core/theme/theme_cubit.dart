@@ -20,9 +20,18 @@ class ThemeCubit extends Cubit<ThemeMode> {
   }
 
   // Persist choice to Hive
-  void _saveTheme(ThemeMode mode) async {
-    var box = await Hive.openBox('settings');
-    box.put('isDarkMode', mode == ThemeMode.dark);
+  void _saveTheme(ThemeMode mode) {
+    // Box is opened in main(), so we can access it synchronously if open,
+    // or safely await if needed, but for UI responsiveness we skip await if possible.
+    try {
+      final box = Hive.box('settings');
+      box.put('isDarkMode', mode == ThemeMode.dark);
+    } catch (_) {
+      // If for some reason box isn't open, open it asynchronously
+      Hive.openBox('settings').then((box) {
+        box.put('isDarkMode', mode == ThemeMode.dark);
+      });
+    }
   }
 
   void _loadTheme() async {
