@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import '../../auth/data/models/user_model.dart';
 import '../../../core/constants/app_constants.dart';
@@ -90,9 +89,6 @@ class ChatRepository {
     } catch (e) {
       // Chat not found or other error updating chat model
       // We ignore this for now as the message is already sent
-      if (kDebugMode) {
-        print('Error updating chat last message: $e');
-      }
     }
   }
 

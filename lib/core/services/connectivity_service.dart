@@ -31,9 +31,7 @@ class ConnectivityService with ChangeNotifier {
       final result = await _connectivity.checkConnectivity();
       await _updateConnectionStatus(result);
     } catch (e) {
-      if (kDebugMode) {
-        print('Connectivity check error: $e');
-      }
+      //
     }
   }
 
@@ -41,11 +39,6 @@ class ConnectivityService with ChangeNotifier {
     final result = results.isNotEmpty ? results.first : ConnectivityResult.none;
     _currentStatus = result;
     _isConnected = result != ConnectivityResult.none;
-
-    if (kDebugMode) {
-      print('Connectivity changed: $result, connected: $_isConnected');
-    }
-
     notifyListeners();
   }
 

@@ -221,6 +221,7 @@ class AuthRepository {
   /// Sign out
   Future<void> signOut() async {
     try {
+      await _ensureInitialized();
       await _auth.signOut();
       await _settingsBox.delete('current_user_id');
     } catch (e) {
@@ -231,6 +232,7 @@ class AuthRepository {
   /// Get current user stream (for auto-login state changes)
   Stream<UserModel?> get userStream {
     return _auth.authStateChanges().asyncMap((User? firebaseUser) async {
+      await _ensureInitialized();
       if (firebaseUser == null) {
         await _settingsBox.delete('current_user_id');
         return null;
@@ -255,6 +257,7 @@ class AuthRepository {
   /// In auth_repository.dart
   Future<void> logout() async {
     try {
+      await _ensureInitialized();
       // Sign out from Firebase
       await _auth.signOut();
 

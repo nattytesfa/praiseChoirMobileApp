@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -86,11 +85,6 @@ class _SongLibraryScreenState extends State<SongLibraryScreen> {
             child: BlocListener<SongCubit, SongState>(
               listener: (context, state) {
                 if (state is SongLoaded && state.errorMessage != null) {
-                  if (kDebugMode) {
-                    print(
-                      'SongLibraryScreen: Showing error snackbar: ${state.errorMessage}',
-                    );
-                  }
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(state.errorMessage!),

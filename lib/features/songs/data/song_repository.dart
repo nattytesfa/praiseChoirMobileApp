@@ -150,9 +150,7 @@ class SongRepository {
   }
 
   Future<void> deleteSong(String songId) async {
-    if (kDebugMode) {
-      print('SongRepository: Deleting song $songId');
-    }
+
 
     // 1. Find local song to prepare soft delete object
     final songToDelete = _songBox.values.cast<SongModel?>().firstWhere(
@@ -161,9 +159,6 @@ class SongRepository {
     );
 
     if (songToDelete == null) {
-      if (kDebugMode) {
-        print('SongRepository: Local song not found, cannot soft delete');
-      }
       return;
     }
 
@@ -175,17 +170,9 @@ class SongRepository {
 
     // 2. Update Remote (Firebase) - Soft Delete
     try {
-      if (kDebugMode) {
-        print('SongRepository: Calling SongService.updateSong (Soft Delete)');
-      }
       // Use updateSong instead of deleteSong to preserve history
       await _songService.updateSong(deletedSong);
-
-      if (kDebugMode) {
-        print('SongRepository: Remote soft delete successful');
-      }
     } catch (e) {
-      debugPrint('Failed to update remote: $e');
       throw Exception('Failed to delete from server: $e');
     }
 

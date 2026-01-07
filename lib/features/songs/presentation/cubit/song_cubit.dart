@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/core/widgets/common/network/sync_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
@@ -149,18 +148,10 @@ class SongCubit extends Cubit<SongState> {
   void deleteSong(String songId) async {
     final currentState = state;
     try {
-      if (kDebugMode) {
-        print('SongCubit: Attempting to delete song $songId');
-      }
       await deleteSongUseCase(songId);
-      if (kDebugMode) {
-        print('SongCubit: Delete successful, reloading songs');
-      }
       loadSongs(); // Reload the list
     } catch (e) {
-      if (kDebugMode) {
-        print('SongCubit: Delete failed with error: $e');
-      }
+
       if (currentState is SongLoaded) {
         emit(
           SongLoaded(
