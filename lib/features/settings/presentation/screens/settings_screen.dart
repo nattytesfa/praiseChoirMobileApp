@@ -126,7 +126,7 @@ Widget _buildThemeSwitch(BuildContext context) {
         secondary: Icon(
           isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
         ),
-        title: Text(isDark ? "darkMode".tr() : "lightMode".tr()),
+        title: Text(isDark ? "lightMode".tr() : "darkMode".tr()),
         value: isDark,
         tileColor: Colors.transparent,
         onChanged: (value) {
