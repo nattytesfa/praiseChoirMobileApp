@@ -60,6 +60,7 @@ dependencies:
   emoji_picker_flutter: ^4.4.0
   easy_localization: ^3.0.8
   timelines_plus: ^1.0.8
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
