@@ -362,7 +362,10 @@ void _confirmCleanup(BuildContext context) {
               ).showSnackBar(SnackBar(content: Text('systemResynced'.tr())));
             }
           },
-          child: Text('clearAndSync'.tr()),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text('clearAndSync'.tr()),
+          ),
         ),
       ],
     ),
