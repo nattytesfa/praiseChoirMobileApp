@@ -463,5 +463,7 @@
   "recordingDuration": "Recording... {}",
   "holdToRecord": "Hold to record",
   "enterTitle": "Please enter a title",
-  "enterContent": "Please enter content"
+  "enterContent": "Please enter content",
+  "favorite": "Favorite",
+  "share": "Share"
 }

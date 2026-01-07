@@ -22,6 +22,7 @@ class _NetworkStatusIndicatorState extends State<NetworkStatusIndicator>
       duration: const Duration(milliseconds: 1500),
     )..repeat();
     _controller.addListener(() {
+      if (!mounted) return;
       final newDotCount = (_controller.value * 4).floor();
       if (newDotCount != _dotCount) {
         setState(() => _dotCount = newDotCount);
@@ -32,6 +33,16 @@ class _NetworkStatusIndicatorState extends State<NetworkStatusIndicator>
   @override
   Widget build(BuildContext context) {
     final syncStatus = context.watch<SyncCubit>().state;
+
+    // Optimization: Stop animation if not needed
+    if ((syncStatus == SyncStatus.synced || syncStatus == SyncStatus.idle) &&
+        _controller.isAnimating) {
+      _controller.stop();
+    } else if ((syncStatus == SyncStatus.waiting ||
+            syncStatus == SyncStatus.updating) &&
+        !_controller.isAnimating) {
+      _controller.repeat();
+    }
 
     String label;
     Color textColor = Colors.white;

@@ -57,6 +57,12 @@ class AppTheme {
       contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       iconColor: AppColors.gray600,
       textColor: AppColors.gray900,
+      titleTextStyle: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+        color: AppColors.gray900,
+      ),
+      subtitleTextStyle: TextStyle(fontSize: 14, color: AppColors.gray600),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
