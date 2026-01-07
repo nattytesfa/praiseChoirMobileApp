@@ -43,10 +43,18 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Generated files
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Firebase
 firebase_options.dart
 **/firebase_options.dart
-firebase_options.dart
-**/firebase_options.dart
-/lib/firebase_options.dart
 /android/app/google-services.json
 /ios/Runner/GoogleService-Info.plist
+
+# Maps
+*.jks
+*.keystore
+key.properties
