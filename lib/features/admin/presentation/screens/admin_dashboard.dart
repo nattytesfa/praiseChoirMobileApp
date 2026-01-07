@@ -3,7 +3,6 @@ import 'package:praise_choir_app/features/admin/admin_routes.dart';
 import 'package:praise_choir_app/features/admin/presentation/cubit/admin_state.dart';
 import 'package:praise_choir_app/features/admin/presentation/screens/activity_analytics.dart';
 import 'package:praise_choir_app/features/admin/presentation/widgets/system_health.dart';
-import 'package:praise_choir_app/features/auth/data/models/user_model.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:praise_choir_app/features/payment/payment_routes.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +13,7 @@ import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dar
 
 import '../../../../core/theme/app_colors.dart';
 import '../cubit/admin_cubit.dart';
+import '../widgets/admin_requests_card.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -97,7 +97,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildRequestTile(context, pendingCount),
+          AdminRequestsCard(requestCount: pendingCount),
           const SizedBox(height: 24),
 
           Text(
@@ -363,271 +363,6 @@ void _confirmCleanup(BuildContext context) {
             }
           },
           child: Text('clearAndSync'.tr()),
-        ),
-      ],
-    ),
-  );
-}
-
-// 1. The Badge Tile (Make sure to call this in your ListView/Column)
-Widget _buildRequestTile(BuildContext context, int count) {
-  return InkWell(
-    onTap: () => _showRequestsModal(context),
-    borderRadius: BorderRadius.circular(16),
-    child: Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        border: Border.all(
-          color: count > 0
-              ? Colors.orange.withValues()
-              : Colors.blue.withValues(),
-          width: 1.5,
-        ),
-      ),
-      child: Row(
-        children: [
-          // Icon with a modern Badge
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: count > 0
-                      ? Colors.blue.withValues()
-                      : Colors.blue.withValues(),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.people_alt_rounded,
-                  color: Colors.blue,
-                  size: 28,
-                ),
-              ),
-              if (count > 0)
-                Positioned(
-                  right: -4,
-                  top: -4,
-                  child: Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: Colors.redAccent,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.red.withValues(),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    constraints: const BoxConstraints(
-                      minWidth: 20,
-                      minHeight: 20,
-                    ),
-                    child: Text(
-                      '$count',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(width: 16),
-          // Text Details
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "manageRequests".tr(),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                Text(
-                  count > 0
-                      ? "newRequestsCount".tr(args: [count.toString()])
-                      : "noNewRequests".tr(),
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: count > 0 ? Colors.orange[800] : Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Icon(Icons.chevron_right_rounded, color: Colors.grey),
-        ],
-      ),
-    ),
-  );
-}
-
-// 2. The Modal that shows the list of users
-void _showRequestsModal(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
-    builder: (modalContext) => DraggableScrollableSheet(
-      initialChildSize: 0.7,
-      maxChildSize: 0.9,
-      minChildSize: 0.5,
-      expand: false,
-      builder: (context, scrollController) {
-        return BlocBuilder<AdminCubit, AdminState>(
-          builder: (context, state) {
-            if (state is! AdminStatsLoaded) {
-              return const CircularProgressIndicator();
-            }
-            final pending = state.members
-                .where((u) => u.approvalStatus == 'pending')
-                .toList();
-            final denied = state.members
-                .where((u) => u.approvalStatus == 'denied')
-                .toList();
-            final approved = state.members
-                .where((u) => u.approvalStatus == 'approved')
-                .toList();
-            return SizedBox(
-              height: MediaQuery.of(context).size.height * 0.6,
-              child: ListView(
-                controller: scrollController,
-                children: [
-                  // 1. PENDING SECTION
-                  if (pending.isNotEmpty) ...[
-                    _buildSectionHeader("pendingRequests".tr(), Colors.orange),
-                    ...pending.map((u) => _buildUserTile(context, u)),
-                  ],
-
-                  // 2. DENIED SECTION
-                  if (denied.isNotEmpty) ...[
-                    _buildSectionHeader("deniedMembers".tr(), Colors.red),
-                    ...denied.map((u) => _buildUserTile(context, u)),
-                  ],
-
-                  // 3. APPROVED SECTION
-                  if (approved.isNotEmpty) ...[
-                    _buildSectionHeader("approvedMembers".tr(), Colors.green),
-                    ...approved.map((u) => _buildUserTile(context, u)),
-                  ],
-
-                  if (state.members.isEmpty)
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(40.0),
-                        child: Text("noUsersFound".tr()),
-                      ),
-                    ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    ),
-  );
-}
-
-Widget _buildSectionHeader(String title, Color color) {
-  return Container(
-    height: 40,
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    color: color.withValues(),
-    width: double.infinity,
-    child: Text(
-      title.toUpperCase(),
-      style: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.bold,
-        color: Colors.black,
-        letterSpacing: 1.1,
-      ),
-    ),
-  );
-}
-
-Widget _buildUserTile(BuildContext context, UserModel user) {
-  return ListTile(
-    leading: CircleAvatar(
-      backgroundColor: const Color.fromARGB(255, 61, 51, 51),
-      child: Text(user.name[0].toUpperCase()),
-    ),
-    title: Text(user.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-    subtitle: Text(
-      user.approvalStatus == 'denied'
-          ? "${'reason'.tr()}: ${user.adminMessage}"
-          : user.email,
-    ),
-    trailing: Wrap(
-      spacing: 8,
-      children: [
-        // Show APPROVE button if the user is NOT approved
-        if (user.approvalStatus != 'approved')
-          IconButton(
-            icon: const Icon(Icons.check_circle_outline, color: Colors.green),
-            onPressed: () =>
-                context.read<AdminCubit>().respondToRequest(user.id, true),
-          ),
-        // Show DENY button if the user is NOT denied
-        if (user.approvalStatus != 'denied')
-          IconButton(
-            icon: const Icon(Icons.block, color: Colors.redAccent),
-            onPressed: () => _showDenyDialog(context, user.id),
-          ),
-      ],
-    ),
-  );
-}
-
-// 3. The Deny Dialog (Must be defined inside the same State class)
-void _showDenyDialog(BuildContext context, String userId) {
-  final controller = TextEditingController();
-  showDialog(
-    context: context,
-    builder: (dialogContext) => AlertDialog(
-      title: Text("reasonForDenial".tr()),
-      content: TextField(
-        controller: controller,
-        decoration: InputDecoration(hintText: "enterReason".tr()),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(dialogContext),
-          child: Text("cancel".tr()),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            if (controller.text.trim().isNotEmpty) {
-              context.read<AdminCubit>().respondToRequest(
-                userId,
-                false,
-                message: controller.text.trim(),
-              );
-              Navigator.pop(dialogContext);
-            }
-          },
-          child: Text("deny".tr()),
         ),
       ],
     ),
