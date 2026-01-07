@@ -326,20 +326,27 @@ class _ChatInputState extends State<ChatInput> {
                         ? Icons.keyboard
                         : Icons.emoji_emotions_outlined,
                   ),
-                  color: AppColors.white,
+                  color: Theme.of(context).iconTheme.color,
                 ),
                 // Text Field
                 Expanded(
                   child: TextField(
                     controller: widget.controller,
                     focusNode: _focusNode,
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
                     decoration: InputDecoration(
                       hintText: 'typeAMessage...'.tr(),
+                      hintStyle: TextStyle(color: Theme.of(context).hintColor),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
+                      fillColor: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.gray800
+                          : AppColors.gray200,
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
@@ -355,7 +362,9 @@ class _ChatInputState extends State<ChatInput> {
                   onPressed: _toggleRecording,
                   icon: Icon(
                     _isRecording ? Icons.stop : Icons.mic,
-                    color: _isRecording ? Colors.red : AppColors.white,
+                    color: _isRecording
+                        ? Colors.red
+                        : Theme.of(context).iconTheme.color,
                   ),
                 ),
                 // Send Button
@@ -363,7 +372,7 @@ class _ChatInputState extends State<ChatInput> {
                   IconButton(
                     onPressed: _sendMessage,
                     icon: const Icon(Icons.send),
-                    color: AppColors.white,
+                    color: AppColors.primary,
                   ),
               ],
             ),

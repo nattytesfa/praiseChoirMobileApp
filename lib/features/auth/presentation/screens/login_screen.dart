@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
               }
             },
             builder: (context, state) {
-              if (state is AuthLoading || state is AuthAuthenticated) {
+              if (state is AuthAuthenticated) {
                 return const Center(child: CircularProgressIndicator());
               }
               return SafeArea(
@@ -160,41 +160,48 @@ class _LoginScreenState extends State<LoginScreen> {
                           errorMessage: 'enterPassword',
                         ),
                         const SizedBox(height: 40),
-                        if (state is AuthLoading)
-                          CircularProgressIndicator(color: AppColors.accent)
-                        else ...[
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: _submitEmailAndPassword,
-                              child: Text(
-                                'signIn'.tr(),
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: state is AuthLoading
+                                ? null
+                                : _submitEmailAndPassword,
+                            child: state is AuthLoading
+                                ? const SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Text(
+                                    'signIn'.tr(),
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                           ),
-                          const SizedBox(height: 30),
+                        ),
+                        const SizedBox(height: 30),
 
-                          // Sign up link
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text('noAccount'.tr()),
-                              const SizedBox(width: 15),
-                              TextButton(
-                                style: TextButton.styleFrom(
-                                  foregroundColor: Colors.blue,
-                                ),
-                                onPressed: () =>
-                                    Navigator.pushNamed(context, '/signup'),
-                                child: Text('signUp'.tr()),
+                        // Sign up link
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('noAccount'.tr()),
+                            const SizedBox(width: 15),
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.blue,
                               ),
-                            ],
-                          ),
-                        ],
+                              onPressed: () =>
+                                  Navigator.pushNamed(context, '/signup'),
+                              child: Text('signUp'.tr()),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),

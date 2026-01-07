@@ -268,11 +268,31 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 }),
                 _drawerItem(Icons.help_outline, "support".tr(), () {}),
                 _coolDivider(context),
-                _drawerItem(
-                  Icons.logout_rounded,
-                  "logOut".tr(),
-                  () => context.read<AuthCubit>().logout(context),
-                ),
+                _drawerItem(Icons.logout_rounded, "logOut".tr(), () {
+                  final parentContext = context;
+                  showDialog(
+                    context: parentContext,
+                    builder: (dialogContext) => AlertDialog(
+                      title: Text("logOut".tr()),
+                      content: Text("logOutConfirmation".tr()),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(dialogContext),
+                          child: Text("cancel".tr()),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(dialogContext);
+                            parentContext.read<AuthCubit>().logout(
+                              parentContext,
+                            );
+                          },
+                          child: Text("logOut".tr()),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
               ],
             ),
           ),

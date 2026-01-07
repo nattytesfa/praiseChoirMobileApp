@@ -204,6 +204,15 @@ class PaymentReportScreen extends StatelessWidget {
   }
 
   Widget _buildCollectionChart() {
+    if (report.totalMembers == 0) {
+      return Center(
+        child: Text(
+          'noData'.tr(),
+          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.gray500),
+        ),
+      );
+    }
+
     final paidPercentage = report.paidCount / report.totalMembers;
     final pendingPercentage = report.pendingCount / report.totalMembers;
     final overduePercentage = report.overdueCount / report.totalMembers;

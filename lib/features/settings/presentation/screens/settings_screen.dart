@@ -124,7 +124,7 @@ Widget _buildThemeSwitch(BuildContext context) {
 
       return SwitchListTile(
         secondary: Icon(
-          isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+          isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
         ),
         title: Text(isDark ? "lightMode".tr() : "darkMode".tr()),
         value: isDark,
