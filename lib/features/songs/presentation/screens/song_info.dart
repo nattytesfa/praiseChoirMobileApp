@@ -17,7 +17,7 @@ class SongInfo extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoSection(context, 'generalInforamation'.tr(), [
+          _buildInfoSection(context, 'generalInformation'.tr(), [
             _buildInfoRow('songNumber'.tr(), song.songNumber ?? '-'),
             _buildInfoRow('title'.tr(), song.title),
             _buildInfoRow('songWriter'.tr(), song.writer ?? 'unknown'.tr()),

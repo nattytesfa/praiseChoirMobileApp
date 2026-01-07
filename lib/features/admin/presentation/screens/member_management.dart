@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/core/constants/app_constants.dart';
 import 'package:praise_choir_app/features/admin/presentation/cubit/admin_state.dart';
 import 'package:praise_choir_app/features/auth/data/models/user_model.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../cubit/admin_cubit.dart';
 
 class MemberManagementScreen extends StatefulWidget {
@@ -18,11 +19,6 @@ class _MemberManagementScreenState extends State<MemberManagementScreen> {
   void initState() {
     super.initState();
     context.read<AdminCubit>().loadAdminStats();
-  }
-
-  void _addNewMember() {
-    // Navigate to add member screen
-    // This would open a form to add new choir members
   }
 
   @override
@@ -41,7 +37,7 @@ class _MemberManagementScreenState extends State<MemberManagementScreen> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                fillColor: Colors.black,
+                fillColor: AppColors.darkBackground,
                 filled: true,
               ),
               onChanged: (value) {},
@@ -61,10 +57,6 @@ class _MemberManagementScreenState extends State<MemberManagementScreen> {
           return Center(child: Text('noMemberDataAvailable'.tr()));
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addNewMember,
-        child: const Icon(Icons.person_add),
-      ),
     );
   }
 
@@ -73,54 +65,57 @@ class _MemberManagementScreenState extends State<MemberManagementScreen> {
       itemCount: members.length,
       itemBuilder: (context, index) {
         final member = members[index];
-        return ListTile(
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 8,
-          ),
-          leading: CircleAvatar(child: Text(member.name[0].toUpperCase())),
-          title: Text(member.name),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(member.email),
-              Text('roleLabel'.tr(args: [member.role])),
-              Text('joinedLabel'.tr(args: [_formatDate(member.joinDate)])),
-              if (!member.isActive)
-                Text(
-                  'inactiveMembers'.tr(),
-                  style: const TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-            ],
-          ),
-          trailing: PopupMenuButton<String>(
-            onSelected: (value) => _handleMemberAction(value, member),
-            itemBuilder: (context) => [
-              // const PopupMenuItem(value: 'edit', child: Text('Edit Member')),
-              PopupMenuItem(
-                value: 'change_role',
-                child: Text('changeRole'.tr()),
-              ),
-
-              !member.isActive
-                  ? PopupMenuItem(
-                      value: 'activate',
-                      child: Text(
-                        'activate'.tr(),
-                        style: TextStyle(color: Colors.green),
-                      ),
-                    )
-                  : PopupMenuItem(
-                      value: 'deactivate',
-                      child: Text(
-                        'deactivate'.tr(),
-                        style: TextStyle(color: Colors.red),
-                      ),
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            leading: CircleAvatar(child: Text(member.name[0].toUpperCase())),
+            title: Text(member.name),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(member.email),
+                Text('roleLabel'.tr(args: [member.role])),
+                Text('joinedLabel'.tr(args: [_formatDate(member.joinDate)])),
+                if (!member.isActive)
+                  Text(
+                    'inactiveMembers'.tr(),
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
                     ),
-            ],
+                  ),
+              ],
+            ),
+            trailing: PopupMenuButton<String>(
+              onSelected: (value) => _handleMemberAction(value, member),
+              itemBuilder: (context) => [
+                // const PopupMenuItem(value: 'edit', child: Text('Edit Member')),
+                PopupMenuItem(
+                  value: 'change_role',
+                  child: Text('changeRole'.tr()),
+                ),
+
+                !member.isActive
+                    ? PopupMenuItem(
+                        value: 'activate',
+                        child: Text(
+                          'activate'.tr(),
+                          style: TextStyle(color: Colors.green),
+                        ),
+                      )
+                    : PopupMenuItem(
+                        value: 'deactivate',
+                        child: Text(
+                          'deactivate'.tr(),
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+              ],
+            ),
           ),
         );
       },

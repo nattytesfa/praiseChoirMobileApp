@@ -70,7 +70,7 @@ class ActivityAnalytics extends StatelessWidget {
                   return ListTile(
                     leading: CircleAvatar(child: Text(user.name[0])),
                     title: Text(user.name),
-                    subtitle: Text('lastSeen: $lastSeen'.tr()),
+                    subtitle: Text('lastSeen'.tr(args: [lastSeen])),
                     trailing: Icon(
                       Icons.circle,
                       size: 12,

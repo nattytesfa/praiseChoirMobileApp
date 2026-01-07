@@ -289,8 +289,9 @@ class _UsageAnalyticsScreenState extends State<UsageAnalyticsScreen> {
 
                   const SizedBox(height: 16),
                   Text(
-                    'lastUpdated: ${_formatDateTime(state.stats.lastUpdated)}'
-                        .tr(),
+                    'lastUpdatedLabel'.tr(
+                      args: [_formatDateTime(state.stats.lastUpdated)],
+                    ),
                     style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                 ],
