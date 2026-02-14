@@ -147,7 +147,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           controller: _emailController,
                           controllerIcon: Icons.alternate_email_rounded,
                           label: 'email',
-                          keyboardType: TextInputType.emailAddress,
                           errorMessage: 'enterEmail',
                         ),
                         const SizedBox(height: 20),
@@ -155,7 +154,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           controller: _passwordController,
                           controllerIcon: Icons.lock_person_rounded,
                           label: 'password',
-                          keyboardType: TextInputType.number,
                           obscureText: true,
                           errorMessage: 'enterPassword',
                         ),
@@ -282,7 +280,6 @@ class _LoginScreenState extends State<LoginScreen> {
     required TextEditingController controller,
     required controllerIcon,
     required String label,
-    required TextInputType keyboardType,
     required String errorMessage,
     bool obscureText = false,
   }) {
@@ -292,7 +289,6 @@ class _LoginScreenState extends State<LoginScreen> {
         prefixIcon: Icon(controllerIcon),
         labelText: label.tr(),
       ),
-      keyboardType: keyboardType,
       obscureText: obscureText,
       validator: (value) {
         if (value == null || value.trim().isEmpty) {
