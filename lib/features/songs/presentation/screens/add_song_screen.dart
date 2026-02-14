@@ -286,7 +286,6 @@ class _AddSongScreenState extends State<AddSongScreen> {
                     return null;
                   },
                   label: '',
-                  keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 20),
 
