@@ -208,10 +208,10 @@ class SongListItem extends StatelessWidget {
               ),
               trailing: IconButton(
                 icon: Icon(
-                  song.tags.contains('favorite'.tr())
+                  song.tags.contains('favorite')
                       ? Icons.favorite
                       : Icons.favorite_border,
-                  color: song.tags.contains('favorite'.tr())
+                  color: song.tags.contains('favorite')
                       ? AppColors.error
                       : Colors.grey,
                 ),
