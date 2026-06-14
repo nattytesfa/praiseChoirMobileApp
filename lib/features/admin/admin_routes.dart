@@ -15,7 +15,7 @@ class AdminRoutes {
   static const String systemHealth = '/admin/systemHealth';
   static const String activityTimeline = '/admin/activity_timeline';
 
-  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
+  static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case adminDashboard:
         return MaterialPageRoute(builder: (_) => const AdminDashboard());
@@ -32,15 +32,7 @@ class AdminRoutes {
       case activityTimeline:
         return MaterialPageRoute(builder: (_) => const AdminActivityTimeline());
       default:
-        return MaterialPageRoute(
-          builder: (_) => Scaffold(
-            body: Center(
-              child: Text(
-                'From adminroutes: No route defined for ${settings.name}',
-              ),
-            ),
-          ),
-        );
+        return null;
     }
   }
 }

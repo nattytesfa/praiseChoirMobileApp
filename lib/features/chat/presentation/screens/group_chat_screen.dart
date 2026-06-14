@@ -196,6 +196,10 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
               ],
             )
           : AppBar(
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.pop(context),
+              ),
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

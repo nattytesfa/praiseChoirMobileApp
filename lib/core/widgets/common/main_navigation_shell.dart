@@ -13,15 +13,28 @@ import '../../../features/chat/presentation/screens/chat_list_screen.dart';
 class MainNavigationShell extends StatefulWidget {
   const MainNavigationShell({super.key});
 
+  static void jumpToHome(BuildContext context) {
+    final state = context.findAncestorStateOfType<_MainNavigationShellState>();
+    state?.jumpToHome();
+  }
+
   @override
   State<MainNavigationShell> createState() => _MainNavigationShellState();
 }
 
 class _MainNavigationShellState extends State<MainNavigationShell> {
   final ValueNotifier<bool> _isChatVisible = ValueNotifier(false);
+  final PersistentTabController _controller = PersistentTabController(
+    initialIndex: 0,
+  );
+
+  void jumpToHome() {
+    _controller.jumpToTab(0);
+  }
 
   @override
   void dispose() {
+    _controller.dispose();
     _isChatVisible.dispose();
     super.dispose();
   }
@@ -37,6 +50,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
     return Scaffold(
       extendBody: true,
       body: PersistentTabView(
+        controller: _controller,
         onTabChanged: (index) {
           // Determine if the new tab is the Chat tab
           // Chat tab index depends on role

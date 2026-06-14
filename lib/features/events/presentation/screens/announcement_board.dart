@@ -9,6 +9,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/common/empty_state.dart';
 import '../../../../core/widgets/common/loading_indicator.dart';
+import '../../../../core/widgets/common/main_navigation_shell.dart';
 import '../cubit/event_cubit.dart';
 import '../cubit/event_state.dart';
 import '../widgets/announcement_card.dart';
@@ -24,6 +25,10 @@ class AnnouncementBoard extends StatelessWidget {
         title: Text('announcements'.tr()),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => MainNavigationShell.jumpToHome(context),
+        ),
       ),
       body: BlocBuilder<EventCubit, EventState>(
         builder: (context, state) {

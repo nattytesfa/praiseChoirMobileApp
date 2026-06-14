@@ -7,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/common/empty_state.dart';
 import '../../../../core/widgets/common/loading_indicator.dart';
+import '../../../../core/widgets/common/main_navigation_shell.dart';
 import '../../data/models/message_model.dart';
 import '../cubit/chat_cubit.dart';
 import '../cubit/chat_state.dart';
@@ -183,6 +184,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
               title: Text('groupChat'.tr()),
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => MainNavigationShell.jumpToHome(context),
+              ),
               actions: [
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.more_vert),
