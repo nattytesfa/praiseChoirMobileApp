@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -110,6 +111,14 @@ class ChoirApp extends StatelessWidget {
                   supportedLocales: context.supportedLocales,
                   initialRoute: Routes.login,
                   debugShowCheckedModeBanner: false,
+                  onUnknownRoute: (settings) {
+                    WidgetsBinding.instance.addPostFrameCallback(
+                      (_) => SystemNavigator.pop(),
+                    );
+                    return MaterialPageRoute(
+                      builder: (_) => const SizedBox.shrink(),
+                    );
+                  },
                 );
               },
             ),

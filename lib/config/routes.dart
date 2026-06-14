@@ -34,7 +34,7 @@ class Routes {
   // admin
   static const String adminDashboard = '/admin';
 
-  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
+  static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     // 1. Check if the route belongs to the Admin section
     // This looks at the string (e.g., '/admin/dashboard')
     // DEBUG: See what string is being sent
@@ -81,10 +81,7 @@ class Routes {
         );
 
       default:
-        return MaterialPageRoute(
-          builder: (_) =>
-              Scaffold(body: Center(child: Text('No route is defined'))),
-        );
+        return null;
     }
   }
 }

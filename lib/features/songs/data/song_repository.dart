@@ -150,8 +150,6 @@ class SongRepository {
   }
 
   Future<void> deleteSong(String songId) async {
-
-
     // 1. Find local song to prepare soft delete object
     final songToDelete = _songBox.values.cast<SongModel?>().firstWhere(
       (s) => s?.id == songId,

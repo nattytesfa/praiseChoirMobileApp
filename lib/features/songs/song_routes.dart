@@ -15,7 +15,7 @@ class SongRoutes {
   static const String search = '/songs/search';
   static const String lyricsFullscreen = '/songs/lyrics-fullscreen';
 
-  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
+  static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case songLibrary:
         return MaterialPageRoute(
@@ -62,11 +62,7 @@ class SongRoutes {
         );
 
       default:
-        return MaterialPageRoute(
-          builder: (_) => Scaffold(
-            body: Center(child: Text('No route defined for ${settings.name}')),
-          ),
-        );
+        return null;
     }
   }
 
