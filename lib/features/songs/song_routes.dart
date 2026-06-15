@@ -56,7 +56,6 @@ class SongRoutes {
           builder: (_) => LyricsDisplay(
             lyrics: args['lyrics'] as String,
             title: args['title'] as String,
-            language: '',
           ),
           settings: settings,
         );

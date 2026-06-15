@@ -267,7 +267,6 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
                 builder: (context) => LyricsDisplay(
                   title: song.title,
                   lyrics: song.lyrics,
-                  language: song.language,
                 ),
               ),
             );

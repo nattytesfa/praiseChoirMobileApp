@@ -61,7 +61,6 @@ class _SongListViewState extends State<SongListView> {
                       builder: (context) => LyricsDisplay(
                         title: song.title,
                         lyrics: song.lyrics,
-                        language: song.language,
                       ),
                     ),
                   );

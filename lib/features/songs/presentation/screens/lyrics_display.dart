@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
+
+import '../../../../core/theme/app_colors.dart';
 
 class LyricsDisplay extends StatefulWidget {
   final String title;
   final String lyrics;
-  final String language;
 
-  const LyricsDisplay({
-    super.key,
-    required this.title,
-    required this.lyrics,
-    required this.language,
-  });
+  const LyricsDisplay({super.key, required this.title, required this.lyrics});
 
   @override
   State<LyricsDisplay> createState() => _LyricsDisplayState();
@@ -20,90 +15,77 @@ class LyricsDisplay extends StatefulWidget {
 
 class _LyricsDisplayState extends State<LyricsDisplay> {
   double _textScale = 1.0;
+  double _baseTextScale = 1.0;
 
-  final List<double> _textScales = [0.8, 1.0, 1.2, 1.5, 2.0];
   final ScrollController _scrollController = ScrollController();
 
-  void _increaseTextSize() {
-    final currentIndex = _textScales.indexOf(_textScale);
-    if (currentIndex < _textScales.length - 1) {
-      setState(() {
-        _textScale = _textScales[currentIndex + 1];
-      });
-    }
-  }
+  // PreferredSizeWidget _buildAppBar() {
+  //   return AppBar(
+  //     backgroundColor: AppColors.withValues(Colors.black, 0.8),
+  //     foregroundColor: Colors.white,
+  //     title: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Text(
+  //           widget.title,
+  //           style: AppTextStyles.titleMedium.copyWith(color: Colors.white),
+  //           maxLines: 1,
+  //           overflow: TextOverflow.ellipsis,
+  //         ),
+  //       ],
+  //     ),
+  //     actions: [_textSizeController()],
+  //   );
+  // }
 
-  void _decreaseTextSize() {
-    final currentIndex = _textScales.indexOf(_textScale);
-    if (currentIndex > 0) {
-      setState(() {
-        _textScale = _textScales[currentIndex - 1];
-      });
-    }
-  }
-
-  void _resetTextSize() {
-    setState(() {
-      _textScale = 1.0;
-    });
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: AppColors.withValues(Colors.black, 0.8),
-      foregroundColor: Colors.white,
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.title,
-            style: AppTextStyles.titleMedium.copyWith(color: Colors.white),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            widget.language == 'amharic' ? 'Amharic' : 'Kembatigna',
-            style: AppTextStyles.caption.copyWith(color: Colors.white70),
-          ),
-        ],
-      ),
-      actions: [_textSizeController()],
-    );
-  }
-
-  Widget _textSizeController() {
-    return Row(
-      children: [
-        IconButton(
-          onPressed: _increaseTextSize,
-          icon: Icon(Icons.zoom_in, color: Colors.white),
-        ),
-        IconButton(
-          onPressed: _decreaseTextSize,
-          icon: Icon(Icons.zoom_out, color: Colors.white),
-        ),
-        IconButton(
-          onPressed: _resetTextSize,
-          icon: Icon(Icons.refresh, color: Colors.white),
-        ),
-      ],
-    );
-  }
+  // Widget _textSizeController() {
+  //   return Row(
+  //     children: [
+  //       IconButton(
+  //         onPressed: _increaseTextSize,
+  //         icon: Icon(Icons.zoom_in, color: Colors.white),
+  //       ),
+  //       IconButton(
+  //         onPressed: _decreaseTextSize,
+  //         icon: Icon(Icons.zoom_out, color: Colors.white),
+  //       ),
+  //       IconButton(
+  //         onPressed: _resetTextSize,
+  //         icon: Icon(Icons.refresh, color: Colors.white),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildLyricsContent() {
-    return Scrollbar(
-      controller: _scrollController,
-      child: SingleChildScrollView(
+    return GestureDetector(
+      onScaleStart: (details) {
+        _baseTextScale = _textScale;
+      },
+      onScaleUpdate: (details) {
+        setState(() {
+          _textScale = (_baseTextScale * details.scale).clamp(0.5, 3.0);
+        });
+      },
+      child: Scrollbar(
         controller: _scrollController,
-        padding: const EdgeInsets.all(24),
-        child: SelectableText(
-          widget.lyrics,
-          style: AppTextStyles.bodyLarge.copyWith(
-            color: Colors.white,
-            fontSize: AppTextStyles.bodyLarge.fontSize! * _textScale,
-            height: 1.8,
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          padding: const EdgeInsets.all(24),
+          child: Container(
+            color: Colors.transparent,
+            padding: const EdgeInsets.all(24),
+            alignment: Alignment.topLeft,
+            child: SelectableText(
+              widget.lyrics,
+              style: AppTextStyles.bodyLarge.copyWith(
+                color: Colors.white,
+                fontSize: AppTextStyles.bodyLarge.fontSize! * _textScale,
+                height: 1.8,
+              ),
+              textAlign: TextAlign.start,
+            ),
           ),
-          textAlign: TextAlign.start,
         ),
       ),
     );
@@ -114,10 +96,25 @@ class _LyricsDisplayState extends State<LyricsDisplay> {
     const primaryDark = Color(0xFF0F172A);
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.withValues(Colors.black, 0.8),
+        foregroundColor: Colors.white,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.title,
+              style: AppTextStyles.titleLarge.copyWith(color: Colors.white),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
       extendBodyBehindAppBar: false,
       extendBody: true,
       backgroundColor: primaryDark,
-      appBar: _buildAppBar(),
+      // appBar: _buildAppBar(),
       body: _buildLyricsContent(),
     );
   }
