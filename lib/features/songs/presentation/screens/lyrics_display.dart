@@ -19,43 +19,6 @@ class _LyricsDisplayState extends State<LyricsDisplay> {
 
   final ScrollController _scrollController = ScrollController();
 
-  // PreferredSizeWidget _buildAppBar() {
-  //   return AppBar(
-  //     backgroundColor: AppColors.withValues(Colors.black, 0.8),
-  //     foregroundColor: Colors.white,
-  //     title: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Text(
-  //           widget.title,
-  //           style: AppTextStyles.titleMedium.copyWith(color: Colors.white),
-  //           maxLines: 1,
-  //           overflow: TextOverflow.ellipsis,
-  //         ),
-  //       ],
-  //     ),
-  //     actions: [_textSizeController()],
-  //   );
-  // }
-
-  // Widget _textSizeController() {
-  //   return Row(
-  //     children: [
-  //       IconButton(
-  //         onPressed: _increaseTextSize,
-  //         icon: Icon(Icons.zoom_in, color: Colors.white),
-  //       ),
-  //       IconButton(
-  //         onPressed: _decreaseTextSize,
-  //         icon: Icon(Icons.zoom_out, color: Colors.white),
-  //       ),
-  //       IconButton(
-  //         onPressed: _resetTextSize,
-  //         icon: Icon(Icons.refresh, color: Colors.white),
-  //       ),
-  //     ],
-  //   );
-  // }
 
   Widget _buildLyricsContent() {
     return GestureDetector(
@@ -114,7 +77,6 @@ class _LyricsDisplayState extends State<LyricsDisplay> {
       extendBodyBehindAppBar: false,
       extendBody: true,
       backgroundColor: primaryDark,
-      // appBar: _buildAppBar(),
       body: _buildLyricsContent(),
     );
   }
