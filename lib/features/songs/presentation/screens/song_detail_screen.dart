@@ -104,13 +104,6 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         ],
       ),
       actions: [
-        // Fullscreen lyrics
-        IconButton(
-          icon: const Icon(Icons.fullscreen),
-          onPressed: _openFullscreenLyrics,
-          tooltip: 'fullscreenLyrics'.tr(),
-        ),
-
         // Edit song (only for leaders/atigni)
         BlocBuilder<AuthCubit, AuthState>(
           builder: (context, authState) {
