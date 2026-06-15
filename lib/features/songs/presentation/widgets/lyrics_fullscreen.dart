@@ -47,26 +47,6 @@ class _LyricsFullscreenState extends State<LyricsFullscreen>
     );
   }
 
-  Widget _buildStanza(String stanza) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: SelectableText(
-        stanza,
-        style: TextStyle(
-          fontSize: _fontSize,
-          height: 1.7, // Slightly increased for Amharic legibility
-          color: Theme.of(context).textTheme.bodyLarge?.color,
-        ),
-        textAlign: TextAlign.start,
-      ),
-    );
-  }
-
-  List<String> _splitLyricsIntoStanzas(String lyrics) {
-    // Split by double newlines (stanzas)
-    return lyrics.split('\n\n');
-  }
-
   Widget _buildActions() {
     if (!widget.showActions) return const SizedBox.shrink();
 
@@ -76,9 +56,9 @@ class _LyricsFullscreenState extends State<LyricsFullscreen>
 
       onPressed: () {
         Clipboard.setData(ClipboardData(text: widget.lyrics));
-        ScaffoldMessenger.of(context).showSnackBar(
-           SnackBar(content: Text('lyricsCopiedToClipboard'.tr())),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('lyricsCopiedToClipboard'.tr())));
       },
       child: const Icon(Icons.copy, size: 20),
     );
@@ -87,7 +67,6 @@ class _LyricsFullscreenState extends State<LyricsFullscreen>
   @override
   Widget build(BuildContext context) {
     super.build(context); // Required for KeepAlive
-    final stanzas = _splitLyricsIntoStanzas(widget.lyrics);
 
     return Scaffold(
       floatingActionButton: widget.showActions ? _buildActions() : null,
@@ -96,16 +75,19 @@ class _LyricsFullscreenState extends State<LyricsFullscreen>
           if (widget.showActions) _buildFontSizeControls(),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // Lyrics Content
-                  Column(
-                    children: stanzas.asMap().entries.map((entry) {
-                      return _buildStanza(entry.value);
-                    }).toList(),
+              padding: const EdgeInsets.all(24),
+              child: Container(
+                color: Colors.transparent,
+                alignment: Alignment.topLeft,
+                child: SelectableText(
+                  widget.lyrics,
+                  style: AppTextStyles.bodyLarge.copyWith(
+                    color: Colors.white,
+                    fontSize: _fontSize,
+                    height: 1.8,
                   ),
-                ],
+                  textAlign: TextAlign.start,
+                ),
               ),
             ),
           ),
