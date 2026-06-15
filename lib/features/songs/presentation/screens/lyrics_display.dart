@@ -1,7 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../widgets/lyrics_fullscreen.dart';
 
 class LyricsDisplay extends StatefulWidget {
   final String title;
@@ -16,9 +19,29 @@ class LyricsDisplay extends StatefulWidget {
 class _LyricsDisplayState extends State<LyricsDisplay> {
   double _textScale = 1.0;
   double _baseTextScale = 1.0;
-
   final ScrollController _scrollController = ScrollController();
 
+  void _openFullscreenLyrics() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          body: SafeArea(
+            child: LyricsFullscreen(
+              lyrics: widget.lyrics,
+              onFullscreen: () => Navigator.pop(context),
+            ),
+          ),
+        ),
+      ),
+    ).then((_) {
+      SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.manual,
+        overlays: SystemUiOverlay.values,
+      );
+    });
+  }
 
   Widget _buildLyricsContent() {
     return GestureDetector(
@@ -73,6 +96,14 @@ class _LyricsDisplayState extends State<LyricsDisplay> {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.fullscreen),
+            color: Colors.white,
+            onPressed: _openFullscreenLyrics,
+            tooltip: 'fullscreenLyrics'.tr(),
+          ),
+        ],
       ),
       extendBodyBehindAppBar: false,
       extendBody: true,
