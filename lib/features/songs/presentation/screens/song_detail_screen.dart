@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart' hide DateUtils;
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
@@ -12,7 +11,6 @@ import 'package:praise_choir_app/features/songs/presentation/cubit/song_state.da
 import 'package:praise_choir_app/features/songs/presentation/screens/edit_song_screen.dart';
 import 'package:praise_choir_app/features/songs/presentation/screens/song_info.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/audio_player_widget.dart';
-import 'package:praise_choir_app/features/songs/presentation/widgets/lyrics_fullscreen.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/version_selector.dart';
 
 class SongDetailScreen extends StatefulWidget {
@@ -30,7 +28,6 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
 
   final List<Map<String, dynamic>> _tabs = [
     {'title': 'info', 'icon': Icons.info_outline},
-    {'title': 'lyrics', 'icon': Icons.music_note},
     {'title': 'audio', 'icon': Icons.audio_file},
     {'title': 'versions', 'icon': Icons.layers},
   ];
@@ -57,28 +54,6 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text('markedAsPracticed'.tr())));
-  }
-
-  void _openFullscreenLyrics() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Scaffold(
-          body: SafeArea(
-            child: LyricsFullscreen(
-              lyrics: _currentSong.lyrics,
-              onFullscreen: () => Navigator.pop(context),
-            ),
-          ),
-        ),
-      ),
-    ).then((_) {
-      SystemChrome.setEnabledSystemUIMode(
-        SystemUiMode.manual,
-        overlays: SystemUiOverlay.values,
-      );
-    });
   }
 
   void _editSong() {
@@ -143,6 +118,7 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
                 title: Text('markAsPerformed'.tr()),
               ),
             ),
+            const PopupMenuDivider(),
             PopupMenuItem(
               value: 'practiced',
               child: ListTile(
@@ -243,13 +219,6 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
         children: [
           // Info Tab
           SongInfo(song: song),
-
-          // Lyrics Tab
-          LyricsFullscreen(
-            lyrics: song.lyrics,
-            onFullscreen: _openFullscreenLyrics,
-          ),
-
           // Audio Tab
           song.audioPath != null
               ? AudioPlayerWidget(audioPath: song.audioPath!, title: song.title)
