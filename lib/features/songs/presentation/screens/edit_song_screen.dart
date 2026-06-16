@@ -45,12 +45,32 @@ class _EditSongScreenState extends State<EditSongScreen> {
 
   void _updateSong() {
     if (_formKey.currentState!.validate()) {
+      final newLyrics = _lyricsController.text;
+      final newAudioPath = _audioPath;
+
+      Map<String, dynamic> updatedMetadata = Map.from(
+        widget.song.metadata ?? {},
+      );
+
+      // Track original lyrics if changed and not already tracked
+      if (widget.song.lyrics != newLyrics &&
+          !updatedMetadata.containsKey('originalLyrics')) {
+        updatedMetadata['originalLyrics'] = widget.song.lyrics;
+      }
+
+      // Track original audio if changed and not already tracked
+      if (widget.song.audioPath != newAudioPath &&
+          !updatedMetadata.containsKey('originalAudio')) {
+        updatedMetadata['originalAudio'] = widget.song.audioPath;
+      }
+
       final updatedSong = widget.song.copyWith(
         title: _titleController.text.trim(),
-        lyrics: _lyricsController.text,
+        lyrics: newLyrics,
         language: _selectedLanguage,
         tags: _selectedTags,
-        audioPath: _audioPath,
+        audioPath: newAudioPath,
+        metadata: updatedMetadata,
       );
 
       context.read<SongCubit>().updateSong(updatedSong);
@@ -198,7 +218,7 @@ class _EditSongScreenState extends State<EditSongScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:  Text('editSong'.tr()),
+        title: Text('editSong'.tr()),
         actions: [
           BlocBuilder<SongCubit, SongState>(
             builder: (context, state) {
