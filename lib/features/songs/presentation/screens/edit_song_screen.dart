@@ -64,6 +64,18 @@ class _EditSongScreenState extends State<EditSongScreen> {
         updatedMetadata['originalAudio'] = widget.song.audioPath;
       }
 
+      // Track full history of changes
+      if (widget.song.lyrics != newLyrics ||
+          widget.song.audioPath != newAudioPath) {
+        List<dynamic> history = List.from(updatedMetadata['history'] ?? []);
+        history.add({
+          'timestamp': DateTime.now().toIso8601String(),
+          'lyrics': widget.song.lyrics,
+          'audioPath': widget.song.audioPath,
+        });
+        updatedMetadata['history'] = history;
+      }
+
       final updatedSong = widget.song.copyWith(
         title: _titleController.text.trim(),
         lyrics: newLyrics,
