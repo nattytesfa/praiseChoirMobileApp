@@ -1,11 +1,7 @@
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart' hide DateUtils;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/theme/app_text_styles.dart';
@@ -135,115 +131,21 @@ class SongListItem extends StatelessWidget {
     ).push(MaterialPageRoute(builder: (_) => SongDetailScreen(song: song)));
   }
 
-  void _showShareOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.text_fields),
-                title: Text('shareText'.tr()),
-                onTap: () {
-                  Navigator.pop(context);
-                  SharePlus.instance.share(
-                    ShareParams(text: "${song.title}\n\n${song.lyrics}"),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.image),
-                title: Text('shareScreenshot'.tr()),
-                onTap: () {
-                  Navigator.pop(context);
-                  _shareScreenshot(context);
-                },
-              ),
-            ],
-          ),
-        );
-      },
+  void _shareText(BuildContext context) {
+    SharePlus.instance.share(
+      ShareParams(text: "${song.title}\n\n${song.lyrics}"),
     );
-  }
-
-  Future<void> _shareScreenshot(BuildContext context) async {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
-
-    try {
-      final screenshotController = ScreenshotController();
-      final widget = MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Material(
-          color: Colors.white,
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            color: Colors.white,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  song.title,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  song.lyrics,
-                  style: const TextStyle(fontSize: 16, color: Colors.black),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-
-      final image = await screenshotController.captureFromWidget(
-        widget,
-        delay: const Duration(milliseconds: 100),
-      );
-
-      if (context.mounted) {
-        Navigator.pop(context); // Close loading dialog
-      }
-
-      final directory = await getTemporaryDirectory();
-      final imagePath = await File(
-        '${directory.path}/lyrics_${song.id}.png',
-      ).create();
-      await imagePath.writeAsBytes(image);
-
-      await SharePlus.instance.share(
-        ShareParams(files: [XFile(imagePath.path)]),
-      );
-    } catch (e) {
-      if (context.mounted) {
-        Navigator.pop(context); // Close loading dialog
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error sharing screenshot: $e')));
-      }
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthCubit, AuthState>(
-      builder: (context, authState) {
+      builder: (blocContext, authState) {
         final isAdmin =
             authState is AuthAuthenticated && authState.user.role == 'admin';
 
         return Card(
-          color: Theme.of(context).listTileTheme.tileColor,
+          color: Theme.of(blocContext).listTileTheme.tileColor,
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           clipBehavior: Clip.antiAlias,
           child: Slidable(
@@ -252,21 +154,23 @@ class SongListItem extends StatelessWidget {
                     motion: const ScrollMotion(),
                     children: [
                       SlidableAction(
-                        onPressed: (context) => _confirmDelete(context),
+                        onPressed: (actionContext) =>
+                            _confirmDelete(blocContext),
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                         icon: Icons.delete,
                         label: 'delete'.tr(),
                       ),
                       SlidableAction(
-                        onPressed: _openSongDetail,
+                        onPressed: (actionContext) =>
+                            _openSongDetail(blocContext),
                         backgroundColor: Colors.blueAccent,
                         foregroundColor: Colors.white,
                         icon: Icons.details,
                         label: 'songDetail'.tr(),
                       ),
                       SlidableAction(
-                        onPressed: (context) => _showShareOptions(context),
+                        onPressed: (actionContext) => _shareText(blocContext),
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
                         icon: Icons.share_rounded,
@@ -278,14 +182,15 @@ class SongListItem extends StatelessWidget {
                     motion: const ScrollMotion(),
                     children: [
                       SlidableAction(
-                        onPressed: _openSongDetail,
+                        onPressed: (actionContext) =>
+                            _openSongDetail(blocContext),
                         backgroundColor: Colors.blueAccent,
                         foregroundColor: Colors.white,
                         icon: Icons.details,
                         label: 'songDetail'.tr(),
                       ),
                       SlidableAction(
-                        onPressed: (context) => _showShareOptions(context),
+                        onPressed: (actionContext) => _shareText(blocContext),
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
                         icon: Icons.share_rounded,
