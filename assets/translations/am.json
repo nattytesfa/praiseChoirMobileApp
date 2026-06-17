@@ -105,7 +105,6 @@
   "generatingPayments": "ክፍያዎች በመፍጠር ላይ...",
   "deletingAllPayments": "ሁሉንም ክፍያዎች በመሰረዝ...",
   "deletingPendingPayments": "በመጠባበቅ ላይ ያሉ ክፍያዎችን በመሰረዝ...",
-  "versions": "ስሪቶች",
   "performanceCount": "ተዘመረ",
   "markedAsPerformed": "እንደተዘመረ ምልክት ተደርጎበታል",
   "markedAsPracticed": "እንደተለማመደ ምልክት ተደርጎበታል",
@@ -173,7 +172,6 @@
   "darkMode": "ይጨልም",
   "financialHealth": "የፋይናንስ ጤና",
   "about": "ስለ",
-  "version": "ስሪት",
   "developedBy": "የተከናወነበ",
   "license": "ፈቃድ",
   "statistics": "ስታቲስቲክስ",
@@ -502,4 +500,20 @@
   "enterCustomVersionName": "ልዩ የስሪት ስም ያስገቡ",
   "updateSong": "መዝሙር አሻሽል",
   "saveChanges": "ለውጦችን አስቀምጥ"
+  ,"originalLyrics": "የመጀመሪያ ግጥም",
+  "noOriginalLyrics": "ምንም የመጀመሪያ ግጥም አልተገኘም።",
+  "updatedLyrics": "የተስተካከለ ግጥም",
+  "notUpdated": "ገና አልተስተካከለም።",
+  "originalAudio": "የመጀመሪያ ድምፅ",
+  "noOriginalAudio": "ምንም የመጀመሪያ ድምፅ አልተገኘም።",
+  "updatedAudio": "የተስተካከለ ድምፅ"
+  ,"versions": "የለውጦች ታሪክ",
+  "originalVersion": "የመጀመሪያ ቅጂ",
+  "addedOn": "የተጨመረው: {}",
+  "version": "ቅጂ {}",
+  "editedOn": "የተስተካከለው: {}",
+  "latestVersion": "የቅርብ ጊዜ ቅጂ",
+  "current": "አሁን ጥቅም ላይ ያለ",
+  "viewLyrics": "ግጥም አሳይ",
+  "viewAudio": "ድምፅ አጫውት"
 }

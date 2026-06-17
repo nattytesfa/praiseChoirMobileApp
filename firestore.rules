@@ -1,0 +1,72 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Trust roles from the authenticated user's own profile.
+    // Safe because self-writes cannot change privileged fields.
+    function isLeaderOrAdmin() {
+      return isSignedIn() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['leader', 'admin']);
+    }
+
+    function unchanged(field) {
+      return request.resource.data[field] == resource.data[field];
+    }
+
+    // USERS
+    match /users/{userId} {
+      // Read all members for in-app lists
+      allow get, list: if isSignedIn();
+
+      // Create own profile only; prevent self-creating elevated roles
+      allow create: if isOwner(userId)
+        && request.resource.data.id == userId
+        && !(request.resource.data.role in ['leader', 'admin']);
+
+      // Update own profile but not privileged/system fields
+      allow update: if isOwner(userId)
+        && unchanged('id')
+        && unchanged('role')
+        && unchanged('approvalStatus')
+        && unchanged('isActive')
+        && unchanged('adminMessage')
+        && unchanged('statusUpdatedAt')
+        && unchanged('email');
+
+      // Leaders/Admins can manage members
+      allow update, delete: if isLeaderOrAdmin() && request.resource.data.id == userId;
+    }
+
+    // SONGS
+    match /songs/{songId} {
+      allow get, list: if isSignedIn();
+      allow create, update, delete: if isLeaderOrAdmin();
+    }
+
+    // ANNOUNCEMENTS
+    match /announcements/{announcementId} {
+      allow get, list: if isSignedIn();
+
+      // Leaders/Admins manage announcements
+      allow create, update, delete: if isLeaderOrAdmin();
+
+      // Allow members to mark announcement as read by adding their UID to readBy only
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data).changedKeys().hasOnly(['readBy'])
+        && request.resource.data.readBy.size() >= resource.data.readBy.size()
+        && request.resource.data.readBy.hasAny([request.auth.uid]);
+    }
+
+    // Default deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
