@@ -20,6 +20,30 @@ import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.da
 import 'package:praise_choir_app/features/songs/data/song_repository.dart';
 import 'package:praise_choir_app/features/chat/data/chat_repository.dart';
 import 'package:praise_choir_app/features/chat/presentation/cubit/chat_cubit.dart';
+import 'package:praise_choir_app/update_checker.dart';
+
+class _AppLifeCycleWrapper extends StatefulWidget {
+  final Widget child;
+  const _AppLifeCycleWrapper({required this.child});
+
+  @override
+  _AppLifeCycleWrapperState createState() => _AppLifeCycleWrapperState();
+}
+
+class _AppLifeCycleWrapperState extends State<_AppLifeCycleWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      UpdateChecker.checkForUpdates(context);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
 
 class ChoirApp extends StatelessWidget {
   const ChoirApp({super.key});
@@ -111,6 +135,8 @@ class ChoirApp extends StatelessWidget {
                   supportedLocales: context.supportedLocales,
                   initialRoute: Routes.login,
                   debugShowCheckedModeBanner: false,
+                  builder: (context, child) =>
+                      _AppLifeCycleWrapper(child: child!),
                   onUnknownRoute: (settings) {
                     WidgetsBinding.instance.addPostFrameCallback(
                       (_) => SystemNavigator.pop(),
