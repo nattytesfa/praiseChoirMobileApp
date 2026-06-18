@@ -18,6 +18,7 @@ class ChatInput extends StatefulWidget {
   final MessageModel? editingMessage;
   final VoidCallback? onCancelEdit;
   final Function(bool)? onTyping;
+  final Function(bool)? onEmojiPickerToggle;
 
   const ChatInput({
     super.key,
@@ -29,6 +30,7 @@ class ChatInput extends StatefulWidget {
     this.editingMessage,
     this.onCancelEdit,
     this.onTyping,
+    this.onEmojiPickerToggle,
   });
 
   @override
@@ -44,6 +46,8 @@ class _ChatInputState extends State<ChatInput> {
   String? _recordedFilePath;
   bool _isPlaying = false;
   Timer? _typingTimer;
+  Timer? _recordingTimer;
+  int _recordingDuration = 0;
 
   @override
   void initState() {
@@ -51,9 +55,14 @@ class _ChatInputState extends State<ChatInput> {
     widget.controller.addListener(_onTextChanged);
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
-        setState(() {
-          _showEmojiPicker = false;
-        });
+        if (_showEmojiPicker) {
+          setState(() {
+            _showEmojiPicker = false;
+          });
+          Future.delayed(const Duration(milliseconds: 300), () {
+            if (mounted) widget.onEmojiPickerToggle?.call(false);
+          });
+        }
       }
     });
     _audioPlayer.playerStateStream.listen((state) {
@@ -67,6 +76,7 @@ class _ChatInputState extends State<ChatInput> {
   void dispose() {
     widget.controller.removeListener(_onTextChanged);
     _typingTimer?.cancel();
+    _recordingTimer?.cancel();
     _audioRecorder.dispose();
     _audioPlayer.dispose();
     _focusNode.dispose();
@@ -86,6 +96,7 @@ class _ChatInputState extends State<ChatInput> {
       if (_isRecording) {
         // Stop recording
         final path = await _audioRecorder.stop();
+        _recordingTimer?.cancel();
         setState(() {
           _isRecording = false;
           _recordedFilePath = path;
@@ -98,13 +109,22 @@ class _ChatInputState extends State<ChatInput> {
               '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
 
           await _audioRecorder.start(const RecordConfig(), path: path);
+
           setState(() {
             _isRecording = true;
+            _recordingDuration = 0;
             _recordedFilePath = null;
+          });
+
+          _recordingTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+            setState(() {
+              _recordingDuration++;
+            });
           });
         }
       }
     } catch (e) {
+      _recordingTimer?.cancel();
       setState(() {
         _isRecording = false;
       });
@@ -141,6 +161,12 @@ class _ChatInputState extends State<ChatInput> {
     if (widget.controller.text.trim().isNotEmpty) {
       widget.onSendMessage(widget.controller.text);
     }
+  }
+
+  String _formatDuration(int seconds) {
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -292,8 +318,8 @@ class _ChatInputState extends State<ChatInput> {
                   const Icon(Icons.mic, color: Colors.red),
                   const SizedBox(width: 8),
                   Text(
-                    'recording...'.tr(),
-                    style: TextStyle(
+                    '${'recording...'.tr()}  ${_formatDuration(_recordingDuration)}',
+                    style: const TextStyle(
                       color: Colors.red,
                       fontWeight: FontWeight.bold,
                     ),
@@ -314,12 +340,16 @@ class _ChatInputState extends State<ChatInput> {
                   onPressed: () {
                     setState(() {
                       _showEmojiPicker = !_showEmojiPicker;
-                      if (_showEmojiPicker) {
-                        _focusNode.unfocus();
-                      } else {
-                        _focusNode.requestFocus();
-                      }
                     });
+                    if (_showEmojiPicker) {
+                      _focusNode.unfocus();
+                      widget.onEmojiPickerToggle?.call(true);
+                    } else {
+                      _focusNode.requestFocus();
+                      Future.delayed(const Duration(milliseconds: 300), () {
+                        if (mounted) widget.onEmojiPickerToggle?.call(false);
+                      });
+                    }
                   },
                   icon: Icon(
                     _showEmojiPicker
@@ -376,27 +406,32 @@ class _ChatInputState extends State<ChatInput> {
                   ),
               ],
             ),
-          if (_showEmojiPicker)
-            SizedBox(
-              height: 250,
-              child: EmojiPicker(
-                textEditingController: widget.controller,
-                config: Config(
-                  checkPlatformCompatibility: false,
-                  emojiViewConfig: EmojiViewConfig(
-                    columns: 7,
-                    emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
-                  ),
-                  categoryViewConfig: const CategoryViewConfig(
-                    initCategory: Category.SMILEYS,
-                  ),
-                  bottomActionBarConfig: const BottomActionBarConfig(
-                    showSearchViewButton: false,
-                    enabled: false,
+          if (_showEmojiPicker) ...[
+            const SizedBox(height: 12),
+            SafeArea(
+              top: false,
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.35,
+                child: EmojiPicker(
+                  textEditingController: widget.controller,
+                  config: Config(
+                    checkPlatformCompatibility: false,
+                    emojiViewConfig: EmojiViewConfig(
+                      columns: 7,
+                      emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                    ),
+                    categoryViewConfig: const CategoryViewConfig(
+                      initCategory: Category.SMILEYS,
+                    ),
+                    bottomActionBarConfig: const BottomActionBarConfig(
+                      showSearchViewButton: false,
+                      enabled: false,
+                    ),
                   ),
                 ),
               ),
             ),
+          ],
         ],
       ),
     );

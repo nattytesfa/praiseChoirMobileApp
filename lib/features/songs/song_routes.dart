@@ -99,8 +99,7 @@ class SongRoutes {
     required String lyrics,
     required String songTitle,
   }) {
-    Navigator.pushNamed(
-      context,
+    Navigator.of(context, rootNavigator: true).pushNamed(
       lyricsFullscreen,
       arguments: {'lyrics': lyrics, 'songTitle': songTitle},
     );

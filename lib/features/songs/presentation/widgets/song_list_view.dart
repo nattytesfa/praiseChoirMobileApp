@@ -55,13 +55,10 @@ class _SongListViewState extends State<SongListView> {
               return SongListItem(
                 song: song,
                 onTap: () {
-                  Navigator.push(
-                    context,
+                  Navigator.of(context, rootNavigator: true).push(
                     MaterialPageRoute(
-                      builder: (context) => LyricsDisplay(
-                        title: song.title,
-                        lyrics: song.lyrics,
-                      ),
+                      builder: (context) =>
+                          LyricsDisplay(title: song.title, lyrics: song.lyrics),
                     ),
                   );
                 },

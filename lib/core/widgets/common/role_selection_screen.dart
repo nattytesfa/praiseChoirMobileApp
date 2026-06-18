@@ -84,8 +84,6 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
     });
   }
 
-
-
   void moveToAnotherPage() {
     Navigator.pushNamedAndRemoveUntil(
       context,

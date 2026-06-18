@@ -16,7 +16,13 @@ import '../widgets/message_bubble.dart';
 
 class ChatListScreen extends StatefulWidget {
   final ValueNotifier<bool>? isVisibleNotifier;
-  const ChatListScreen({super.key, this.isVisibleNotifier});
+  final ValueNotifier<bool>? isEmojiPickerVisibleNotifier;
+
+  const ChatListScreen({
+    super.key,
+    this.isVisibleNotifier,
+    this.isEmojiPickerVisibleNotifier,
+  });
 
   @override
   State<ChatListScreen> createState() => _ChatListScreenState();
@@ -380,6 +386,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
           ),
           ChatInput(
             controller: _messageController,
+            onEmojiPickerToggle: (isOpen) {
+              widget.isEmojiPickerVisibleNotifier?.value = isOpen;
+            },
             replyingTo: _replyingTo,
             onCancelReply: () {
               setState(() {

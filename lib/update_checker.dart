@@ -12,7 +12,7 @@ class UpdateChecker {
       // 1. Fetch remote JSON file details
       final response = await http.get(Uri.parse(_configUrl));
       if (response.statusCode != 200) return;
-      
+
       final Map<String, dynamic> remoteData = json.decode(response.body);
       final int latestBuildNumber = remoteData['build_number'];
       final String downloadUrl = remoteData['apk_url'];
@@ -31,20 +31,26 @@ class UpdateChecker {
     }
   }
 
-  static void _showUpdateDialog(BuildContext context, String apkUrl, bool isRequired) {
+  static void _showUpdateDialog(
+    BuildContext context,
+    String apkUrl,
+    bool isRequired,
+  ) {
     showDialog(
       context: context,
       // If update is mandatory, block user from dismissing by clicking outside
-      barrierDismissible: !isRequired, 
+      barrierDismissible: !isRequired,
       builder: (context) {
         return PopScope(
           // Block Android physical hardware back button if update is mandatory
-          canPop: !isRequired, 
+          canPop: !isRequired,
           child: AlertDialog(
             title: const Text('Update Available'),
-            content: Text(isRequired 
-              ? 'A critical new update is required to continue using this application.' 
-              : 'A new version with enhancements is available. Would you like to update now?'),
+            content: Text(
+              isRequired
+                  ? 'A critical new update is required to continue using this application.'
+                  : 'A new version with enhancements is available. Would you like to update now?',
+            ),
             actions: [
               if (!isRequired)
                 TextButton(

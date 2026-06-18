@@ -24,6 +24,7 @@ class MainNavigationShell extends StatefulWidget {
 
 class _MainNavigationShellState extends State<MainNavigationShell> {
   final ValueNotifier<bool> _isChatVisible = ValueNotifier(false);
+  final ValueNotifier<bool> _isEmojiPickerVisible = ValueNotifier(false);
   final PersistentTabController _controller = PersistentTabController(
     initialIndex: 0,
   );
@@ -36,6 +37,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
   void dispose() {
     _controller.dispose();
     _isChatVisible.dispose();
+    _isEmojiPickerVisible.dispose();
     super.dispose();
   }
 
@@ -47,75 +49,86 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
         ? authState.user.role
         : 'guest';
 
+    final bool isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+
     return Scaffold(
       extendBody: true,
-      body: PersistentTabView(
-        controller: _controller,
-        onTabChanged: (index) {
-          // Determine if the new tab is the Chat tab
-          // Chat tab index depends on role
-          int chatIndex = -1;
-          if (role != 'guest') {
-            chatIndex = 2; // 0: Home, 1: Announcement, 2: Chat
-          }
+      body: ValueListenableBuilder<bool>(
+        valueListenable: _isEmojiPickerVisible,
+        builder: (context, isEmojiPickerOpen, child) {
+          return PersistentTabView(
+            controller: _controller,
+            hideNavigationBar: isKeyboardOpen || isEmojiPickerOpen,
+            onTabChanged: (index) {
+              // Determine if the new tab is the Chat tab
+              // Chat tab index depends on role
+              int chatIndex = -1;
+              if (role != 'guest') {
+                chatIndex = 2; // 0: Home, 1: Announcement, 2: Chat
+              }
 
-          _isChatVisible.value = (index == chatIndex);
-        },
-        tabs: [
-          // TAB 1: ALWAYS VISIBLE
-          PersistentTabConfig(
-            screen: const HomeScreen(), // Your existing HomeScreen code
-            item: ItemConfig(
-              icon: const Icon(Icons.music_note),
-              title: 'songs'.tr(),
-            ),
-          ),
-
-          // TAB 2 & 3: HIDDEN FROM GUESTS
-          if (role != 'guest') ...[
-            PersistentTabConfig(
-              screen: const AnnouncementBoard(),
-              item: ItemConfig(
-                icon: const Icon(Icons.announcement),
-                title: 'announcements'.tr(),
-              ),
-            ),
-            PersistentTabConfig(
-              screen: ChatListScreen(isVisibleNotifier: _isChatVisible),
-              item: ItemConfig(
-                icon: StreamBuilder<int>(
-                  stream: (authState is AuthAuthenticated)
-                      ? context.read<ChatRepository>().watchUnreadCount(
-                          authState.user.id,
-                        )
-                      : const Stream.empty(),
-                  builder: (context, snapshot) {
-                    final count = snapshot.data ?? 0;
-                    return Badge(
-                      isLabelVisible: count > 0,
-                      label: Text('$count'),
-                      child: const Icon(Icons.chat),
-                    );
-                  },
+              _isChatVisible.value = (index == chatIndex);
+            },
+            tabs: [
+              // TAB 1: ALWAYS VISIBLE
+              PersistentTabConfig(
+                screen: const HomeScreen(), // Your existing HomeScreen code
+                item: ItemConfig(
+                  icon: const Icon(Icons.music_note),
+                  title: 'songs'.tr(),
                 ),
-                title: 'chat'.tr(),
               ),
-            ),
-          ],
 
-          // TAB 4: ONLY FOR ADMINS
-          if (role == 'admin' || role == 'leader')
-            PersistentTabConfig(
-              screen: const AdminDashboard(),
-              item: ItemConfig(
-                icon: const Icon(Icons.security),
-                title: 'admin'.tr(),
-              ),
-            ),
-        ],
+              // TAB 2 & 3: HIDDEN FROM GUESTS
+              if (role != 'guest') ...[
+                PersistentTabConfig(
+                  screen: const AnnouncementBoard(),
+                  item: ItemConfig(
+                    icon: const Icon(Icons.announcement),
+                    title: 'announcements'.tr(),
+                  ),
+                ),
+                PersistentTabConfig(
+                  screen: ChatListScreen(
+                    isVisibleNotifier: _isChatVisible,
+                    isEmojiPickerVisibleNotifier: _isEmojiPickerVisible,
+                  ),
+                  item: ItemConfig(
+                    icon: StreamBuilder<int>(
+                      stream: (authState is AuthAuthenticated)
+                          ? context.read<ChatRepository>().watchUnreadCount(
+                              authState.user.id,
+                            )
+                          : const Stream.empty(),
+                      builder: (context, snapshot) {
+                        final count = snapshot.data ?? 0;
+                        return Badge(
+                          isLabelVisible: count > 0,
+                          label: Text('$count'),
+                          child: const Icon(Icons.chat),
+                        );
+                      },
+                    ),
+                    title: 'chat'.tr(),
+                  ),
+                ),
+              ],
 
-        navBarBuilder: (navBarConfig) =>
-            Style1BottomNavBar(navBarConfig: navBarConfig),
+              // TAB 4: ONLY FOR ADMINS
+              if (role == 'admin' || role == 'leader')
+                PersistentTabConfig(
+                  screen: const AdminDashboard(),
+                  item: ItemConfig(
+                    icon: const Icon(Icons.security),
+                    title: 'admin'.tr(),
+                  ),
+                ),
+            ],
+
+            navBarBuilder: (navBarConfig) =>
+                Style1BottomNavBar(navBarConfig: navBarConfig),
+          );
+        },
       ),
     );
   }

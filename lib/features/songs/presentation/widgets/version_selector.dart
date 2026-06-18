@@ -19,11 +19,16 @@ class VersionSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Determine history from metadata
-    final List<dynamic> history = song.metadata?['history'] as List<dynamic>? ?? [];
+    final List<dynamic> history =
+        song.metadata?['history'] as List<dynamic>? ?? [];
 
     final bool hasHistory = history.isNotEmpty;
-    final originalLyrics = hasHistory ? history.first['lyrics'] as String : song.lyrics;
-    final originalAudio = hasHistory ? history.first['audioPath'] as String? : song.audioPath;
+    final originalLyrics = hasHistory
+        ? history.first['lyrics'] as String
+        : song.lyrics;
+    final originalAudio = hasHistory
+        ? history.first['audioPath'] as String?
+        : song.audioPath;
 
     // The most up-to-date lyrics/audio string is always stored directly on the song
     final latestLyrics = song.lyrics;
@@ -36,16 +41,25 @@ class VersionSelector extends StatelessWidget {
         children: [
           Text(
             'versions'.tr(),
-            style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.bold),
+            style: AppTextStyles.titleLarge.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 16),
-          
+
           // Original Version (always exists)
           _buildHistoryCard(
             context,
             title: 'originalVersion'.tr(),
-            subtitle: hasHistory 
-                ? 'addedOn'.tr(args: [_formatDate(DateTime.tryParse(history.first['timestamp']) ?? song.dateAdded)])
+            subtitle: hasHistory
+                ? 'addedOn'.tr(
+                    args: [
+                      _formatDate(
+                        DateTime.tryParse(history.first['timestamp']) ??
+                            song.dateAdded,
+                      ),
+                    ],
+                  )
                 : 'addedOn'.tr(args: [_formatDate(song.dateAdded)]),
             lyricsContent: originalLyrics,
             audioContent: originalAudio,
@@ -60,7 +74,13 @@ class VersionSelector extends StatelessWidget {
                 child: _buildHistoryCard(
                   context,
                   title: 'version'.tr(args: [(index + 2).toString()]),
-                  subtitle: 'editedOn'.tr(args: [_formatDate(DateTime.tryParse(edit['timestamp']) ?? song.dateAdded)]),
+                  subtitle: 'editedOn'.tr(
+                    args: [
+                      _formatDate(
+                        DateTime.tryParse(edit['timestamp']) ?? song.dateAdded,
+                      ),
+                    ],
+                  ),
                   lyricsContent: edit['lyrics'] as String?,
                   audioContent: edit['audioPath'] as String?,
                 ),
@@ -69,16 +89,18 @@ class VersionSelector extends StatelessWidget {
 
           // The Latest / Current Version (only if there are edits)
           if (hasHistory) ...[
-             const SizedBox(height: 16),
+            const SizedBox(height: 16),
             _buildHistoryCard(
               context,
               title: 'latestVersion'.tr(),
-              subtitle: 'editedOn'.tr(args: [_formatDate(song.updatedAt ?? DateTime.now())]),
+              subtitle: 'editedOn'.tr(
+                args: [_formatDate(song.updatedAt ?? DateTime.now())],
+              ),
               lyricsContent: latestLyrics,
               audioContent: latestAudio,
               isLatest: true,
             ),
-          ]
+          ],
         ],
       ),
     );
@@ -101,7 +123,7 @@ class VersionSelector extends StatelessWidget {
       color: isLatest ? AppColors.primary.withValues(alpha: 0.05) : null,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: isLatest 
+        side: isLatest
             ? BorderSide(color: AppColors.primary, width: 1.5)
             : BorderSide(color: Colors.grey.shade300, width: 1),
       ),
@@ -121,27 +143,38 @@ class VersionSelector extends StatelessWidget {
                         title,
                         style: AppTextStyles.titleMedium.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: isLatest ? AppColors.primary : AppColors.textPrimary,
+                          color: isLatest
+                              ? AppColors.primary
+                              : AppColors.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         subtitle,
-                        style: AppTextStyles.bodySmall.copyWith(color: Colors.grey.shade600),
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: Colors.grey.shade600,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 if (isLatest)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.primary,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       'current'.tr(),
-                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
               ],
@@ -157,7 +190,8 @@ class VersionSelector extends StatelessWidget {
                     icon: Icons.history_edu,
                     label: 'viewLyrics'.tr(),
                     onTap: () {
-                      if (lyricsContent == null || lyricsContent.trim().isEmpty) {
+                      if (lyricsContent == null ||
+                          lyricsContent.trim().isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('noOriginalLyrics'.tr())),
                         );

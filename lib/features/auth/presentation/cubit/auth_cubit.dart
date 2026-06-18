@@ -253,50 +253,49 @@ Map<String, List<UserModel>> getActivitySegments(List<UserModel> members) {
         .toList(),
   };
 }
-  // Future<void> googleSignIn() async {
-  //   emit(AuthLoading());
-  //   if (_auth == null) {
-  //     emit(AuthError('Authentication disabled'));
-  //     return;
-  //   }
-  //   try {
-  //     final google = GoogleSignIn();
-  //     final account = await google.signIn();
-  //     if (account == null) {
-  //       emit(AuthUnauthenticated());
-  //       return;
-  //     }
-  //     final authDetails = await account.authentication;
-  //     final credential = GoogleAuthProvider.credential(
-  //       accessToken: authDetails.accessToken,
-  //       idToken: authDetails.idToken,
-  //     );
+// Future<void> googleSignIn() async {
+//   emit(AuthLoading());
+//   if (_auth == null) {
+//     emit(AuthError('Authentication disabled'));
+//     return;
+//   }
+//   try {
+//     final google = GoogleSignIn();
+//     final account = await google.signIn();
+//     if (account == null) {
+//       emit(AuthUnauthenticated());
+//       return;
+//     }
+//     final authDetails = await account.authentication;
+//     final credential = GoogleAuthProvider.credential(
+//       accessToken: authDetails.accessToken,
+//       idToken: authDetails.idToken,
+//     );
 
-  //     final userCredential = await _auth.signInWithCredential(credential);
-  //     final fbUser = userCredential.user;
-  //     if (fbUser == null) {
-  //       emit(AuthError('Google sign-in failed'));
-  //       return;
-  //     }
+//     final userCredential = await _auth.signInWithCredential(credential);
+//     final fbUser = userCredential.user;
+//     if (fbUser == null) {
+//       emit(AuthError('Google sign-in failed'));
+//       return;
+//     }
 
-  //     final userBox = Hive.box<UserModel>(HiveBoxes.users);
-  //     final matches = userBox.values
-  //         .cast<UserModel>()
-  //         .where((u) => u.id == fbUser.uid || u.email == (fbUser.email ?? ''))
-  //         .toList();
-  //     if (matches.isEmpty) {
-  //       await _auth.signOut();
-  //       emit(AuthUnauthorized(fbUser.email ?? ''));
-  //       return;
-  //     }
-  //     final matching = matches.first;
-  //     await authRepository.saveUser(matching);
-  //     emit(AuthAuthenticated(matching));
-  //     return;
-  //   } on FirebaseAuthException catch (e) {
-  //     emit(AuthError(e.message ?? e.code));
-  //   } catch (e) {
-  //     emit(AuthError('Google sign-in failed'));
-  //   }
-  // }
-
+//     final userBox = Hive.box<UserModel>(HiveBoxes.users);
+//     final matches = userBox.values
+//         .cast<UserModel>()
+//         .where((u) => u.id == fbUser.uid || u.email == (fbUser.email ?? ''))
+//         .toList();
+//     if (matches.isEmpty) {
+//       await _auth.signOut();
+//       emit(AuthUnauthorized(fbUser.email ?? ''));
+//       return;
+//     }
+//     final matching = matches.first;
+//     await authRepository.saveUser(matching);
+//     emit(AuthAuthenticated(matching));
+//     return;
+//   } on FirebaseAuthException catch (e) {
+//     emit(AuthError(e.message ?? e.code));
+//   } catch (e) {
+//     emit(AuthError('Google sign-in failed'));
+//   }
+// }

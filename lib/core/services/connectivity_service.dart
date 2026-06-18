@@ -86,6 +86,8 @@ class NetworkUtils {
         return 'VPN';
       case ConnectivityResult.bluetooth:
         return 'Bluetooth';
+      case ConnectivityResult.satellite:
+        return 'Satellite';
       case ConnectivityResult.other:
         return 'Other';
       case ConnectivityResult.none:

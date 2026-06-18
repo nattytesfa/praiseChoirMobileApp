@@ -151,7 +151,6 @@ class SongCubit extends Cubit<SongState> {
       await deleteSongUseCase(songId);
       loadSongs(); // Reload the list
     } catch (e) {
-
       if (currentState is SongLoaded) {
         emit(
           SongLoaded(

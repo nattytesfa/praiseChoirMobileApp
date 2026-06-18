@@ -45,7 +45,6 @@ class _VoiceMessageScreenState extends State<VoiceMessageScreen> {
               showWaveform: true,
             ),
             const SizedBox(height: 24),
-
           ],
         ),
       ),

@@ -16,7 +16,7 @@ class AppConstants {
     roleLeader,
     roleSongWriter,
     roleMember,
-    roleUser
+    roleUser,
   ];
 
   // Language constants

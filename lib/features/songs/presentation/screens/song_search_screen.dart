@@ -261,13 +261,10 @@ class _SongSearchScreenState extends State<SongSearchScreen> {
           song: song,
           onTap: () {
             _saveRecentSearch(song.title);
-            Navigator.push(
-              context,
+            Navigator.of(context, rootNavigator: true).push(
               MaterialPageRoute(
-                builder: (context) => LyricsDisplay(
-                  title: song.title,
-                  lyrics: song.lyrics,
-                ),
+                builder: (context) =>
+                    LyricsDisplay(title: song.title, lyrics: song.lyrics),
               ),
             );
           },

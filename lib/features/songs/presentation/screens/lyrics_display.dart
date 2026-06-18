@@ -23,24 +23,25 @@ class _LyricsDisplayState extends State<LyricsDisplay> {
 
   void _openFullscreenLyrics() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Scaffold(
-          body: SafeArea(
-            child: LyricsFullscreen(
-              lyrics: widget.lyrics,
-              onFullscreen: () => Navigator.pop(context),
+    Navigator.of(context, rootNavigator: true)
+        .push(
+          MaterialPageRoute(
+            builder: (context) => Scaffold(
+              body: SafeArea(
+                child: LyricsFullscreen(
+                  lyrics: widget.lyrics,
+                  onFullscreen: () => Navigator.pop(context),
+                ),
+              ),
             ),
           ),
-        ),
-      ),
-    ).then((_) {
-      SystemChrome.setEnabledSystemUIMode(
-        SystemUiMode.manual,
-        overlays: SystemUiOverlay.values,
-      );
-    });
+        )
+        .then((_) {
+          SystemChrome.setEnabledSystemUIMode(
+            SystemUiMode.manual,
+            overlays: SystemUiOverlay.values,
+          );
+        });
   }
 
   Widget _buildLyricsContent() {

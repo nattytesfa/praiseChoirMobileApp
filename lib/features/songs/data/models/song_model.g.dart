@@ -28,10 +28,12 @@ class SongModelAdapter extends TypeAdapter<SongModel> {
       lastPerformed: fields[8] as DateTime?,
       lastPracticed: fields[9] as DateTime?,
       performanceCount: fields[10] == null ? 0 : fields[10] as int,
-      versions:
-          fields[11] == null ? [] : (fields[11] as List).cast<SongVersion>(),
-      recordingNotes:
-          fields[12] == null ? [] : (fields[12] as List).cast<RecordingNote>(),
+      versions: fields[11] == null
+          ? []
+          : (fields[11] as List).cast<SongVersion>(),
+      recordingNotes: fields[12] == null
+          ? []
+          : (fields[12] as List).cast<RecordingNote>(),
       songNumber: fields[13] as String?,
       likeCount: fields[14] == null ? 0 : fields[14] as int,
       practiceCount: fields[15] == null ? 0 : fields[15] as int,
