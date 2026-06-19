@@ -66,6 +66,11 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
   }
 
   PreferredSizeWidget _buildAppBar(SongModel song) {
+    final authState = context.watch<AuthCubit>().state;
+    final role = (authState is AuthAuthenticated)
+        ? authState.user.role
+        : 'guest';
+
     return AppBar(
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,22 +116,26 @@ class _SongDetailScreenState extends State<SongDetailScreen> {
             }
           },
           itemBuilder: (context) => [
-            PopupMenuItem(
-              value: 'performed',
-              child: ListTile(
-                leading: const Icon(Icons.star),
-                title: Text('markAsPerformed'.tr()),
+            if (role != 'guest') ...[
+              PopupMenuItem(
+                value: 'performed',
+                child: ListTile(
+                  leading: const Icon(Icons.star),
+                  title: Text('markAsPerformed'.tr()),
+                ),
               ),
-            ),
-            const PopupMenuDivider(),
-            PopupMenuItem(
-              value: 'practiced',
-              child: ListTile(
-                leading: const Icon(Icons.self_improvement),
-                title: Text('markAsPracticed'.tr()),
+              const PopupMenuDivider(),
+            ],
+            if (role != 'guest') ...[
+              PopupMenuItem(
+                value: 'practiced',
+                child: ListTile(
+                  leading: const Icon(Icons.self_improvement),
+                  title: Text('markAsPracticed'.tr()),
+                ),
               ),
-            ),
-            const PopupMenuDivider(),
+              const PopupMenuDivider(),
+            ],
             PopupMenuItem(
               value: 'share',
               child: ListTile(

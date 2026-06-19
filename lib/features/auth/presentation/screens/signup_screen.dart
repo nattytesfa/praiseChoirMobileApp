@@ -5,7 +5,6 @@ import 'package:praise_choir_app/config/routes.dart';
 import 'package:praise_choir_app/core/utils/validators.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
-import 'package:praise_choir_app/features/songs/song_routes.dart';
 
 import '../../../../core/theme/app_colors.dart';
 
@@ -97,7 +96,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             if (user.role == 'guest') {
               Navigator.pushNamedAndRemoveUntil(
                 context,
-                SongRoutes.songLibrary,
+                Routes.mainNavigationShell,
                 (route) => false,
               );
             } else if (user.approvalStatus == 'pending') {

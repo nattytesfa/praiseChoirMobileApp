@@ -74,6 +74,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.watch<AuthCubit>().state;
+    final role = (authState is AuthAuthenticated)
+        ? authState.user.role
+        : 'guest';
+
     return MultiBlocListener(
       listeners: [
         BlocListener<SyncCubit, SyncStatus>(
@@ -119,10 +124,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             actions: [
               Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.add, color: Colors.white),
-                    onPressed: () => SongRoutes.navigateToAdd(context),
-                  ),
+                  if (role != 'guest')
+                    IconButton(
+                      icon: const Icon(Icons.add, color: Colors.white),
+                      onPressed: () => SongRoutes.navigateToAdd(context),
+                    ),
                   IconButton(
                     icon: const Icon(Icons.search, color: Colors.white),
                     onPressed: () =>
@@ -255,13 +261,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                   );
                 }),
-                _drawerItem(Icons.payment, "paymentHistory".tr(), () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(
-                    context,
-                    PaymentRoutes.userPaymentHistory,
-                  );
-                }),
+                if (user?.role != 'guest')
+                  _drawerItem(Icons.payment, "paymentHistory".tr(), () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(
+                      context,
+                      PaymentRoutes.userPaymentHistory,
+                    );
+                  }),
                 _drawerItem(Icons.settings_outlined, "settings".tr(), () {
                   Navigator.pop(context);
                   Navigator.pushNamed(context, Routes.userSettings);

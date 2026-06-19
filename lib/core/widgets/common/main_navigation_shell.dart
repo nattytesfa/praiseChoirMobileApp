@@ -79,15 +79,17 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
                 ),
               ),
 
-              // TAB 2 & 3: HIDDEN FROM GUESTS
-              if (role != 'guest') ...[
-                PersistentTabConfig(
-                  screen: const AnnouncementBoard(),
-                  item: ItemConfig(
-                    icon: const Icon(Icons.announcement),
-                    title: 'announcements'.tr(),
-                  ),
+              // TAB 2: ALWAYS VISIBLE (EVERYONE INC. GUEST)
+              PersistentTabConfig(
+                screen: const AnnouncementBoard(),
+                item: ItemConfig(
+                  icon: const Icon(Icons.announcement),
+                  title: 'announcements'.tr(),
                 ),
+              ),
+
+              // TAB 3: HIDDEN FROM GUESTS
+              if (role != 'guest')
                 PersistentTabConfig(
                   screen: ChatListScreen(
                     isVisibleNotifier: _isChatVisible,
@@ -112,7 +114,6 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
                     title: 'chat'.tr(),
                   ),
                 ),
-              ],
 
               // TAB 4: ONLY FOR ADMINS
               if (role == 'admin' || role == 'leader')

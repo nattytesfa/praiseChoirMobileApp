@@ -7,6 +7,9 @@ import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.da
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_state.dart';
 import 'package:praise_choir_app/features/songs/presentation/screens/song_detail_screen.dart';
 import 'package:praise_choir_app/features/songs/presentation/widgets/song_list_item.dart';
+import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
+import 'package:praise_choir_app/features/songs/presentation/screens/lyrics_display.dart';
 
 import '../../../../core/theme/app_colors.dart';
 
@@ -47,12 +50,28 @@ class FavoritesScreen extends StatelessWidget {
                   return SongListItem(
                     song: song,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SongDetailScreen(song: song),
-                        ),
-                      );
+                      final authState = context.read<AuthCubit>().state;
+                      final role = (authState is AuthAuthenticated)
+                          ? authState.user.role
+                          : 'guest';
+                      if (role == 'guest') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LyricsDisplay(
+                              title: song.title,
+                              lyrics: song.lyrics,
+                            ),
+                          ),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SongDetailScreen(song: song),
+                          ),
+                        );
+                      }
                     },
                     onPerformed: () {
                       context.read<SongCubit>().markSongPerformed(song.id);

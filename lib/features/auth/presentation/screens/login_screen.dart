@@ -4,7 +4,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/config/routes.dart';
 import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
-import 'package:praise_choir_app/features/songs/song_routes.dart';
 import '../../../../core/theme/theme_cubit.dart';
 import '../cubit/auth_cubit.dart';
 
@@ -39,11 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
         (route) => false,
       );
     } else if (user.role == 'guest') {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        SongRoutes.songLibrary,
-        (route) => false,
-      );
+      Navigator.pushReplacementNamed(context, Routes.mainNavigationShell);
     } else {
       Navigator.pushReplacementNamed(context, Routes.mainNavigationShell);
     }

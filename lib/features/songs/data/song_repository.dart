@@ -73,7 +73,25 @@ class SongRepository {
       final safeLikes = newLikes < 0 ? 0 : newLikes;
 
       final updatedSong = song.copyWith(likeCount: safeLikes);
-      await updateSong(updatedSong);
+
+      try {
+        await updateSong(updatedSong);
+      } catch (e) {
+        debugPrint(
+          'Silently ignoring remote update failure for likeCount on guest/member users: $e',
+        );
+        // Still update local box even if remote update fails due to permissions
+        final existingSong = _songBox.values.cast<SongModel?>().firstWhere(
+          (s) => s?.id == updatedSong.id,
+          orElse: () => null,
+        );
+
+        if (existingSong != null) {
+          await _songBox.put(existingSong.key, updatedSong);
+        } else {
+          await _songBox.put(updatedSong.id, updatedSong);
+        }
+      }
     }
   }
 
