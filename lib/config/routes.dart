@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:praise_choir_app/core/widgets/common/home_screen.dart';
 import 'package:praise_choir_app/core/widgets/common/main_navigation_shell.dart';
 import 'package:praise_choir_app/core/widgets/common/pending_approval_screen.dart';
+import 'package:praise_choir_app/core/widgets/common/deactivated_user_screen.dart';
 import 'package:praise_choir_app/core/widgets/common/role_selection_screen.dart';
 import 'package:praise_choir_app/core/widgets/common/song_list_screen.dart';
 // import 'package:praise_choir_app/core/widgets/common/splash_screen.dart';
@@ -30,6 +31,7 @@ class Routes {
 
   static const String pendingUser = '/pendingUser';
   static const String guestUser = '/guestUser';
+  static const String deactivatedUser = '/deactivatedUser';
 
   // admin
   static const String adminDashboard = '/admin';
@@ -63,6 +65,8 @@ class Routes {
         return MaterialPageRoute(builder: (_) => PendingApprovalScreen());
       case guestUser:
         return MaterialPageRoute(builder: (_) => SongListScreen());
+      case deactivatedUser:
+        return MaterialPageRoute(builder: (_) => const DeactivatedUserScreen());
       case mainNavigationShell:
         return MaterialPageRoute(builder: (_) => MainNavigationShell());
       case login:

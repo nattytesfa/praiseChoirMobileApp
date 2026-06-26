@@ -42,3 +42,12 @@ class AuthUnauthorized extends AuthState {
   @override
   List<Object> get props => [email];
 }
+
+class AuthDeactivated extends AuthState {
+  final UserModel user;
+
+  const AuthDeactivated(this.user);
+
+  @override
+  List<Object> get props => [user];
+}

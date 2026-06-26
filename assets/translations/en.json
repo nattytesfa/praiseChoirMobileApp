@@ -72,6 +72,8 @@
   "pendingApprovalMsg": "A leader needs to verify your account before you can access choir tools.",
   "returnToLogin": "Return to login",
   "checkIfApproved": "Check if Approved",
+  "accountDeactivated": "Account Deactivated",
+  "accountDeactivatedMsg": "Your account ({name}) has been deactivated. Please contact the leaders for more information.",
   "createAccount": "Create Account",
   "joinPraiseChoir": "Join Praise Choir",
   "createAccountSubtitle": "Create your account to access choir features",

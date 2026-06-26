@@ -74,6 +74,8 @@
   "pendingApprovalMsg": "የመዘምራን መሳሪያዎችን ከመጠቀምዎ በፊት መሪ መለያዎን ማረጋገጥ አለበት።",
   "returnToLogin": "ወደ መግቢያ ይመለሱ",
   "checkIfApproved": "ማረጋገጫውን ያረጋግጡ",
+  "accountDeactivated": "መለያ አገልግሎት ተቋርጧል",
+  "accountDeactivatedMsg": "የእርስዎ መለያ ({name}) አገልግሎት ተቋርጧል። እባክዎ ለበለጠ መረጃ መሪዎችን ያነጋግሩ።",
   "createAccount": "መለያ ይፍጠሩ",
   "joinPraiseChoir": "Praise Choirን ይቀላቀሉ",
   "createAccountSubtitle": "የመዘምራን ባህሪያትን ለማግኘት መለያዎን ይፍጠሩ",

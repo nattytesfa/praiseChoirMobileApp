@@ -5,7 +5,8 @@ import 'package:praise_choir_app/core/theme/app_colors.dart';
 import 'package:praise_choir_app/core/widgets/common/network/network_status_indicator.dart';
 import 'package:praise_choir_app/core/widgets/common/network/sync_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
-import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart';
+import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart'
+    show AuthState, AuthAuthenticated, AuthDeactivated, AuthError, AuthUnauthenticated;
 import 'package:praise_choir_app/features/songs/data/song_repository.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.dart';
 import 'package:praise_choir_app/features/songs/presentation/screens/favorites_screen.dart';
@@ -99,6 +100,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           listener: (context, state) {
             if (state is AuthUnauthenticated || state is AuthError) {
               Navigator.pushReplacementNamed(context, Routes.login);
+            } else if (state is AuthDeactivated) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                Routes.deactivatedUser,
+                (route) => false,
+              );
             } else if (state is AuthAuthenticated) {
               // Optional: Check if pending/guest
               if (state.user.role == 'guest') {

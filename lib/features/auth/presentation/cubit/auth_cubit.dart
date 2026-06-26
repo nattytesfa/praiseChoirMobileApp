@@ -6,7 +6,8 @@ import 'package:praise_choir_app/config/routes.dart';
 import 'package:praise_choir_app/core/constants/app_constants.dart';
 import 'package:praise_choir_app/features/auth/data/auth_repository.dart';
 import 'package:praise_choir_app/features/auth/data/models/user_model.dart';
-import 'auth_state.dart';
+import 'auth_state.dart'
+    show AuthState, AuthInitial, AuthLoading, AuthAuthenticated, AuthUnauthenticated, AuthError, AuthPasswordResetSent, AuthDeactivated;
 import 'package:hive/hive.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -36,6 +37,7 @@ class AuthCubit extends Cubit<AuthState> {
       final userBox = Hive.box<UserModel>(HiveBoxes.users);
       try {
         final matching = userBox.values.firstWhere((u) => u.email == email);
+        if (!matching.isActive) return AuthDeactivated(matching);
         return AuthAuthenticated(matching);
       } catch (_) {
         return AuthInitial();
@@ -78,7 +80,13 @@ class AuthCubit extends Cubit<AuthState> {
       // 2. Update local Hive cache
       await _usersBox.put(updatedUser.id, updatedUser);
 
-      // 3. Emit new state to trigger UI update
+      // 3. If user was deactivated since last check, emit deactivated state
+      if (!updatedUser.isActive) {
+        emit(AuthDeactivated(updatedUser));
+        return;
+      }
+
+      // 4. Emit new state to trigger UI update
       emit(AuthAuthenticated(updatedUser));
     } catch (e) {
       emit(AuthError("Failed to refresh: $e"));
@@ -134,6 +142,10 @@ class AuthCubit extends Cubit<AuthState> {
           return;
         }
         final matching = matches.first;
+        if (!matching.isActive) {
+          emit(AuthDeactivated(matching));
+          return;
+        }
         await authRepository.saveUser(matching);
         emit(AuthAuthenticated(matching));
         return;
@@ -146,6 +158,10 @@ class AuthCubit extends Cubit<AuthState> {
       // app doesn't prompt to login repeatedly between restarts.
       final current = await authRepository.getCurrentUser();
       if (current != null) {
+        if (!current.isActive) {
+          emit(AuthDeactivated(current));
+          return;
+        }
         emit(AuthAuthenticated(current));
         return;
       }
@@ -171,6 +187,8 @@ class AuthCubit extends Cubit<AuthState> {
       // 2. If the repository succeeded, we now have a UserModel.
       // Emitting this state tells the LoginScreen BlocListener to navigate.
       emit(AuthAuthenticated(user));
+    } on UserDeactivatedException catch (e) {
+      emit(AuthDeactivated(e.user));
     } on FirebaseAuthException catch (e) {
       // Catch specific Firebase errors (e.g., 'wrong-password')
       emit(AuthError(e.message ?? 'Authentication failed'));

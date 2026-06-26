@@ -3,6 +3,11 @@ import 'package:hive/hive.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+class UserDeactivatedException implements Exception {
+  final UserModel user;
+  UserDeactivatedException(this.user);
+}
+
 class AuthRepository {
   // Firebase services
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -175,6 +180,11 @@ class AuthRepository {
         // 3a. User exists in Firestore - create from document
         user = UserModel.fromJson(doc.data() as Map<String, dynamic>);
 
+        // Block deactivated users from signing in
+        if (!user.isActive) {
+          throw UserDeactivatedException(user);
+        }
+
         // Update last login time
         user = user.copyWith(lastLogin: DateTime.now());
 
@@ -204,6 +214,8 @@ class AuthRepository {
       return user;
     } on FirebaseAuthException catch (e) {
       throw _handleFirebaseAuthError(e);
+    } on UserDeactivatedException {
+      rethrow;
     } catch (e) {
       throw Exception('Sign in failed: $e');
     }
