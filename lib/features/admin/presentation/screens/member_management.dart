@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:praise_choir_app/core/constants/app_constants.dart';
 import 'package:praise_choir_app/features/admin/presentation/cubit/admin_state.dart';
 import 'package:praise_choir_app/features/auth/data/models/user_model.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../cubit/admin_cubit.dart';
 
 class MemberManagementScreen extends StatefulWidget {
@@ -26,24 +25,6 @@ class _MemberManagementScreenState extends State<MemberManagementScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('memberManagement'.tr()),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'searchMembers'.tr(),
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                fillColor: AppColors.darkBackground,
-                filled: true,
-              ),
-              onChanged: (value) {},
-            ),
-          ),
-        ),
       ),
       body: BlocBuilder<AdminCubit, AdminState>(
         builder: (context, state) {
@@ -182,18 +163,21 @@ class _MemberManagementScreenState extends State<MemberManagementScreen> {
           mainAxisSize: MainAxisSize.min,
           children: AppConstants.roles
               .map(
-                (role) => ListTile(
-                  title: Text(role.tr()),
-                  trailing: member.role == role
-                      ? const Icon(Icons.check)
-                      : null,
-                  onTap: () {
-                    context.read<AdminCubit>().updateMemberRole(
-                      member.id,
-                      role,
-                    );
-                    Navigator.pop(context);
-                  },
+                (role) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: ListTile(
+                    title: Text(role.tr()),
+                    trailing: member.role == role
+                        ? const Icon(Icons.check)
+                        : null,
+                    onTap: () {
+                      context.read<AdminCubit>().updateMemberRole(
+                        member.id,
+                        role,
+                      );
+                      Navigator.pop(context);
+                    },
+                  ),
                 ),
               )
               .toList(),
