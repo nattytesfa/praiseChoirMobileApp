@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:praise_choir_app/core/constants/app_constants.dart';
 import 'package:praise_choir_app/features/payment/data/payment_repository.dart';
+import 'package:praise_choir_app/features/payment/data/models/payment_settings.dart';
 import 'payment_state.dart';
 
 class PaymentCubit extends Cubit<PaymentState> {
@@ -56,7 +56,6 @@ class PaymentCubit extends Cubit<PaymentState> {
         additionalFee: additionalFee,
       );
 
-      // Reload the relevant list to reflect the update.
       if (memberId != null) {
         loadMyPayments(memberId);
       } else {
@@ -110,12 +109,14 @@ class PaymentCubit extends Cubit<PaymentState> {
   void createMonthlyPayments(List<String> memberIds) async {
     emit(PaymentLoading());
     try {
+      final settings = await paymentRepository.getSettings();
       final dueDate = DateTime(
         DateTime.now().year,
         DateTime.now().month,
-        AppConstants.paymentDueDay,
+        settings.dueDay,
       );
       await paymentRepository.createMonthlyPayments(memberIds, dueDate);
+      await paymentRepository.saveSettings(settings);
       loadAllPayments();
     } catch (e) {
       emit(PaymentError('Failed to create monthly payments'));
@@ -133,6 +134,48 @@ class PaymentCubit extends Cubit<PaymentState> {
       loadAllPayments();
     } catch (e) {
       emit(PaymentError('Failed to delete monthly payments'));
+    }
+  }
+
+  // ==================== SETTINGS ====================
+
+  void loadSettings() async {
+    try {
+      final settings = await paymentRepository.getSettings();
+      emit(PaymentSettingsLoaded(settings));
+    } catch (e) {
+      emit(PaymentError('Failed to load payment settings'));
+    }
+  }
+
+  Future<void> updateSettings(PaymentSettings settings) async {
+    try {
+      await paymentRepository.saveSettings(settings);
+      loadAllPayments();
+    } catch (e) {
+      emit(PaymentError('Failed to save payment settings'));
+    }
+  }
+
+  Future<void> manualGenerateWithSettings(List<String> activeMemberIds) async {
+    emit(PaymentLoading());
+    try {
+      final settings = await paymentRepository.getSettings();
+      final dueDate = DateTime(
+        DateTime.now().year,
+        DateTime.now().month,
+        settings.dueDay,
+      );
+      await paymentRepository.createMonthlyPayments(
+        activeMemberIds,
+        dueDate,
+        amount: settings.paymentAmount,
+      );
+      settings.lastGenerated = DateTime.now();
+      await paymentRepository.saveSettings(settings);
+      loadAllPayments();
+    } catch (e) {
+      emit(PaymentError('Failed to generate payments'));
     }
   }
 }

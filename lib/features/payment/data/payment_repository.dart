@@ -1,13 +1,53 @@
 import 'package:hive/hive.dart';
 import 'package:praise_choir_app/core/constants/app_constants.dart';
 import 'models/payment_model.dart';
+import 'models/payment_settings.dart';
 
 class PaymentRepository {
   late Box<PaymentModel> _paymentBox;
+  late Box _settingsBox;
 
   PaymentRepository() {
     _paymentBox = Hive.box<PaymentModel>(HiveBoxes.payments);
+    _settingsBox = Hive.box('settings');
   }
+
+  // ==================== SETTINGS ====================
+
+  Future<PaymentSettings> getSettings() async {
+    final data = _settingsBox.get('payment_settings') as Map?;
+    if (data == null) return PaymentSettings();
+    return PaymentSettings.fromJson(Map<String, dynamic>.from(data));
+  }
+
+  Future<void> saveSettings(PaymentSettings settings) async {
+    await _settingsBox.put('payment_settings', settings.toJson());
+  }
+
+  bool _hasGeneratedThisMonth(DateTime? lastGenerated) {
+    if (lastGenerated == null) return false;
+    final now = DateTime.now();
+    return lastGenerated.month == now.month && lastGenerated.year == now.year;
+  }
+
+  Future<bool> generateIfDue(List<String> activeMemberIds) async {
+    final settings = await getSettings();
+    if (!settings.autoGenerate) return false;
+    if (_hasGeneratedThisMonth(settings.lastGenerated)) return false;
+
+    final now = DateTime.now();
+    if (now.day < settings.dueDay) return false;
+
+    final dueDate = DateTime(now.year, now.month, settings.dueDay);
+    await createMonthlyPayments(activeMemberIds, dueDate,
+        amount: settings.paymentAmount);
+
+    settings.lastGenerated = now;
+    await saveSettings(settings);
+    return true;
+  }
+
+  // ==================== CRUD ====================
 
   Future<List<PaymentModel>> getPaymentsForMember(String memberId) async {
     final allPayments = _paymentBox.values.toList();
@@ -108,13 +148,24 @@ class PaymentRepository {
 
   Future<void> createMonthlyPayments(
     List<String> memberIds,
-    DateTime dueDate,
-  ) async {
+    DateTime dueDate, {
+    double? amount,
+  }) async {
+    final settings = await getSettings();
+    final paymentAmount = amount ?? settings.paymentAmount;
+
     for (final memberId in memberIds) {
+      final existing = _paymentBox.values.where((p) =>
+          p.memberId == memberId &&
+          p.dueDate.year == dueDate.year &&
+          p.dueDate.month == dueDate.month);
+
+      if (existing.isNotEmpty) continue;
+
       final payment = PaymentModel(
         id: 'payment_${memberId}_${dueDate.millisecondsSinceEpoch}',
         memberId: memberId,
-        amount: AppConstants.monthlyPaymentAmount,
+        amount: paymentAmount,
         dueDate: dueDate,
         status: PaymentStatus.pending,
       );

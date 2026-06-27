@@ -62,6 +62,41 @@ class _PaymentHistoryState extends State<PaymentHistory> {
           title: Text(widget.title.tr()),
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
+          actions: [
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'delete_pending') {
+                  _showDeleteConfirmation(context, includePaid: false);
+                } else if (value == 'delete_all') {
+                  _showDeleteConfirmation(context, includePaid: true);
+                }
+              },
+              itemBuilder: (BuildContext context) {
+                return [
+                  PopupMenuItem<String>(
+                    value: 'delete_pending',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.delete_outline, color: Colors.orange),
+                        const SizedBox(width: 8),
+                        Text('deletePendingPayments'.tr()),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem<String>(
+                    value: 'delete_all',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.delete_forever, color: Colors.red),
+                        const SizedBox(width: 8),
+                        Text('deleteAllPayments'.tr()),
+                      ],
+                    ),
+                  ),
+                ];
+              },
+            ),
+          ],
           systemOverlayStyle: SystemUiOverlayStyle.light,
           bottom: TabBar(
             labelColor: Colors.white,
@@ -118,15 +153,61 @@ class _PaymentHistoryState extends State<PaymentHistory> {
     );
   }
 
+  Future<void> _showDeleteConfirmation(
+    BuildContext context, {
+    required bool includePaid,
+  }) async {
+    final title = includePaid
+        ? 'deleteAllPayments'.tr()
+        : 'deletePendingPayments'.tr();
+    final content = includePaid
+        ? 'deleteAllPaymentsConfirm'.tr()
+        : 'deletePendingPaymentsConfirm'.tr();
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('cancel'.tr()),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: Text('delete'.tr()),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true && context.mounted) {
+      context.read<PaymentCubit>().deleteMonthlyPayments(
+        includePaid: includePaid,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            includePaid
+                ? 'deletingAllPayments'.tr()
+                : 'deletingPendingPayments'.tr(),
+          ),
+        ),
+      );
+    }
+  }
+
   Widget _buildTabBarView(List<PaymentModel> allPayments) {
     final paid = allPayments
         .where((p) => p.status == PaymentStatus.paid)
         .toList();
     final overdue = allPayments
-        .where((p) => p.status == PaymentStatus.overdue)
+        .where((p) => p.isOverdue)
         .toList();
     final pending = allPayments
-        .where((p) => p.status == PaymentStatus.pending)
+        .where((p) => p.status == PaymentStatus.pending && !p.isOverdue)
         .toList();
 
     return TabBarView(

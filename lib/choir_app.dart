@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,12 +32,44 @@ class _AppLifeCycleWrapper extends StatefulWidget {
 }
 
 class _AppLifeCycleWrapperState extends State<_AppLifeCycleWrapper> {
+  Timer? _autoGenTimer;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       UpdateChecker.checkForUpdates(context);
+      _scheduleAutoGeneration();
     });
+  }
+
+  @override
+  void dispose() {
+    _autoGenTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _scheduleAutoGeneration() async {
+    await _tryAutoGenerate();
+
+    _autoGenTimer = Timer.periodic(const Duration(hours: 6), (_) {
+      _tryAutoGenerate();
+    });
+  }
+
+  Future<void> _tryAutoGenerate() async {
+    try {
+      final authRepo = AuthRepository();
+      final paymentRepo = PaymentRepository();
+      final allUsers = await authRepo.getAllUsers();
+      final activeIds = allUsers
+          .where((u) => u.isActive)
+          .map((u) => u.id)
+          .toList();
+      await paymentRepo.generateIfDue(activeIds);
+    } catch (_) {
+      // Silently fail - auto-generation is best-effort
+    }
   }
 
   @override

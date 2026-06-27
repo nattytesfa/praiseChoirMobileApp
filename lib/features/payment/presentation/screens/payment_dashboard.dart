@@ -6,6 +6,8 @@ import 'package:praise_choir_app/core/theme/app_text_styles.dart';
 import 'package:praise_choir_app/features/auth/data/auth_repository.dart';
 import 'package:praise_choir_app/features/payment/presentation/cubit/payment_cubit.dart';
 import 'package:praise_choir_app/features/payment/presentation/cubit/payment_state.dart';
+import 'package:praise_choir_app/features/payment/presentation/widgets/payment_adjustment_card.dart';
+import 'package:praise_choir_app/features/payment/data/models/payment_settings.dart';
 import 'package:praise_choir_app/features/payment/payment_routes.dart';
 import 'package:praise_choir_app/features/payment/data/models/payment_report_model.dart';
 
@@ -17,12 +19,70 @@ class PaymentDashboard extends StatefulWidget {
 }
 
 class _PaymentDashboardState extends State<PaymentDashboard> {
+  PaymentSettings? _settings;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<PaymentCubit>().loadAllPayments();
+      _loadData();
     });
+  }
+
+  Future<void> _loadData() async {
+    final cubit = context.read<PaymentCubit>();
+    cubit.loadAllPayments();
+    final settings = await cubit.paymentRepository.getSettings();
+    if (mounted) {
+      setState(() => _settings = settings);
+    }
+  }
+
+  Future<void> _onManualGenerate() async {
+    final authRepo = context.read<AuthRepository>();
+    final cubit = context.read<PaymentCubit>();
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('generateMonthlyPayments'.tr()),
+        content: Text('generatePaymentsConfirm'.tr()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('cancel'.tr()),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('generate'.tr()),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+    if (!mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    final allUsers = await authRepo.getAllUsers();
+    if (!mounted) return;
+
+    final activeMemberIds = allUsers
+        .where((u) => u.isActive)
+        .map((u) => u.id)
+        .toList();
+
+    cubit.manualGenerateWithSettings(activeMemberIds);
+    messenger.showSnackBar(SnackBar(content: Text('generatingPayments'.tr())));
+  }
+
+  Future<void> _onSettingsSaved(PaymentSettings newSettings) async {
+    await context.read<PaymentCubit>().updateSettings(newSettings);
+    if (!mounted) return;
+    setState(() => _settings = newSettings);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Settings saved')),
+    );
   }
 
   @override
@@ -34,53 +94,18 @@ class _PaymentDashboardState extends State<PaymentDashboard> {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            onPressed: () {
-              context.read<PaymentCubit>().loadAllPayments();
-            },
+            onPressed: _loadData,
             icon: const Icon(Icons.refresh),
-          ),
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'delete_pending') {
-                _showDeleteConfirmation(context, includePaid: false);
-              } else if (value == 'delete_all') {
-                _showDeleteConfirmation(context, includePaid: true);
-              }
-            },
-            itemBuilder: (BuildContext context) {
-              return [
-                PopupMenuItem<String>(
-                  value: 'delete_pending',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.delete_outline, color: Colors.orange),
-                      const SizedBox(width: 8),
-                      Text('deletePendingPayments'.tr()),
-                    ],
-                  ),
-                ),
-                PopupMenuItem<String>(
-                  value: 'delete_all',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.delete_forever, color: Colors.red),
-                      const SizedBox(width: 8),
-                      Text('deleteAllPayments'.tr()),
-                    ],
-                  ),
-                ),
-              ];
-            },
           ),
         ],
       ),
       body: BlocBuilder<PaymentCubit, PaymentState>(
         builder: (context, state) {
-          if (state is PaymentLoading) {
+          if (state is PaymentLoading && _settings == null) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (state is PaymentError) {
+          if (state is PaymentError && _settings == null) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -88,8 +113,7 @@ class _PaymentDashboardState extends State<PaymentDashboard> {
                   Text(state.message, style: AppTextStyles.bodyMedium),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () =>
-                        context.read<PaymentCubit>().loadAllPayments(),
+                    onPressed: _loadData,
                     child: Text('retry'.tr()),
                   ),
                 ],
@@ -97,152 +121,67 @@ class _PaymentDashboardState extends State<PaymentDashboard> {
             );
           }
 
-          if (state is PaymentLoaded) {
-            final summary = state.summary;
+          final summary = (state is PaymentLoaded) ? state.summary : null;
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  const SizedBox(height: 16),
-                  _buildNavigationCard(
-                    context,
-                    title: 'paymentHistory'.tr(),
-                    subtitle: 'viewPaymentRecords'.tr(),
-                    icon: Icons.history,
-                    color: Colors.blue,
-                    onTap: () => Navigator.pushNamed(
-                      context,
-                      PaymentRoutes.adminHistory,
-                    ),
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                if (_settings != null)
+                  PaymentAdjustmentCard(
+                    settings: _settings!,
+                    onSettingsSaved: _onSettingsSaved,
+                    onManualGenerate: _onManualGenerate,
                   ),
-                  const SizedBox(height: 12),
-                  _buildNavigationCard(
+                const SizedBox(height: 12),
+                _buildNavigationCard(
+                  context,
+                  title: 'paymentHistory'.tr(),
+                  subtitle: 'viewPaymentRecords'.tr(),
+                  icon: Icons.history,
+                  color: Colors.blue,
+                  onTap: () => Navigator.pushNamed(
                     context,
-                    title: 'paymentReports'.tr(),
-                    subtitle: 'viewFinancialAnalytics'.tr(),
-                    icon: Icons.bar_chart,
-                    color: Colors.purple,
-                    onTap: () {
-                      if (summary != null) {
-                        final report = PaymentReportModel(
-                          id: 'report_${DateTime.now().millisecondsSinceEpoch}',
-                          month: DateTime.now(),
-                          totalMembers: summary['totalMembers'] as int,
-                          paidCount: summary['paidCount'] as int,
-                          pendingCount: summary['pendingCount'] as int,
-                          overdueCount: summary['overdueCount'] as int,
-                          collectionRate: (summary['collectionRate'] as num)
-                              .toDouble(),
-                          totalAmount: (summary['totalAmount'] as num)
-                              .toDouble(),
-                          generatedAt: DateTime.now(),
-                        );
-                        Navigator.pushNamed(
-                          context,
-                          PaymentRoutes.report,
-                          arguments: report,
-                        );
-                      }
-                    },
+                    PaymentRoutes.adminHistory,
                   ),
-                  const SizedBox(height: 80),
-                ],
-              ),
-            );
-          }
-
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          final paymentCubit = context.read<PaymentCubit>();
-          final authRepo = context.read<AuthRepository>();
-
-          final confirm = await showDialog<bool>(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text('generateMonthlyPayments'.tr()),
-              content: Text('generatePaymentsConfirm'.tr()),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text('cancel'.tr()),
                 ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  child: Text('generate'.tr()),
+                const SizedBox(height: 12),
+                _buildNavigationCard(
+                  context,
+                  title: 'paymentReports'.tr(),
+                  subtitle: 'viewFinancialAnalytics'.tr(),
+                  icon: Icons.bar_chart,
+                  color: Colors.purple,
+                  onTap: () {
+                    if (summary != null) {
+                      final report = PaymentReportModel(
+                        id: 'report_${DateTime.now().millisecondsSinceEpoch}',
+                        month: DateTime.now(),
+                        totalMembers: summary['totalMembers'] as int,
+                        paidCount: summary['paidCount'] as int,
+                        pendingCount: summary['pendingCount'] as int,
+                        overdueCount: summary['overdueCount'] as int,
+                        collectionRate: (summary['collectionRate'] as num)
+                            .toDouble(),
+                        totalAmount: (summary['totalAmount'] as num)
+                            .toDouble(),
+                        generatedAt: DateTime.now(),
+                      );
+                      Navigator.pushNamed(
+                        context,
+                        PaymentRoutes.report,
+                        arguments: report,
+                      );
+                    }
+                  },
                 ),
+                const SizedBox(height: 80),
               ],
             ),
           );
-
-          if (confirm != true) return;
-          if (!context.mounted) return;
-
-          final users = await authRepo.getAllUsers();
-
-          if (!context.mounted) return;
-
-          final memberIds = users.map((u) => u.id).toList();
-          paymentCubit.createMonthlyPayments(memberIds);
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('generatingPayments'.tr())));
         },
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add),
-        label: Text('generatePayments'.tr()),
       ),
     );
-  }
-
-  Future<void> _showDeleteConfirmation(
-    BuildContext context, {
-    required bool includePaid,
-  }) async {
-    final title = includePaid
-        ? 'deleteAllPayments'.tr()
-        : 'deletePendingPayments'.tr();
-    final content = includePaid
-        ? 'deleteAllPaymentsConfirm'.tr()
-        : 'deletePendingPaymentsConfirm'.tr();
-
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Text(content),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text('cancel'.tr()),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text('delete'.tr()),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true && context.mounted) {
-      context.read<PaymentCubit>().deleteMonthlyPayments(
-        includePaid: includePaid,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            includePaid
-                ? 'deletingAllPayments'.tr()
-                : 'deletingPendingPayments'.tr(),
-          ),
-        ),
-      );
-    }
   }
 
   Widget _buildNavigationCard(

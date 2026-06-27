@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:praise_choir_app/features/payment/data/models/payment_model.dart';
+import 'package:praise_choir_app/features/payment/data/models/payment_settings.dart';
 
 abstract class PaymentState extends Equatable {
   const PaymentState();
@@ -38,4 +39,13 @@ class PaymentMarkedAsPaid extends PaymentState {
 
   @override
   List<Object> get props => [payment];
+}
+
+class PaymentSettingsLoaded extends PaymentState {
+  final PaymentSettings settings;
+
+  const PaymentSettingsLoaded(this.settings);
+
+  @override
+  List<Object> get props => [settings];
 }
