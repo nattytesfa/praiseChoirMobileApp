@@ -57,7 +57,7 @@ class PaymentAdjustmentCard extends StatelessWidget {
                           fontSize: 13,
                           color: settings.hasGeneratedThisMonth
                               ? Colors.green
-                              : Colors.orange,
+                              : Colors.red,
                         ),
                       ),
                     ],
@@ -69,8 +69,11 @@ class PaymentAdjustmentCard extends StatelessWidget {
             _infoRow(context, 'Amount', 'ETB ${settings.paymentAmount}'),
             _infoRow(context, 'Due day', '${settings.dueDay}th of month'),
             _infoRow(context, 'Late fee', 'ETB ${settings.lateFee}'),
-            _infoRow(context, 'Auto-generate',
-                settings.autoGenerate ? 'On' : 'Off'),
+            _infoRow(
+              context,
+              'Auto-generate',
+              settings.autoGenerate ? 'On' : 'Off',
+            ),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -108,13 +111,16 @@ class PaymentAdjustmentCard extends StatelessWidget {
         children: [
           SizedBox(
             width: 110,
-            child: Text(label,
-                style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            ),
           ),
           Expanded(
-            child: Text(value,
-                style: const TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w600)),
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),
@@ -122,12 +128,13 @@ class PaymentAdjustmentCard extends StatelessWidget {
   }
 
   Future<void> _showEditDialog(BuildContext context) async {
-    final amountCtrl =
-        TextEditingController(text: settings.paymentAmount.toString());
-    final dueDayCtrl =
-        TextEditingController(text: settings.dueDay.toString());
-    final lateFeeCtrl =
-        TextEditingController(text: settings.lateFee.toString());
+    final amountCtrl = TextEditingController(
+      text: settings.paymentAmount.toString(),
+    );
+    final dueDayCtrl = TextEditingController(text: settings.dueDay.toString());
+    final lateFeeCtrl = TextEditingController(
+      text: settings.lateFee.toString(),
+    );
     bool autoGen = settings.autoGenerate;
 
     final result = await showDialog<PaymentSettings>(
@@ -170,15 +177,13 @@ class PaymentAdjustmentCard extends StatelessWidget {
                   title: const Text('Auto-generate monthly'),
                   value: autoGen,
                   onChanged: (v) => setDialogState(() => autoGen = v),
-                  contentPadding: EdgeInsets.zero,
                 ),
                 if (autoGen && settings.lastGenerated != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
                       'Last generated: ${settings.lastGenerated!.day}/${settings.lastGenerated!.month}/${settings.lastGenerated!.year}',
-                      style: const TextStyle(
-                          fontSize: 12, color: Colors.grey),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ),
               ],
@@ -195,9 +200,11 @@ class PaymentAdjustmentCard extends StatelessWidget {
                   ctx,
                   PaymentSettings(
                     paymentAmount:
-                        double.tryParse(amountCtrl.text) ?? settings.paymentAmount,
+                        double.tryParse(amountCtrl.text) ??
+                        settings.paymentAmount,
                     dueDay: int.tryParse(dueDayCtrl.text) ?? settings.dueDay,
-                    lateFee: double.tryParse(lateFeeCtrl.text) ?? settings.lateFee,
+                    lateFee:
+                        double.tryParse(lateFeeCtrl.text) ?? settings.lateFee,
                     autoGenerate: autoGen,
                     lastGenerated: settings.lastGenerated,
                   ),
