@@ -6,7 +6,12 @@ import 'package:praise_choir_app/core/widgets/common/network/network_status_indi
 import 'package:praise_choir_app/core/widgets/common/network/sync_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:praise_choir_app/features/auth/presentation/cubit/auth_state.dart'
-    show AuthState, AuthAuthenticated, AuthDeactivated, AuthError, AuthUnauthenticated;
+    show
+        AuthState,
+        AuthAuthenticated,
+        AuthDeactivated,
+        AuthError,
+        AuthUnauthenticated;
 import 'package:praise_choir_app/features/songs/data/song_repository.dart';
 import 'package:praise_choir_app/features/songs/presentation/cubit/song_cubit.dart';
 import 'package:praise_choir_app/features/songs/presentation/screens/favorites_screen.dart';

@@ -7,7 +7,15 @@ import 'package:praise_choir_app/core/constants/app_constants.dart';
 import 'package:praise_choir_app/features/auth/data/auth_repository.dart';
 import 'package:praise_choir_app/features/auth/data/models/user_model.dart';
 import 'auth_state.dart'
-    show AuthState, AuthInitial, AuthLoading, AuthAuthenticated, AuthUnauthenticated, AuthError, AuthPasswordResetSent, AuthDeactivated;
+    show
+        AuthState,
+        AuthInitial,
+        AuthLoading,
+        AuthAuthenticated,
+        AuthUnauthenticated,
+        AuthError,
+        AuthPasswordResetSent,
+        AuthDeactivated;
 import 'package:hive/hive.dart';
 
 class AuthCubit extends Cubit<AuthState> {

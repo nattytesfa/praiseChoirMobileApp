@@ -23,9 +23,7 @@ class _MemberManagementScreenState extends State<MemberManagementScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('memberManagement'.tr()),
-      ),
+      appBar: AppBar(title: Text('memberManagement'.tr())),
       body: BlocBuilder<AdminCubit, AdminState>(
         builder: (context, state) {
           if (state is AdminLoading) {

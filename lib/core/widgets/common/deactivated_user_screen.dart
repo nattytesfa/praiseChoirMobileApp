@@ -39,14 +39,9 @@ class DeactivatedUserScreen extends StatelessWidget {
                       ? "accountDeactivatedMsg".tr(
                           namedArgs: {'name': user.name},
                         )
-                      : "accountDeactivatedMsg".tr(
-                          namedArgs: {'name': ''},
-                        ),
+                      : "accountDeactivatedMsg".tr(namedArgs: {'name': ''}),
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
                 ),
                 const SizedBox(height: 32),
                 ElevatedButton(

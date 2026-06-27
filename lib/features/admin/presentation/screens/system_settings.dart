@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:praise_choir_app/core/constants/app_constants.dart';
-import 'package:praise_choir_app/features/admin/presentation/cubit/admin_cubit.dart';
 
 class SystemSettingsScreen extends StatefulWidget {
   const SystemSettingsScreen({super.key});
@@ -12,18 +10,12 @@ class SystemSettingsScreen extends StatefulWidget {
 }
 
 class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
-  bool _enableSmsNotifications = true;
   bool _enablePushNotifications = true;
-  bool _autoBackupEnabled = false;
-  bool _highContrastMode = false;
-  double _audioQuality = 0.8;
 
   final Map<String, bool> _featureToggles = {
     'songRotationSystem': true,
     'paymentReminders': true,
     'voiceMessages': true,
-    'socialSharing': true,
-    'offlineMode': true,
   };
 
   void _showResetConfirmation() {
@@ -60,20 +52,6 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
     ).showSnackBar(SnackBar(content: Text('resetSuccess'.tr())));
   }
 
-  void _exportData() {
-    // This would export all data to a file
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('exportSuccess'.tr())));
-  }
-
-  void _runSystemDiagnostics() {
-    context.read<AdminCubit>().checkSystemHealth();
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('diagnosticsCompleted'.tr())));
-  }
-
   Widget _buildSettingSection(String title, List<Widget> children) {
     return Card(
       child: Padding(
@@ -107,31 +85,6 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
     );
   }
 
-  Widget _buildSliderSetting(
-    String title,
-    String value,
-    double currentValue,
-    Function(double) onChanged,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [Text(title.tr()), Text(value)],
-        ),
-        Slider(
-          value: currentValue,
-          onChanged: onChanged,
-          min: 0.1,
-          max: 1.0,
-          divisions: 9,
-          label: (currentValue * 100).toStringAsFixed(0),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -142,12 +95,6 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
           children: [
             // Notification Settings
             _buildSettingSection('notifications', [
-              _buildToggleSetting(
-                'smsNotifications',
-                'smsNotificationsDesc',
-                _enableSmsNotifications,
-                (value) => setState(() => _enableSmsNotifications = value),
-              ),
               _buildToggleSetting(
                 'pushNotifications',
                 'pushNotificationsDesc',
@@ -167,66 +114,6 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
                   entry.value,
                   (value) => setState(() => _featureToggles[entry.key] = value),
                 ),
-              ),
-            ]),
-
-            const SizedBox(height: 16),
-
-            // Audio Settings
-            _buildSettingSection('audioSettings', [
-              _buildSliderSetting(
-                'audioQuality',
-                '${(_audioQuality * 100).toStringAsFixed(0)}%',
-                _audioQuality,
-                (value) => setState(() => _audioQuality = value),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'highQualityUsageWarning'.tr(),
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-              ),
-            ]),
-
-            const SizedBox(height: 16),
-
-            // Accessibility
-            _buildSettingSection('accessibility', [
-              _buildToggleSetting(
-                'highContrastMode',
-                'highContrastModeDesc',
-                _highContrastMode,
-                (value) => setState(() => _highContrastMode = value),
-              ),
-              _buildToggleSetting(
-                'largeText',
-                'largeTextDesc',
-                false,
-                (value) {}, // Would implement
-              ),
-            ]),
-
-            const SizedBox(height: 16),
-
-            // Data Management
-            _buildSettingSection('dataManagement', [
-              _buildToggleSetting(
-                'autoBackup',
-                'autoBackupDesc',
-                _autoBackupEnabled,
-                (value) => setState(() => _autoBackupEnabled = value),
-              ),
-              const SizedBox(height: 8),
-              ListTile(
-                leading: const Icon(Icons.download),
-                title: Text('exportData'.tr()),
-                subtitle: Text('exportDataDesc'.tr()),
-                onTap: _exportData,
-              ),
-              ListTile(
-                leading: const Icon(Icons.health_and_safety),
-                title: Text('runSystemDiagnostics'.tr()),
-                subtitle: Text('runSystemDiagnosticsDesc'.tr()),
-                onTap: _runSystemDiagnostics,
               ),
             ]),
 
@@ -266,10 +153,6 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
               _buildInfoItem('appVersion', AppConstants.appVersion),
               _buildInfoItem('buildNumber', '1.0.0+1'),
               _buildInfoItem('lastUpdated', '2024-01-01'),
-              _buildInfoItem(
-                'databaseSize',
-                'calculateSize'.tr(),
-              ), // Would calculate actual size
             ]),
 
             const SizedBox(height: 32),
